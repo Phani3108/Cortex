@@ -121,7 +121,7 @@ ${Object.entries(COMMANDS).map(([k, v]) => `    ${k.padEnd(12)} ${v}`).join('\n'
     cortex status                  Show current configuration
 
   LEARN MORE
-    https://github.com/YOUR_USERNAME/cortex
+    https://github.com/Phani3108/Cortex
 `);
 }
 
