@@ -2,6 +2,7 @@ node_modules/
 .DS_Store
 *.log
 bin/aictx.js
+_add-headers.mjs
 
 # Cortex generated artifacts (compiled from .cortex/ sources)
 .cortex/.compile-manifest.json

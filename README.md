@@ -157,7 +157,13 @@ templates/                ← Built-in rule & skill templates
 
 ## 📄 License
 
-MIT
+MIT License — Copyright (c) 2026 [Phani Marupaka](https://linkedin.com/in/phani-marupaka)
+
+Created & Developed by **Phani Marupaka**. All rights reserved under applicable copyright law.
+
+Any fork, derivative work, or redistribution must visibly credit the original author and include a link to [linkedin.com/in/phani-marupaka](https://linkedin.com/in/phani-marupaka).
+
+See [LICENSE](LICENSE) for full terms.
 
 ---
 

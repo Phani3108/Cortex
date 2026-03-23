@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Cortex — Universal AI Context Engine
+// Copyright (c) 2026 Phani Marupaka. All rights reserved.
+// Created & Developed by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
+// Licensed under MIT — see LICENSE for terms. Attribution required.
+// ─────────────────────────────────────────────────────────────────────────────
 /**
  * Metrics & Summary Engine — quantifies everything cortex does.
  *
@@ -128,9 +134,11 @@ export function generateSummary(projectRoot) {
 
   const lines = [];
 
-  lines.push('╔══════════════════════════════════════════════════════════╗');
-  lines.push('║               cortex — Project Summary                   ║');
-  lines.push('╚══════════════════════════════════════════════════════════╝');
+  lines.push('╔══════════════════════════════════════════════════════════════╗');
+  lines.push('║        Cortex — Project Summary                              ║');
+  lines.push('║  Created by Phani Marupaka                                    ║');
+  lines.push('║  https://github.com/Phani3108/Cortex                          ║');
+  lines.push('╚══════════════════════════════════════════════════════════════╝');
   lines.push('');
 
   // Time savings
@@ -170,7 +178,7 @@ export function generateSummary(projectRoot) {
   // Impact statement
   if (savings.time.totalSavedMinutes > 0) {
     lines.push('💡 IMPACT');
-    lines.push(`   Without cortex, maintaining ${savings.coverage.enabledProviders} provider(s) manually`);
+    lines.push(`   Without Cortex, maintaining ${savings.coverage.enabledProviders} provider(s) manually`);
     lines.push(`   would have cost ~${savings.time.totalSavedMinutes} minutes of configuration work.`);
     if (savings.quality.signalsCaptured > 0) {
       lines.push(`   ${savings.quality.signalsCaptured} feedback signals were automatically captured and`);

@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Cortex — Universal AI Context Engine
+// Copyright (c) 2026 Phani Marupaka. All rights reserved.
+// Created & Developed by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
+// Licensed under MIT — see LICENSE for terms. Attribution required.
+// ─────────────────────────────────────────────────────────────────────────────
 /**
  * Session persistence — remembers context across invocations.
  *

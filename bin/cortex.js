@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+// ─────────────────────────────────────────────────────────────────────────────
+// Cortex — Universal AI Context Engine
+// Copyright (c) 2026 Phani Marupaka. All rights reserved.
+// Created & Developed by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
+// Licensed under MIT — see LICENSE for terms. Attribution required.
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * cortex — Universal AI Context Engine CLI
@@ -47,7 +53,7 @@ const COMMANDS = {
 // ── Entry point ─────────────────────────────────────────────────────────────
 async function main() {
   if (values.version) {
-    console.log(`cortex v${VERSION}`);
+    console.log(`cortex v${VERSION} — Created by Phani Marupaka (https://linkedin.com/in/phani-marupaka)`);
     process.exit(0);
   }
 
@@ -88,6 +94,7 @@ async function main() {
 function printHelp() {
   console.log(`
   cortex v${VERSION} — Universal AI Context Engine
+  Created by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
 
   USAGE
     cortex <command> [options]

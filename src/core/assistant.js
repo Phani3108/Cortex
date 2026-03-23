@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Cortex — Universal AI Context Engine
+// Copyright (c) 2026 Phani Marupaka. All rights reserved.
+// Created & Developed by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
+// Licensed under MIT — see LICENSE for terms. Attribution required.
+// ─────────────────────────────────────────────────────────────────────────────
 /**
  * Conversational Assistant — the friendly guide that makes cortex approachable.
  *
@@ -117,7 +123,8 @@ export async function startConversation(projectRoot) {
 
 async function flowFirstTime(projectRoot, session) {
   console.log();
-  sayBold('👋 Welcome to cortex — your AI context engine.');
+  sayBold('👋 Welcome to Cortex — your AI context engine.');
+  sayDim('  Created by Phani Marupaka — https://linkedin.com/in/phani-marupaka');
   say('');
   say("I'll help you set this up. Let me ask a few questions to");
   say('figure out the best configuration for your project.');
