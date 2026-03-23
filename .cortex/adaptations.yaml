@@ -1,0 +1,6 @@
+# cortex adaptation state
+version: 1
+lastAdapted: "2026-03-23T09:03:17.233Z"
+totalCycles: 5
+signalCounts:
+  style_signal: 14

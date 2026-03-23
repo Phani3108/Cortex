@@ -1,0 +1,28 @@
+# cortex user profile
+# Personal preferences carried across all projects
+#
+# This file lives at ~/.cortex/profile.yaml and is merged
+# into every project's AI context when you compile.
+
+name: null
+
+# Your preferred AI interaction style
+style:
+  tone: concise
+  verbosity: normal
+  comments: minimal
+  language: en
+
+# Development preferences
+preferences:
+  typescript: false
+  testing_framework: null
+  formatter: null
+  linter: null
+
+# Patterns you've taught AI assistants
+# Added automatically by 'cortex learn'
+patterns: []
+
+# Insights extracted from your AI sessions
+learned: []

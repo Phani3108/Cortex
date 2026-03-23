@@ -1,0 +1,46 @@
+# cortex configuration
+# https://github.com/YOUR_USERNAME/cortex
+
+version: 1
+
+project:
+  name: {{PROJECT_NAME}}
+  language: {{LANGUAGE}}
+  framework: {{FRAMEWORK}}
+
+# Which AI providers to generate config for
+providers:
+  claude: true
+  cursor: true
+  copilot: true
+  gemini: false
+  openai: false
+  windsurf: false
+  antigravity: false
+  codex: false
+  kiro: false
+
+# Rules control AI behavior in your project
+rules:
+  sources:
+    - local
+
+# Skills are reusable instruction sets
+skills:
+  sources:
+    - local
+
+# Context controls what files are included in AI context
+context:
+  include:
+    - src/
+    - lib/
+    - app/
+    - packages/
+  exclude:
+    - node_modules/
+    - dist/
+    - build/
+    - .git/
+    - "*.lock"
+  max_tokens: 100000

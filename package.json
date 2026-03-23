@@ -1,0 +1,54 @@
+{
+  "name": "cortex",
+  "version": "1.0.0",
+  "description": "Universal AI Context Engine — carry your intelligence across every AI coding tool and every project",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "cortex": "./bin/cortex.js"
+  },
+  "scripts": {
+    "start": "node bin/cortex.js",
+    "test": "node --test tests/",
+    "lint": "eslint src/ bin/",
+    "build": "echo 'No build step needed — pure Node.js'"
+  },
+  "keywords": [
+    "ai",
+    "claude",
+    "cursor",
+    "copilot",
+    "gemini",
+    "openai",
+    "codex",
+    "antigravity",
+    "developer-tools",
+    "ai-coding",
+    "context-management",
+    "token-optimization",
+    "skills",
+    "rules",
+    "agents",
+    "mcp",
+    "universal-config",
+    "ai-context",
+    "productivity"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/",
+    "providers/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/cortex"
+  }
+}

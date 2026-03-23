@@ -1,0 +1,36 @@
+# cortex configuration
+# https://github.com/YOUR_USERNAME/cortex
+
+version: 1
+project:
+  name: cortex
+  language: JavaScript
+  framework:
+providers:
+  claude: true
+  cursor: true
+  copilot: true
+  windsurf: false
+  antigravity: false
+  codex: false
+  gemini: false
+  openai: false
+rules:
+  sources:
+    - local
+skills:
+  sources:
+    - local
+context:
+  include:
+    - src/
+    - lib/
+    - app/
+    - packages/
+  exclude:
+    - node_modules/
+    - dist/
+    - build/
+    - .git/
+    - "*.lock"
+  max_tokens: 100000
