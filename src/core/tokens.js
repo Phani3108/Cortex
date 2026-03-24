@@ -11,54 +11,32 @@
  * Real tokenizers would need tiktoken (OpenAI) or similar — we approximate
  * well enough for budget and cost estimation purposes.
  *
- * Calibrated against actual tokenizer counts for English source code:
- *   Claude (BPE):     ~3.5-4.5 chars/token for code
- *   GPT-4o (o200k):   ~3.8-4.3 chars/token for code
- *   Gemini (SentPiece): ~4.0-4.5 chars/token for code
+ * Family classification is now handled by families.js (regex-based, future-proof).
+ * Model pricing is in registry.js (auto-synced from remote).
+ * This file retains the estimation math and project analysis.
  */
 
 import { walkDir } from '../utils/fs.js';
 import { readFileSync, statSync } from 'node:fs';
 import { extname } from 'node:path';
+import { getTokenizerFamily, getCharsPerToken as familyCharsPerToken } from './families.js';
+import { getModelCost, getAllModelCosts as registryAllModelCosts } from './registry.js';
 
 // Model-family-aware chars-per-token ratios (for English + code)
+// These are tokenizer-level constants — stable across model versions.
 const CHARS_PER_TOKEN = {
-  'claude':     3.8,  // Claude BPE tokenizer, tight on code
-  'openai':     4.0,  // o200k_base, well-calibrated
-  'gemini':     4.2,  // SentencePiece, slightly more generous
-  'open-source': 3.5, // Llama/Mistral tokenizers, conservative
+  'claude':     3.8,  // Claude BPE tokenizer
+  'openai':     4.0,  // o200k_base
+  'gemini':     4.2,  // SentencePiece
+  'open-source': 3.5, // Llama/Mistral/DeepSeek tokenizers
   'default':    4.0,  // Generic fallback
 };
 
-// Cost per 1M tokens (input) — 2026 pricing
-const MODEL_COSTS = {
-  // OpenAI
-  'gpt-4o':          2.50,
-  'gpt-4o-mini':     0.15,
-  'gpt-4.1':         2.00,
-  'gpt-4.1-mini':    0.40,
-  'gpt-4.1-nano':    0.10,
-  'o3':              2.00,
-  'o3-mini':         1.10,
-  'o4-mini':         1.10,
-  // Anthropic
-  'claude-opus':     15.00,
-  'claude-sonnet':    3.00,
-  'claude-haiku':     0.80,
-  // Google
-  'gemini-pro':       1.25,
-  'gemini-flash':     0.075,
-  'gemini-ultra':     7.00,
-  // Open source (API hosting estimates)
-  'llama':            0.20,
-  'deepseek':         0.27,
-  'mistral':          0.30,
-  'codestral':        0.30,
-  // Subscription (effectively free per query)
-  'cursor':           0.00,
-  'copilot':          0.00,
-  'windsurf':         0.00,
-};
+// MODEL_COSTS is no longer hardcoded — pricing comes from registry.js.
+// This legacy export loads from the registry for backward compatibility.
+function getLegacyModelCosts() {
+  return registryAllModelCosts();
+}
 
 const TEXT_EXTENSIONS = new Set([
   '.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs',
@@ -82,16 +60,14 @@ export function estimateTokens(text, modelFamily = 'default') {
 }
 
 /**
- * Map a model name to its family for token estimation.
+ * Map a model name to its tokenizer family for token estimation.
+ * Now delegates to families.js for future-proof regex-based resolution.
+ * Any future model (gpt-5.1, claude-sonnet-4.6, gemini-3.3) resolves correctly.
  */
 export function getTokenFamily(modelName) {
   if (!modelName) return 'default';
-  const lower = modelName.toLowerCase();
-  if (lower.includes('claude') || lower.includes('haiku') || lower.includes('sonnet') || lower.includes('opus')) return 'claude';
-  if (lower.includes('gpt') || lower.includes('o3') || lower.includes('o4')) return 'openai';
-  if (lower.includes('gemini')) return 'gemini';
-  if (lower.includes('llama') || lower.includes('deepseek') || lower.includes('mistral') || lower.includes('codestral') || lower.includes('qwen')) return 'open-source';
-  return 'default';
+  const family = getTokenizerFamily(modelName);
+  return CHARS_PER_TOKEN[family] ? family : 'default';
 }
 
 /**
@@ -149,14 +125,15 @@ export function analyzeProject(projectRoot, config = {}) {
 
 /**
  * Estimate cost for a given model.
+ * Now powered by registry.js — supports any model, auto-synced pricing.
  */
 export function estimateCost(tokens, model = 'gpt-4o') {
-  const costPer1M = MODEL_COSTS[model] ?? 2.50;
+  const costPer1M = getModelCost(model);
   return (tokens / 1_000_000) * costPer1M;
 }
 
 export function getModelCosts() {
-  return { ...MODEL_COSTS };
+  return getLegacyModelCosts();
 }
 
 function shouldExclude(relativePath, patterns) {

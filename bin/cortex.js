@@ -27,6 +27,7 @@ const { values, positionals } = parseArgs({
     force:   { type: 'boolean', short: 'f', default: false },
     dry:     { type: 'boolean', default: false },
     provider:{ type: 'string',  short: 'p' },
+    model:   { type: 'string',  short: 'm' },
     profile: { type: 'string' },
   },
 });
@@ -42,7 +43,13 @@ const COMMANDS = {
   diff:     'Show what changed in provider files since last compile',
   import:   'Import existing provider files (CLAUDE.md, .cursorrules, etc.) into .cortex/',
   cost:     'Show estimated token cost analysis for the project',
-  status:   'Show current cortex configuration status',
+  budget:   'Pre-session token intelligence — where your tokens go, optimization tips',
+  switch:   'Compare two LLM models — tokens, cost, formatting, capabilities',
+  migrate:  'Compare two AI coding tools — files, features, budget, migration steps',
+  optimize: 'Score rules by impact, compress to fit tight token budgets',
+  verify:   'Validate compiled output against provider specs, generate tips',
+  suggest:  'Intelligent rule suggestions based on project stack analysis',
+  status:   'Show current cortex configuration status + provider health',
   profile:  'View or edit your personal AI profile (~/.cortex/profile.yaml)',
   add:      'Add a new skill, rule, or source (e.g., cortex add skill <name>)',
   sync:     'Sync skills/rules from upstream sources',
@@ -124,6 +131,16 @@ ${Object.entries(COMMANDS).map(([k, v]) => `    ${k.padEnd(12)} ${v}`).join('\n'
     cortex hooks install           Install git hooks for auto-learning
     cortex sync                    Sync rules from remote sources
     cortex cost                    Analyze token cost for project context
+    cortex budget                  Token budget report for current model
+    cortex budget -m gpt-5.1       Budget report for a specific model
+    cortex switch claude-sonnet-4 gpt-5.1   Compare two models
+    cortex migrate copilot cursor  Compare providers for migration
+    cortex optimize                Score rules + compression analysis
+    cortex optimize -p copilot     Compress rules for Copilot's 2K budget
+    cortex verify                  Validate all compiled files + tips
+    cortex suggest                 Get rule suggestions for your project
+    cortex suggest packs           List available rule packs
+    cortex suggest apply tdd       Apply a rule pack
     cortex add skill tdd           Add the TDD skill to current project
     cortex status                  Show current configuration
 

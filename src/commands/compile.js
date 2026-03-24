@@ -18,6 +18,8 @@ import { saveManifest } from '../core/manifest.js';
 import { heading, success, info, warn, error, fileCreated, fileSkipped, dryRun, dim, table } from '../utils/log.js';
 
 import { loadSession, saveSession, recordAction, updateMetrics } from '../core/session.js';
+import { generateTips, formatTipsForDisplay } from '../core/tips.js';
+import { PROVIDER_SPECS } from '../core/specs.js';
 
 export default async function compile({ values, positionals }) {
   const projectRoot = findProjectRoot();
@@ -112,6 +114,32 @@ export default async function compile({ values, positionals }) {
 
   console.log();
   success(`Compiled ${totalFiles} files for ${providerNames.length} provider(s)`);
+
+  // Show inline tips for each provider
+  let totalTips = 0;
+  for (const [name, provider] of Object.entries(providers)) {
+    const spec = PROVIDER_SPECS[name];
+    if (!spec) continue;
+    const model = spec.models?.[0] || 'gpt-4o';
+    const outputs = allOutputs.filter(o => o.provider === name);
+    for (const output of outputs) {
+      const tips = generateTips(output.content, model, name, { rules: allRules });
+      const important = tips.filter(t => t.severity === 'critical' || t.severity === 'warning');
+      if (important.length > 0) {
+        const display = formatTipsForDisplay(important);
+        if (display) {
+          dim(`  ${spec.name}:`);
+          console.log(display);
+          totalTips += important.length;
+        }
+      }
+    }
+  }
+
+  if (totalTips > 0) {
+    console.log();
+    dim(`${totalTips} tip(s) generated. Run \`cortex verify\` for full analysis.`);
+  }
 
   // Show summary
   dim('Provider files are auto-generated. Edit .cortex/ sources instead.');

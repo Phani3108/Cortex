@@ -9,11 +9,12 @@
  */
 
 import { findProjectRoot, getCortexDir } from '../utils/fs.js';
-import { startWatch } from '../core/watch.js';
+import { startWatch, detectModelSwitch } from '../core/watch.js';
 import { captureSignals } from '../core/signals.js';
 import { distillSignals, applyAdaptation } from '../core/adapt.js';
 import { heading, info, success, dim, warn } from '../utils/log.js';
 import { existsSync } from 'node:fs';
+import { compareModels } from '../core/compare.js';
 
 export default async function watch({ values }) {
   const projectRoot = findProjectRoot();
@@ -53,6 +54,25 @@ export default async function watch({ values }) {
     },
     onError: (err) => {
       dim(`  Error: ${err.message}`);
+    },
+    onModelSwitch: () => {
+      info('Model/IDE config changed — checking for model switch...');
+      try {
+        const result = detectModelSwitch(projectRoot);
+        if (result && result.changed) {
+          info(`  Model switch detected: ${result.from} → ${result.to}`);
+          const comparison = compareModels(result.from, result.to);
+          if (comparison.recompileNeeded) {
+            warn(`  Format change required. Re-compiling...`);
+            compileCmd({ values: { ...values, force: true }, positionals: [] }).catch(() => {});
+          } else {
+            dim(`  Same format family — no recompile needed.`);
+          }
+          if (comparison.costDelta.direction !== 'same') {
+            dim(`  Cost impact: ${comparison.costDelta.change}`);
+          }
+        }
+      } catch { /* ignore detection errors */ }
     },
   });
 

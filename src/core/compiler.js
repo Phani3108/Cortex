@@ -11,12 +11,12 @@
  * This module formats rules optimally for each model family,
  * respecting provider token budgets.
  *
- * Claude: prefers XML-structured, direct imperatives
- * GPT-4o: prefers system-prompt style, numbered lists
- * Gemini: benefits from detailed markdown, more context
- * Open source: needs explicit, unambiguous instructions
+ * Model family detection is now regex-based via families.js,
+ * so future models (gpt-5.1, claude-sonnet-4.6, gemini-3.3-flash)
+ * are handled automatically without code changes.
  */
 
+import { getFormatFamily } from './families.js';
 import { getModelFamily, PROVIDER_SPECS } from './specs.js';
 import { estimateTokens, getTokenFamily } from './tokens.js';
 
@@ -29,10 +29,10 @@ import { estimateTokens, getTokenFamily } from './tokens.js';
  * @returns {string} Formatted instructions
  */
 export function formatForModel(rules, modelHint = 'claude-sonnet', options = {}) {
-  const family = getModelFamily(modelHint);
+  const formatFamily = getFormatFamily(modelHint);
   const { maxTokens = null } = options;
 
-  switch (family.family) {
+  switch (formatFamily) {
     case 'claude-family':
       return formatClaude(rules, maxTokens, modelHint);
     case 'openai-family':

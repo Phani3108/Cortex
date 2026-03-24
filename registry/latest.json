@@ -1,0 +1,358 @@
+{
+  "version": "2026-03-24",
+  "description": "Cortex Model Registry — canonical model data synced from upstream",
+  "lastUpdated": "2026-03-24T00:00:00Z",
+
+  "models": {
+
+    "claude-opus-4": {
+      "family": "anthropic",
+      "tier": "opus",
+      "version": "4",
+      "costPer1M": { "input": 15.00, "output": 75.00 },
+      "contextWindow": 200000,
+      "released": "2025-06-25",
+      "status": "active"
+    },
+    "claude-opus-4.5": {
+      "family": "anthropic",
+      "tier": "opus",
+      "version": "4.5",
+      "costPer1M": { "input": 15.00, "output": 75.00 },
+      "contextWindow": 200000,
+      "released": "2026-01-15",
+      "status": "active"
+    },
+    "claude-opus-4.6": {
+      "family": "anthropic",
+      "tier": "opus",
+      "version": "4.6",
+      "costPer1M": { "input": 15.00, "output": 75.00 },
+      "contextWindow": 200000,
+      "released": "2026-03-10",
+      "status": "active"
+    },
+    "claude-sonnet-4": {
+      "family": "anthropic",
+      "tier": "sonnet",
+      "version": "4",
+      "costPer1M": { "input": 3.00, "output": 15.00 },
+      "contextWindow": 200000,
+      "released": "2025-06-25",
+      "status": "active"
+    },
+    "claude-sonnet-4.5": {
+      "family": "anthropic",
+      "tier": "sonnet",
+      "version": "4.5",
+      "costPer1M": { "input": 3.00, "output": 15.00 },
+      "contextWindow": 200000,
+      "released": "2026-01-20",
+      "status": "active"
+    },
+    "claude-sonnet-4.6": {
+      "family": "anthropic",
+      "tier": "sonnet",
+      "version": "4.6",
+      "costPer1M": { "input": 2.50, "output": 12.50 },
+      "contextWindow": 200000,
+      "released": "2026-03-15",
+      "status": "active"
+    },
+    "claude-haiku-3.5": {
+      "family": "anthropic",
+      "tier": "haiku",
+      "version": "3.5",
+      "costPer1M": { "input": 0.80, "output": 4.00 },
+      "contextWindow": 200000,
+      "released": "2024-11-05",
+      "status": "active"
+    },
+    "claude-haiku-4.5": {
+      "family": "anthropic",
+      "tier": "haiku",
+      "version": "4.5",
+      "costPer1M": { "input": 0.60, "output": 3.00 },
+      "contextWindow": 200000,
+      "released": "2026-02-10",
+      "status": "active"
+    },
+
+    "gpt-4o": {
+      "family": "openai-gpt",
+      "tier": "",
+      "version": "4o",
+      "costPer1M": { "input": 2.50, "output": 10.00 },
+      "contextWindow": 128000,
+      "released": "2024-05-01",
+      "status": "active"
+    },
+    "gpt-4o-mini": {
+      "family": "openai-gpt",
+      "tier": "mini",
+      "version": "4o",
+      "costPer1M": { "input": 0.15, "output": 0.60 },
+      "contextWindow": 128000,
+      "released": "2024-07-01",
+      "status": "active"
+    },
+    "gpt-4.1": {
+      "family": "openai-gpt",
+      "tier": "",
+      "version": "4.1",
+      "costPer1M": { "input": 2.00, "output": 8.00 },
+      "contextWindow": 1000000,
+      "released": "2025-04-15",
+      "status": "active"
+    },
+    "gpt-4.1-mini": {
+      "family": "openai-gpt",
+      "tier": "mini",
+      "version": "4.1",
+      "costPer1M": { "input": 0.40, "output": 1.60 },
+      "contextWindow": 1000000,
+      "released": "2025-04-15",
+      "status": "active"
+    },
+    "gpt-4.1-nano": {
+      "family": "openai-gpt",
+      "tier": "nano",
+      "version": "4.1",
+      "costPer1M": { "input": 0.10, "output": 0.40 },
+      "contextWindow": 1000000,
+      "released": "2025-04-15",
+      "status": "active"
+    },
+    "gpt-5.1": {
+      "family": "openai-gpt",
+      "tier": "",
+      "version": "5.1",
+      "costPer1M": { "input": 2.00, "output": 8.00 },
+      "contextWindow": 1000000,
+      "released": "2026-02-01",
+      "status": "active"
+    },
+    "gpt-5.1-mini": {
+      "family": "openai-gpt",
+      "tier": "mini",
+      "version": "5.1",
+      "costPer1M": { "input": 0.30, "output": 1.20 },
+      "contextWindow": 1000000,
+      "released": "2026-02-01",
+      "status": "active"
+    },
+    "gpt-5.1-nano": {
+      "family": "openai-gpt",
+      "tier": "nano",
+      "version": "5.1",
+      "costPer1M": { "input": 0.08, "output": 0.32 },
+      "contextWindow": 1000000,
+      "released": "2026-02-15",
+      "status": "active"
+    },
+
+    "o3": {
+      "family": "openai-reasoning",
+      "tier": "",
+      "version": "3",
+      "costPer1M": { "input": 2.00, "output": 8.00 },
+      "contextWindow": 200000,
+      "released": "2025-04-16",
+      "status": "active"
+    },
+    "o3-mini": {
+      "family": "openai-reasoning",
+      "tier": "mini",
+      "version": "3",
+      "costPer1M": { "input": 1.10, "output": 4.40 },
+      "contextWindow": 200000,
+      "released": "2025-01-30",
+      "status": "active"
+    },
+    "o4-mini": {
+      "family": "openai-reasoning",
+      "tier": "mini",
+      "version": "4",
+      "costPer1M": { "input": 1.10, "output": 4.40 },
+      "contextWindow": 200000,
+      "released": "2025-04-16",
+      "status": "active"
+    },
+
+    "gemini-2.0-flash": {
+      "family": "gemini",
+      "tier": "flash",
+      "version": "2.0",
+      "costPer1M": { "input": 0.10, "output": 0.40 },
+      "contextWindow": 1000000,
+      "released": "2025-02-01",
+      "status": "active"
+    },
+    "gemini-2.5-pro": {
+      "family": "gemini",
+      "tier": "pro",
+      "version": "2.5",
+      "costPer1M": { "input": 1.25, "output": 10.00 },
+      "contextWindow": 1000000,
+      "released": "2025-03-25",
+      "status": "active"
+    },
+    "gemini-2.5-flash": {
+      "family": "gemini",
+      "tier": "flash",
+      "version": "2.5",
+      "costPer1M": { "input": 0.075, "output": 0.30 },
+      "contextWindow": 1000000,
+      "released": "2025-05-20",
+      "status": "active"
+    },
+    "gemini-3.0-pro": {
+      "family": "gemini",
+      "tier": "pro",
+      "version": "3.0",
+      "costPer1M": { "input": 1.00, "output": 8.00 },
+      "contextWindow": 2000000,
+      "released": "2026-01-10",
+      "status": "active"
+    },
+    "gemini-3.0-flash": {
+      "family": "gemini",
+      "tier": "flash",
+      "version": "3.0",
+      "costPer1M": { "input": 0.05, "output": 0.20 },
+      "contextWindow": 2000000,
+      "released": "2026-01-10",
+      "status": "active"
+    },
+    "gemini-3.1-pro": {
+      "family": "gemini",
+      "tier": "pro",
+      "version": "3.1",
+      "costPer1M": { "input": 1.00, "output": 8.00 },
+      "contextWindow": 2000000,
+      "released": "2026-02-20",
+      "status": "active"
+    },
+    "gemini-3.2-flash": {
+      "family": "gemini",
+      "tier": "flash",
+      "version": "3.2",
+      "costPer1M": { "input": 0.04, "output": 0.16 },
+      "contextWindow": 2000000,
+      "released": "2026-03-05",
+      "status": "active"
+    },
+    "gemini-3.3-pro": {
+      "family": "gemini",
+      "tier": "pro",
+      "version": "3.3",
+      "costPer1M": { "input": 0.90, "output": 7.20 },
+      "contextWindow": 2000000,
+      "released": "2026-03-20",
+      "status": "active"
+    },
+
+    "deepseek-v3": {
+      "family": "deepseek",
+      "tier": "",
+      "version": "3",
+      "costPer1M": { "input": 0.27, "output": 1.10 },
+      "contextWindow": 128000,
+      "released": "2025-01-20",
+      "status": "active"
+    },
+    "deepseek-r1": {
+      "family": "deepseek",
+      "tier": "",
+      "version": "r1",
+      "costPer1M": { "input": 0.55, "output": 2.19 },
+      "contextWindow": 128000,
+      "released": "2025-01-20",
+      "status": "active"
+    },
+
+    "llama-3.3": {
+      "family": "meta-llama",
+      "tier": "",
+      "version": "3.3",
+      "costPer1M": { "input": 0.20, "output": 0.20 },
+      "contextWindow": 128000,
+      "released": "2024-12-06",
+      "status": "active"
+    },
+    "llama-4-scout": {
+      "family": "meta-llama",
+      "tier": "scout",
+      "version": "4",
+      "costPer1M": { "input": 0.10, "output": 0.10 },
+      "contextWindow": 512000,
+      "released": "2025-04-05",
+      "status": "active"
+    },
+    "llama-4-maverick": {
+      "family": "meta-llama",
+      "tier": "",
+      "version": "4",
+      "costPer1M": { "input": 0.20, "output": 0.20 },
+      "contextWindow": 1000000,
+      "released": "2025-04-05",
+      "status": "active"
+    },
+
+    "mistral-large": {
+      "family": "mistral",
+      "tier": "large",
+      "version": "2",
+      "costPer1M": { "input": 2.00, "output": 6.00 },
+      "contextWindow": 128000,
+      "released": "2024-11-01",
+      "status": "active"
+    },
+    "codestral": {
+      "family": "mistral",
+      "tier": "",
+      "version": "1",
+      "costPer1M": { "input": 0.30, "output": 0.90 },
+      "contextWindow": 256000,
+      "released": "2025-01-15",
+      "status": "active"
+    },
+
+    "grok-3": {
+      "family": "xai",
+      "tier": "",
+      "version": "3",
+      "costPer1M": { "input": 3.00, "output": 15.00 },
+      "contextWindow": 128000,
+      "released": "2025-02-18",
+      "status": "active"
+    },
+    "grok-3-mini": {
+      "family": "xai",
+      "tier": "mini",
+      "version": "3",
+      "costPer1M": { "input": 0.30, "output": 0.50 },
+      "contextWindow": 128000,
+      "released": "2025-04-10",
+      "status": "active"
+    }
+  },
+
+  "providerModels": {
+    "claude":      ["claude-sonnet-4.6", "claude-opus-4.6", "claude-haiku-4.5", "claude-sonnet-4.5", "claude-opus-4.5", "claude-sonnet-4", "claude-opus-4", "claude-haiku-3.5"],
+    "cursor":      ["claude-sonnet-4.6", "gpt-4o", "claude-opus-4.6", "gpt-5.1", "o4-mini", "cursor-small"],
+    "copilot":     ["gpt-4o", "claude-sonnet-4.6", "o3", "o4-mini", "gemini-2.5-pro", "gpt-5.1"],
+    "windsurf":    ["claude-sonnet-4.6", "gpt-4o", "gpt-5.1"],
+    "antigravity": ["claude-sonnet-4.6", "claude-opus-4.6", "gpt-4o", "gemini-3.3-pro"],
+    "codex":       ["o3", "o4-mini", "gpt-4o", "codex-mini"],
+    "gemini":      ["gemini-3.3-pro", "gemini-3.2-flash", "gemini-2.5-pro", "gemini-2.5-flash"],
+    "kiro":        ["claude-sonnet-4.6", "claude-haiku-4.5"],
+    "openai":      ["gpt-5.1", "gpt-4o", "o3", "o4-mini"]
+  },
+
+  "subscriptionProviders": {
+    "cursor":   { "monthlyUSD": 20,  "plan": "Pro" },
+    "copilot":  { "monthlyUSD": 10,  "plan": "Individual" },
+    "windsurf": { "monthlyUSD": 15,  "plan": "Pro" }
+  }
+}

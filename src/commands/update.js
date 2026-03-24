@@ -14,6 +14,7 @@ import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { findProjectRoot, getCortexDir } from '../utils/fs.js';
 import { loadConfig } from '../core/config.js';
+import { syncRegistry, isRegistryStale, getRegistryStaleness } from '../core/registry.js';
 import { heading, info, success, dim, warn, error } from '../utils/log.js';
 
 export default async function update({ values }) {
@@ -68,6 +69,45 @@ export default async function update({ values }) {
         warn(`Sync failed: ${err.message}`);
       }
     }
+  }
+
+  // ── Model Registry Sync ─────────────────────────────────────────────────
+  console.log();
+  info('Syncing model registry...');
+
+  try {
+    const result = await syncRegistry();
+
+    if (result.success) {
+      const added = result.changes.filter(c => c.type === 'added');
+      const priceChanges = result.changes.filter(c => c.type === 'price_change');
+      const providerUpdates = result.changes.filter(c => c.type === 'provider_model');
+
+      if (result.changes.length === 0) {
+        success('Model registry is up to date.');
+      } else {
+        for (const c of added) {
+          success(`  + Added: ${c.model} ($${c.cost}/1M, ${(c.contextWindow / 1000).toFixed(0)}K context)`);
+        }
+        for (const c of priceChanges) {
+          info(`  ↻ Updated: ${c.model} pricing $${c.from} → $${c.to}/1M`);
+        }
+        for (const c of providerUpdates) {
+          info(`  ↻ ${c.provider} now supports: ${c.model}`);
+        }
+
+        const summary = [];
+        if (added.length > 0) summary.push(`${added.length} new model(s)`);
+        if (priceChanges.length > 0) summary.push(`${priceChanges.length} price update(s)`);
+        if (providerUpdates.length > 0) summary.push(`${providerUpdates.length} provider update(s)`);
+        success(`Registry updated: ${summary.join(', ')}`);
+      }
+    } else {
+      dim(`Could not sync registry: ${result.error}`);
+      dim('Using bundled model data. Run `cortex update` when online.');
+    }
+  } catch (err) {
+    dim(`Registry sync skipped: ${err.message}`);
   }
 
   console.log();

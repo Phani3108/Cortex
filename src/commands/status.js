@@ -15,6 +15,8 @@ import { loadConfig } from '../core/config.js';
 import { loadProfile } from '../core/profile.js';
 import { getAllProviders } from '../providers/index.js';
 import { heading, info, warn, dim, table, success } from '../utils/log.js';
+import { assessHealth } from '../core/health.js';
+import { isRegistryStale, getRegistryStaleness } from '../core/registry.js';
 
 export default async function status({ values }) {
   const projectRoot = findProjectRoot();
@@ -96,6 +98,37 @@ export default async function status({ values }) {
     if (profile.style?.verbosity) profileRows.push(['Verbosity', profile.style.verbosity]);
     if (profile.patterns?.length) profileRows.push(['Patterns', `${profile.patterns.length} stored`]);
     if (profileRows.length > 0) table(profileRows);
+  }
+
+  // Provider Health
+  if (existsSync(cortexDir)) {
+    const config = loadConfig(projectRoot);
+    const health = assessHealth(projectRoot, config);
+
+    console.log();
+    info(`Health: ${health.overall.score}/100 (${health.overall.label})`);
+
+    // Registry status
+    const staleDays = getRegistryStaleness();
+    const registryLabel = staleDays === Infinity ? 'never synced'
+      : staleDays > 7 ? `stale (${staleDays} days old)`
+      : `current (${staleDays}d ago)`;
+    dim(`  Registry: ${registryLabel}`);
+
+    // Per-provider health
+    for (const [slug, ph] of Object.entries(health.providers)) {
+      const icon = ph.status === 'healthy' ? '✓' : ph.status === 'warning' ? '⚠' : '✗';
+      dim(`  ${icon} ${ph.name}: ${ph.status}${ph.newModels.length > 0 ? ` (+${ph.newModels.length} new model${ph.newModels.length > 1 ? 's' : ''})` : ''}`);
+    }
+
+    // Recommendations
+    if (health.recommendations.length > 0) {
+      console.log();
+      info('Recommendations:');
+      for (const rec of health.recommendations.slice(0, 3)) {
+        dim(`  ${rec.priority === 'high' ? '!' : '·'} ${rec.message}`);
+      }
+    }
   }
 
   console.log();

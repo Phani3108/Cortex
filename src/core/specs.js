@@ -17,7 +17,17 @@
  *
  * If we get this wrong, we're generating files into the void.
  * If we get this right, we're the only tool that actually works.
+ *
+ * Model classification is now handled by families.js (regex-based,
+ * future-proof). Model pricing/data is in registry.js (auto-synced).
+ * This file retains PROVIDER-level specs only.
  */
+
+import {
+  resolveModel, getFormatFamily, getModelStrategy,
+  getTokenizerFamily, MODEL_FAMILIES,
+} from './families.js';
+import { getProviderModels } from './registry.js';
 
 export const PROVIDER_SPECS = {
 
@@ -493,132 +503,83 @@ export const PROVIDER_SPECS = {
 
 /**
  * Model-specific prompting strategies.
- * Different LLMs respond differently to the same instructions.
- * This controls HOW we format rules for each model family.
+ *
+ * MIGRATION NOTE: Model classification is now in families.js with regex-based
+ * detection that handles future models (gpt-5.1, claude-sonnet-4.6, gemini-3.3-flash).
+ * MODEL_STRATEGIES is retained as a read-only backward-compatible alias.
+ * New code should use families.js directly.
  */
-export const MODEL_STRATEGIES = {
+export const MODEL_STRATEGIES = buildLegacyStrategies();
 
-  'claude-family': {
-    models: ['claude-sonnet-4', 'claude-opus-4', 'claude-haiku-3.5', 'claude-sonnet', 'claude-opus', 'claude-haiku'],
-    formatting: {
-      useXmlTags: true,       // Claude responds well to XML structure
-      sectionMarkers: 'xml',  // <rules>, <style>, <context>
-      listStyle: 'dash',      // - item
-      emphasisStyle: 'bold',  // **important**
-      instructionTone: 'direct', // "Do X. Don't Y."
-    },
-    strengths: ['long_context', 'instruction_following', 'code_generation', 'analysis', 'agentic_workflows'],
-    promptPattern: 'structured_xml',
-    tips: {
-      prefillResponse: true,   // Start assistant response to guide format
-      useExamples: true,       // Few-shot examples improve output
-      chainOfThought: true,    // Ask to think step by step for complex tasks
-      avoidAmbiguity: true,    // Direct imperatives over hedging
-    },
-  },
+function buildLegacyStrategies() {
+  // Build from families.js data for backward compatibility
+  const strategies = {};
+  const familyToLegacy = {
+    'anthropic': 'claude-family',
+    'openai-gpt': 'openai-family',
+    'openai-reasoning': 'reasoning-family',
+    'gemini': 'gemini-family',
+    'deepseek': 'open-source',
+    'meta-llama': 'open-source',
+    'mistral': 'open-source',
+    'qwen': 'open-source',
+    'cohere': 'openai-family',
+    'xai': 'openai-family',
+  };
 
-  'openai-family': {
-    models: ['gpt-4o', 'gpt-4-turbo', 'o1', 'o3', 'o4-mini', 'codex-mini'],
-    formatting: {
-      useXmlTags: false,
-      sectionMarkers: 'markdown', // ## Section
-      listStyle: 'numbered',     // 1. item
-      emphasisStyle: 'caps',     // IMPORTANT:
-      instructionTone: 'system', // System prompt style
-    },
-    strengths: ['reasoning', 'code_generation', 'tool_use', 'structured_output'],
-    promptPattern: 'system_prompt',
-    tips: {
-      leadingWords: true,       // End prompt with start of desired output
-      completionBias: true,     // Use completion-style for formatting control
-      jsonMode: true,           // Request structured JSON when needed
-    },
-  },
-
-  'reasoning-family': {
-    models: ['o1', 'o3', 'o4-mini'],
-    formatting: {
-      useXmlTags: false,
-      sectionMarkers: 'markdown',
-      listStyle: 'numbered',
-      emphasisStyle: 'caps',
-      instructionTone: 'minimal', // Less instruction, more problem statement
-    },
-    strengths: ['deep_reasoning', 'math', 'complex_code', 'planning'],
-    promptPattern: 'problem_statement',
-    tips: {
-      minimalInstructions: true, // Reasoning models work better with less scaffolding
-      problemFocused: true,      // State the problem, let model reason
-      avoidChainOfThought: true, // These models do CoT internally
-    },
-  },
-
-  'gemini-family': {
-    models: ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro', 'gemini-flash', 'gemini-ultra'],
-    formatting: {
-      useXmlTags: true,       // Gemini 2.5+ responds well to XML-style tags
-      sectionMarkers: 'markdown', // Combine markdown headings with XML tags
-      listStyle: 'dash',
-      emphasisStyle: 'bold',
-      instructionTone: 'conversational',
-    },
-    strengths: ['large_context', 'multimodal', 'reasoning', 'long_documents'],
-    promptPattern: 'detailed_markdown',
-    tips: {
-      contextFirst: true,       // Put context before questions for long contexts
-      explicitPlanning: true,   // Ask model to plan before executing
-      selfCritique: true,       // Ask model to review its own output
-      scopeDefinition: true,    // Be explicit about what's in/out of scope
-      consistentFormatting: true, // Pick one tagging style and stick with it
-    },
-  },
-
-  'open-source': {
-    models: ['llama', 'deepseek', 'codestral', 'qwen', 'mistral', 'deepseek-v3'],
-    formatting: {
-      useXmlTags: false,
-      sectionMarkers: 'markdown',
-      listStyle: 'dash',
-      emphasisStyle: 'bold',
-      instructionTone: 'explicit', // More explicit, less implicit
-    },
-    strengths: ['code_generation', 'fast_inference'],
-    promptPattern: 'explicit_markdown',
-    tips: {
-      shortContext: true,       // Smaller context windows need concise instructions
-      explicitConstraints: true, // State constraints clearly
-      repeatCritical: true,     // Repeat critical instructions at beginning and end
-    },
-  },
-};
+  for (const [id, fam] of Object.entries(MODEL_FAMILIES)) {
+    const legacyKey = familyToLegacy[id];
+    if (!legacyKey) continue;
+    // Only set if not already defined (first family wins for shared keys like 'open-source')
+    if (!strategies[legacyKey]) {
+      strategies[legacyKey] = {
+        models: [], // Populated dynamically — no longer hardcoded
+        formatting: fam.formatting,
+        strengths: fam.strengths,
+        promptPattern: fam.promptPattern,
+        tips: fam.tips,
+      };
+    }
+  }
+  return strategies;
+}
 
 /**
  * Get the model family for a given model name.
+ * Now delegates to families.js for future-proof regex-based resolution.
  */
 export function getModelFamily(modelName) {
-  for (const [family, spec] of Object.entries(MODEL_STRATEGIES)) {
-    if (spec.models.some(m => modelName.toLowerCase().includes(m.toLowerCase()))) {
-      return { family, ...spec };
-    }
-  }
-  return { family: 'unknown', ...MODEL_STRATEGIES['openai-family'] }; // Safe default
+  const strategy = getModelStrategy(modelName);
+  const formatFamily = getFormatFamily(modelName);
+  return { family: formatFamily, ...strategy };
 }
 
 /**
- * Get the spec for a provider.
+ * Get the spec for a provider, with models merged from registry.
  */
 export function getProviderSpec(name) {
-  return PROVIDER_SPECS[name] || null;
+  const spec = PROVIDER_SPECS[name];
+  if (!spec) return null;
+
+  // Merge in registry model list (may be newer than hardcoded)
+  const registryModels = getProviderModels(name);
+  if (registryModels.length > 0) {
+    return { ...spec, models: registryModels };
+  }
+  return spec;
 }
 
 /**
- * List all known providers.
+ * List all known providers with registry-merged models.
  */
 export function listProviderSpecs() {
-  return Object.entries(PROVIDER_SPECS).map(([key, spec]) => ({
-    key,
-    name: spec.name,
-    verified: spec.verified,
-    models: spec.models,
-  }));
+  return Object.entries(PROVIDER_SPECS).map(([key, spec]) => {
+    const registryModels = getProviderModels(key);
+    return {
+      key,
+      name: spec.name,
+      verified: spec.verified,
+      models: registryModels.length > 0 ? registryModels : spec.models,
+    };
+  });
 }
