@@ -2,6 +2,8 @@
 
 **One config. Every AI coding tool. Zero drift.**
 
+🌐 **[cortex1.vercel.app](https://cortex1.vercel.app/)** · 📦 [GitHub](https://github.com/Phani3108/Cortex)
+
 Cortex is a universal context engine that compiles a single `.cortex/` source into native config files for 9 AI coding tools — so every tool gets the same rules, skills, and style, always in sync.
 
 ---
@@ -158,6 +160,10 @@ templates/                ← Built-in rule & skill templates
 ## 📄 License
 
 MIT License — Copyright (c) 2026 [Phani Marupaka](https://linkedin.com/in/phani-marupaka)
+
+---
+
+🌐 **Live:** [cortex1.vercel.app](https://cortex1.vercel.app/) · 📦 **Source:** [github.com/Phani3108/Cortex](https://github.com/Phani3108/Cortex)
 
 Created & Developed by **Phani Marupaka**. All rights reserved under applicable copyright law.
 
