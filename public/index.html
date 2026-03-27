@@ -8,115 +8,360 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a0a;
-      color: #e0e0e0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+      background: #0a0a0a; color: #e0e0e0;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start; padding: 2rem;
     }
-    .container { max-width: 720px; text-align: center; }
+    .container { max-width: 760px; width: 100%; text-align: center; padding-top: 3rem; }
+    code { font-family: 'SF Mono','Fira Code',monospace; }
+
+    /* HERO */
     h1 {
-      font-size: 3rem;
-      font-weight: 800;
+      font-size: 3rem; font-weight: 800;
       background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
     }
-    .tagline {
-      font-size: 1.25rem;
-      color: #9ca3af;
-      margin-bottom: 2rem;
+    .tagline { font-size: 1.25rem; color: #e0e0e0; font-weight: 600; margin-bottom: 0.65rem; }
+    .sub-tagline {
+      font-size: 0.92rem; color: #9ca3af; margin-bottom: 2rem;
+      line-height: 1.65; max-width: 560px; margin-left: auto; margin-right: auto;
     }
-    .features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      text-align: left;
-    }
-    .feature {
-      background: #161616;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-    .feature h3 {
-      font-size: 0.95rem;
-      color: #a78bfa;
-      margin-bottom: 0.4rem;
-    }
-    .feature p {
-      font-size: 0.85rem;
-      color: #9ca3af;
-      line-height: 1.5;
-    }
+
+    /* FEATURES */
+    .features { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; text-align: left; }
+    .feature { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; }
+    .feature-icon { font-size: 1.1rem; margin-bottom: 0.45rem; display: block; }
+    .feature h3 { font-size: 0.92rem; color: #a78bfa; margin-bottom: 0.4rem; font-weight: 700; }
+    .feature p { font-size: 0.82rem; color: #9ca3af; line-height: 1.55; }
+
+    /* INSTALL */
     .install-box {
-      background: #161616;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 1rem;
-      color: #a78bfa;
-      display: inline-block;
+      background: #161616; border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1.1rem 1.5rem; margin-bottom: 1.5rem;
+      font-family: 'SF Mono','Fira Code',monospace; font-size: 1rem; color: #a78bfa;
+      display: inline-block; cursor: pointer; transition: border-color 0.2s;
     }
-    .install-box span { color: #6b7280; }
-    .links { display: flex; gap: 1rem; justify-content: center; }
+    .install-box:hover { border-color: #6366f1; }
+    .install-box span.dollar { color: #6b7280; }
+    .copy-hint { font-size: 0.7rem; color: #4b5563; margin-left: 0.75rem; }
+    .links { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; }
     .links a {
-      color: #a78bfa;
-      text-decoration: none;
-      font-size: 0.95rem;
-      padding: 0.6rem 1.5rem;
-      border: 1px solid #3b3b5c;
-      border-radius: 8px;
+      color: #a78bfa; text-decoration: none; font-size: 0.92rem;
+      padding: 0.6rem 1.5rem; border: 1px solid #3b3b5c; border-radius: 8px;
       transition: background 0.2s, border-color 0.2s;
     }
-    .links a:hover {
-      background: #1e1b4b;
-      border-color: #6366f1;
+    .links a:hover { background: #1e1b4b; border-color: #6366f1; }
+    .providers { font-size: 0.82rem; color: #6b7280; }
+
+    /* CLI COMMANDS */
+    #cli-section { margin-top: 2.5rem; text-align: left; }
+    .cli-header { text-align: center; margin-bottom: 1.25rem; }
+    .cli-header h2 { font-size: 1.05rem; font-weight: 700; color: #c4c4c4; margin-bottom: 0.3rem; }
+    .cli-header p { font-size: 0.8rem; color: #6b7280; }
+    .cli-grid { display: flex; flex-direction: column; gap: 0.45rem; }
+    .cli-row {
+      display: flex; align-items: baseline; gap: 1rem;
+      background: #111; border: 1px solid #1e1e1e; border-radius: 8px;
+      padding: 0.6rem 1rem; font-family: 'SF Mono','Fira Code',monospace;
     }
-    .providers {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: #6b7280;
+    .cli-cmd { font-size: 0.8rem; color: #a78bfa; white-space: nowrap; min-width: 230px; }
+    .cli-dollar { color: #4b5563; }
+    .cli-desc { font-size: 0.76rem; color: #6b7280; }
+
+    /* DIVIDER */
+    .sp-divider { border: none; border-top: 1px solid #1e1e1e; margin: 3rem 0 2.5rem; }
+
+    /* EXPLORER HEADER */
+    .explorer-header { text-align: center; margin-bottom: 1.5rem; }
+    .explorer-header h2 {
+      font-size: 1.5rem; font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
     }
-     @media (max-width: 600px) {
+    .explorer-header p { font-size: 0.85rem; color: #6b7280; }
+
+    /* MODE SWITCHER */
+    .explorer-modes { display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 2rem; }
+    .ex-mode-btn {
+      padding: 0.6rem 1.5rem; border-radius: 10px; border: 1px solid #2a2a2a;
+      background: #111; color: #9ca3af; font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .ex-mode-btn.active {
+      background: rgba(99,102,241,0.12); border-color: #6366f1; color: #a78bfa;
+    }
+    .ex-mode-btn:hover:not(.active) { border-color: #4b5563; color: #e0e0e0; }
+
+    /* STACK PICKER */
+    #stack-picker { text-align: left; width: 100%; }
+    .sp-group { margin-bottom: 1.25rem; }
+    .sp-group-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #6b7280; margin-bottom: 0.55rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sp-group-label::after { content: ''; flex: 1; height: 1px; background: #1e1e1e; }
+    .sp-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .sp-chip {
+      padding: 0.32rem 0.85rem; border-radius: 999px; border: 1px solid #2a2a2a;
+      background: #111; cursor: pointer; font-size: 0.78rem; color: #c4c4c4;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, color 0.15s;
+      user-select: none; white-space: nowrap; position: relative;
+    }
+    .sp-chip:hover { border-color: #6366f1; background: #1e1b4b; color: #e0e0e0; }
+    .sp-chip.selected {
+      border-color: #6366f1; background: #1e1b4b; color: #a78bfa;
+      box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+    }
+    .sp-chip.selected::before { content: '✓ '; font-size: 0.65rem; opacity: 0.8; }
+    .sp-cta-wrap { margin-top: 1.5rem; text-align: center; min-height: 2.5rem; }
+    .sp-cta {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.65rem 1.75rem;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none; border-radius: 10px; color: #fff;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      opacity: 0; pointer-events: none; transform: translateY(4px);
+    }
+    .sp-cta.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .sp-cta:hover { opacity: 0.88; }
+    .sp-count { margin-top: 0.6rem; font-size: 0.75rem; color: #6b7280; text-align: center; min-height: 1rem; }
+
+    /* Q&A WIZARD */
+    #mode-guided { width: 100%; }
+    .qa-progress { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.75rem; }
+    .qa-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #2a2a2a;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .qa-dot.active { background: #6366f1; transform: scale(1.3); }
+    .qa-dot.done { background: #a855f7; }
+    .qa-card {
+      background: #111; border: 1px solid #2a2a2a; border-radius: 16px;
+      padding: 1.75rem; text-align: left; animation: fadeSlide 0.2s ease;
+    }
+    .qa-question { font-size: 1rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.3rem; }
+    .qa-hint { font-size: 0.78rem; color: #6b7280; margin-bottom: 1.25rem; }
+    .qa-options { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .qa-option {
+      padding: 0.5rem 1.1rem; border-radius: 10px; border: 1px solid #2a2a2a;
+      background: #161616; color: #c4c4c4; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .qa-option:hover { border-color: #6366f1; color: #e0e0e0; background: #1a1a2e; }
+    .qa-option.selected { border-color: #6366f1; background: rgba(99,102,241,0.15); color: #a78bfa; font-weight: 600; }
+    .qa-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+    .qa-back {
+      padding: 0.5rem 1rem; border: 1px solid #2a2a2a; background: none;
+      color: #6b7280; font-size: 0.82rem; border-radius: 8px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .qa-back:hover { color: #e0e0e0; border-color: #4b5563; }
+    .qa-next {
+      padding: 0.5rem 1.4rem; background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none; border-radius: 8px; color: #fff; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; opacity: 0.35; pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .qa-next.enabled { opacity: 1; pointer-events: auto; }
+    .qa-step-label { font-size: 0.72rem; color: #4b5563; }
+
+    /* RECOMMENDATION CARD */
+    #qa-result { display: none; animation: fadeSlide 0.25s ease; }
+    #qa-result.visible { display: block; }
+    .rec-card {
+      background: linear-gradient(135deg, rgba(99,102,241,0.07), rgba(168,85,247,0.07));
+      border: 1px solid #3b3b5c; border-radius: 16px; padding: 1.5rem;
+      text-align: left; margin-bottom: 1rem;
+    }
+    .rec-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #6366f1; margin-bottom: 0.5rem;
+    }
+    .rec-name { font-size: 1.2rem; font-weight: 800; color: #e0e0e0; margin-bottom: 0.25rem; }
+    .rec-headline { font-size: 0.9rem; color: #a78bfa; font-weight: 600; margin-bottom: 0.75rem; }
+    .rec-why { font-size: 0.82rem; color: #9ca3af; line-height: 1.6; margin-bottom: 1rem; }
+    .rec-examples { font-size: 0.75rem; color: #6b7280; margin-bottom: 1rem; }
+    .rec-examples strong { color: #c4c4c4; }
+    .rec-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.1rem; }
+    .rec-chip {
+      font-size: 0.74rem; padding: 0.22rem 0.75rem; border-radius: 999px;
+      background: rgba(99,102,241,0.15); border: 1px solid #6366f1; color: #a78bfa;
+    }
+    .rec-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+    .rec-btn-primary {
+      padding: 0.55rem 1.4rem;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none; border-radius: 8px; color: #fff;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+    }
+    .rec-btn-primary:hover { opacity: 0.85; }
+    .rec-btn-secondary {
+      padding: 0.55rem 1.2rem; border: 1px solid #3b3b5c; background: none;
+      border-radius: 8px; color: #a78bfa; font-size: 0.82rem; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .rec-btn-secondary:hover { background: rgba(99,102,241,0.08); }
+
+    /* BUILD MATRIX */
+    #build-matrix { margin-top: 1.5rem; display: none; animation: fadeSlide 0.25s ease; }
+    #build-matrix.visible { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .bm-tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid #2a2a2a; margin-bottom: 1.25rem; }
+    .bm-tab {
+      padding: 0.55rem 1.2rem; font-size: 0.82rem; font-weight: 500; color: #6b7280;
+      border: none; background: none; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s;
+    }
+    .bm-tab.active { color: #a78bfa; border-bottom-color: #6366f1; }
+    .bm-tab:hover:not(.active) { color: #e0e0e0; }
+    .bm-panel { display: none; }
+    .bm-panel.active { display: block; }
+    .bm-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .bm-table thead th {
+      text-align: left; padding: 0.5rem 0.75rem; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: #6b7280;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .bm-table tbody tr { border-bottom: 1px solid #161616; transition: background 0.1s; }
+    .bm-table tbody tr:hover { background: #111; }
+    .bm-table td { padding: 0.65rem 0.75rem; vertical-align: top; color: #c4c4c4; line-height: 1.4; }
+    .bm-table td:first-child { color: #e0e0e0; font-weight: 500; }
+    .bm-row-full td:first-child { border-left: 3px solid #6366f1; }
+    .bm-row-partial { opacity: 0.72; }
+    .bm-row-none { opacity: 0.3; }
+    .bm-match-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600;
+    }
+    .bm-match-full  { background: rgba(99,102,241,0.18); color: #a78bfa; }
+    .bm-match-part  { background: rgba(168,85,247,0.12); color: #c084fc; }
+    .bm-match-low   { background: #1a1a1a; color: #6b7280; }
+    .bm-complexity { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; display: inline-block; }
+    .bm-low   { background: rgba(16,185,129,0.12); color: #34d399; }
+    .bm-med   { background: rgba(245,158,11,0.12);  color: #fbbf24; }
+    .bm-high  { background: rgba(239,68,68,0.12);   color: #f87171; }
+    .bm-vhigh { background: rgba(239,68,68,0.2);    color: #fc8181; }
+    .bm-stack-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .bm-stack-tag {
+      font-size: 0.68rem; padding: 0.1rem 0.4rem; border-radius: 4px;
+      background: #1a1a1a; color: #9ca3af; white-space: nowrap;
+    }
+    .bm-stack-tag.matched { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .bm-tips { display: flex; flex-direction: column; gap: 0.75rem; }
+    .bm-tip {
+      background: #111; border: 1px solid #1e1e1e; border-left: 3px solid #6366f1;
+      border-radius: 8px; padding: 0.85rem 1rem;
+    }
+    .bm-tip-title { font-size: 0.82rem; font-weight: 600; color: #a78bfa; margin-bottom: 0.25rem; }
+    .bm-tip-body { font-size: 0.78rem; color: #9ca3af; line-height: 1.5; }
+    .bm-no-sel { text-align: center; color: #4b5563; font-size: 0.82rem; padding: 2rem 0; }
+
+    /* CORTEX CONFIG */
+    .cortex-config-wrap { background: #0d0d1a; border: 1px solid #2a2a3a; border-radius: 10px; overflow: hidden; }
+    .cortex-config-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.6rem 1rem; background: #111122; border-bottom: 1px solid #2a2a3a;
+    }
+    .cortex-config-filename { font-family: 'SF Mono','Fira Code',monospace; font-size: 0.75rem; color: #6b7280; }
+    .cortex-config-copy {
+      font-size: 0.72rem; color: #6366f1; cursor: pointer;
+      border: none; background: none; transition: color 0.15s;
+    }
+    .cortex-config-copy:hover { color: #a78bfa; }
+    .cortex-config-pre {
+      font-family: 'SF Mono','Fira Code',monospace; font-size: 0.75rem; line-height: 1.75;
+      padding: 1rem; color: #c4c4c4; white-space: pre; text-align: left;
+      max-height: 400px; overflow-y: auto;
+    }
+
+    /* TOOLTIP */
+    #sp-tooltip {
+      position: fixed; width: 292px; background: #12122a; border: 1px solid #3b3b5c;
+      border-radius: 12px; padding: 1rem 1.1rem; pointer-events: none;
+      opacity: 0; transition: opacity 0.15s ease; z-index: 9999;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    #sp-tooltip.visible { opacity: 1; }
+    .tt-name { font-size: 0.9rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.6rem; }
+    .tt-section-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #6366f1; margin-bottom: 0.35rem;
+    }
+    .tt-bullets { list-style: none; margin-bottom: 0.75rem; }
+    .tt-bullets li {
+      font-size: 0.76rem; color: #9ca3af; line-height: 1.45;
+      padding-left: 0.9rem; position: relative; margin-bottom: 0.2rem;
+    }
+    .tt-bullets li::before { content: '·'; position: absolute; left: 0.2rem; color: #a855f7; }
+    .tt-sep { border: none; border-top: 1px solid #1e1e2e; margin: 0.6rem 0; }
+    .tt-app-name { font-size: 0.72rem; color: #6b7280; margin-bottom: 0.4rem; }
+    .tt-app-name strong { color: #c4c4c4; }
+    .tt-mini-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tt-mini-chip {
+      font-size: 0.68rem; padding: 0.18rem 0.55rem; border-radius: 999px;
+      border: 1px solid #2a2a2a; background: #1a1a1a; color: #6b7280; white-space: nowrap;
+    }
+    .tt-mini-chip.highlight {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+      border-color: #6366f1; color: #a78bfa; font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
       h1 { font-size: 2rem; }
       .features { grid-template-columns: 1fr; }
+      #build-matrix { overflow-x: auto; }
+      .bm-table { min-width: 520px; }
+      #sp-tooltip { width: 240px; font-size: 0.85em; }
+      .explorer-modes { flex-direction: column; align-items: center; }
+      .cli-cmd { min-width: 180px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Cortex</h1>
-    <p class="tagline">Universal AI Context Engine — carry your intelligence across every AI coding tool</p>
 
+    <!-- HERO -->
+    <h1>Cortex</h1>
+    <p class="tagline">Write your AI rules once. Ship them everywhere.</p>
+    <p class="sub-tagline">
+      Define <code style="color:#a78bfa">.cortex/</code> once — Cortex compiles your context, rules, and model preferences to
+      Claude Code, Cursor, Copilot, Windsurf, Gemini CLI, and 4 more. One source of truth for your entire AI toolchain.
+    </p>
+
+    <!-- FEATURES -->
     <div class="features">
       <div class="feature">
-        <h3>One Source of Truth</h3>
-        <p>Define rules once in .cortex/, compile to every provider format automatically.</p>
+        <span class="feature-icon">⚡</span>
+        <h3>Stop rewriting rules</h3>
+        <p>One <code style="color:#c4c4c4;font-size:0.9em">.cortex/</code> directory. Nine provider formats generated automatically. No more copy-pasting <code style="color:#c4c4c4;font-size:0.9em">.cursorrules</code> across tools.</p>
       </div>
       <div class="feature">
-        <h3>9 Providers</h3>
-        <p>Claude, Cursor, Copilot, Windsurf, Gemini, OpenAI, Codex, Kiro, Antigravity.</p>
+        <span class="feature-icon">📊</span>
+        <h3>Token budget, visible</h3>
+        <p>Every rule is impact-scored and token-counted. Cortex trims, compresses, and warns before your AI hits a context wall mid-session.</p>
       </div>
       <div class="feature">
-        <h3>Token Intelligence</h3>
-        <p>Budget analysis, rule scoring, prompt compression, and cost optimization.</p>
+        <span class="feature-icon">🧠</span>
+        <h3>Model-aware by default</h3>
+        <p>Detects Claude, GPT, Gemini, Llama. Tunes context delivery to each model's strengths. Switch models without losing your project's memory.</p>
       </div>
       <div class="feature">
-        <h3>Model Awareness</h3>
-        <p>Family-first detection, model comparison, switch detection, and health scoring.</p>
+        <span class="feature-icon">🌐</span>
+        <h3>Community intelligence</h3>
+        <p>Import battle-tested rule sets for React, FastAPI, Go, and more. Your <code style="color:#c4c4c4;font-size:0.9em">.cortex/</code> is portable, shareable, and git-tracked.</p>
       </div>
     </div>
 
-    <div class="install-box">
-      <span>$</span> npx cortex init
+    <!-- INSTALL -->
+    <div class="install-box" onclick="copyInstall(this)" title="Click to copy">
+      <span class="dollar">$</span> npx cortex init<span class="copy-hint" id="copy-hint">click to copy</span>
     </div>
 
     <div class="links">
@@ -124,8 +369,846 @@
       <a href="https://www.npmjs.com/package/cortex" target="_blank" rel="noopener">npm</a>
       <a href="https://cortex1.vercel.app/" target="_blank" rel="noopener">Live Site</a>
     </div>
-
     <p class="providers">Works with Claude Code &middot; Cursor &middot; GitHub Copilot &middot; Windsurf &middot; Gemini CLI &middot; OpenAI Codex &middot; Kiro</p>
+
+    <!-- CLI COMMANDS -->
+    <section id="cli-section">
+      <div class="cli-header">
+        <h2>Everything you need, one CLI</h2>
+        <p>Install once globally or run via <code style="color:#a78bfa">npx</code> — zero config</p>
+      </div>
+      <div class="cli-grid">
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex init</span>
+          <span class="cli-desc">Bootstrap <code>.cortex/</code> in any project — detects your stack automatically</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex compile</span>
+          <span class="cli-desc">Compile rules to all 9 AI provider formats at once</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex score</span>
+          <span class="cli-desc">Analyze token budget, rule impact, and compression savings</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex health</span>
+          <span class="cli-desc">Check model compatibility and provider health scores</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex add react</span>
+          <span class="cli-desc">Install community rule packages for your stack</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> cortex switch claude</span>
+          <span class="cli-desc">Switch active AI provider and recompile context instantly</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIVIDER -->
+    <hr class="sp-divider">
+
+    <!-- STACK EXPLORER -->
+    <section id="stack-explorer">
+      <div class="explorer-header">
+        <h2>Stack Intelligence</h2>
+        <p>Discover what you can build — or let us guide you to the right stack</p>
+      </div>
+
+      <div class="explorer-modes">
+        <button class="ex-mode-btn active" id="btn-mode-picker" onclick="switchMode('picker')">
+          🔧&nbsp; Pick My Stack
+        </button>
+        <button class="ex-mode-btn" id="btn-mode-guided" onclick="switchMode('guided')">
+          🧭&nbsp; Guide Me →
+        </button>
+      </div>
+
+      <!-- MODE A: Stack Picker -->
+      <div id="mode-picker">
+        <div id="sp-categories"></div>
+        <div class="sp-cta-wrap">
+          <button class="sp-cta" id="sp-cta-btn" onclick="toggleMatrix()">
+            What can I build? <span>→</span>
+          </button>
+          <div class="sp-count" id="sp-count"></div>
+        </div>
+      </div>
+
+      <!-- MODE B: Q&A Wizard -->
+      <div id="mode-guided" style="display:none">
+        <div class="qa-progress" id="qa-progress"></div>
+        <div id="qa-step-container"></div>
+        <div id="qa-result"></div>
+      </div>
+
+      <!-- BUILD MATRIX (shared) -->
+      <div id="build-matrix">
+        <div class="bm-tabs">
+          <button class="bm-tab active" data-panel="matrix" onclick="switchBMTab('matrix',this)">Build Matrix</button>
+          <button class="bm-tab" data-panel="tips" onclick="switchBMTab('tips',this)">Stack Tips</button>
+          <button class="bm-tab" data-panel="config" onclick="switchBMTab('config',this)">Cortex Config</button>
+        </div>
+        <div class="bm-panel active" id="bm-panel-matrix">
+          <table class="bm-table">
+            <thead>
+              <tr>
+                <th>What You Can Build</th>
+                <th>Core Stack</th>
+                <th>Complexity</th>
+                <th>Real Example</th>
+                <th>Match</th>
+              </tr>
+            </thead>
+            <tbody id="bm-table-body"></tbody>
+          </table>
+        </div>
+        <div class="bm-panel" id="bm-panel-tips">
+          <div class="bm-tips" id="bm-tips-content"></div>
+        </div>
+        <div class="bm-panel" id="bm-panel-config">
+          <div class="cortex-config-wrap">
+            <div class="cortex-config-header">
+              <span class="cortex-config-filename">.cortex/main.md</span>
+              <button class="cortex-config-copy" onclick="copyConfig()">copy</button>
+            </div>
+            <pre class="cortex-config-pre" id="cortex-config-content"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
+
+  <!-- Global tooltip -->
+  <div id="sp-tooltip">
+    <div class="tt-name" id="tt-name"></div>
+    <div class="tt-section-label">Best for</div>
+    <ul class="tt-bullets" id="tt-bullets"></ul>
+    <hr class="tt-sep">
+    <div class="tt-section-label">Powers</div>
+    <div class="tt-app-name" id="tt-app-name"></div>
+    <div class="tt-mini-chips" id="tt-mini-chips"></div>
+  </div>
+
+  <script>
+  // ═══════════════════════════════════════
+  // TECH DATA
+  // ═══════════════════════════════════════
+  const CATEGORIES = [
+    { id: 'frontend', label: 'Frontend',      icon: '🖥' },
+    { id: 'backend',  label: 'Backend',       icon: '⚙️' },
+    { id: 'database', label: 'Database',      icon: '🗄' },
+    { id: 'cloud',    label: 'Cloud / Infra', icon: '☁️' },
+    { id: 'llm',      label: 'LLMs',          icon: '🧠' },
+    { id: 'models',   label: 'Models',        icon: '🎯' },
+    { id: 'tools',    label: 'Coding Tools',  icon: '🛠' },
+  ];
+
+  const TECH = [
+    // FRONTEND
+    { id:'html-css',  label:'HTML/CSS + JS', category:'frontend',
+      bestFor:['Static pages, landing pages, marketing sites','Simple UIs without heavy interactivity or frameworks','Zero build-step, ultra-fast delivery'],
+      example:{ app:'Apple.com marketing pages', stack:['HTML/CSS','Vanilla JS','Netlify'], highlight:'HTML/CSS' } },
+    { id:'react', label:'React', category:'frontend',
+      bestFor:['Dynamic, component-based UIs with reusable logic','SSR / SEO-heavy apps via Next.js','Large ecosystem: hooks, routing, rich libraries'],
+      example:{ app:'Facebook / Instagram', stack:['React','Node.js','MySQL','Redis'], highlight:'React' } },
+    { id:'vue', label:'Vue', category:'frontend',
+      bestFor:['Gentle learning curve with reactive component structure','Medium-size apps that need structure without complexity','Excellent two-way data binding and templates'],
+      example:{ app:'GitLab', stack:['Vue','Ruby on Rails','PostgreSQL'], highlight:'Vue' } },
+    { id:'angular', label:'Angular', category:'frontend',
+      bestFor:['Large enterprise apps needing strong typing from day one','Full-battery framework: DI, forms, routing, HTTP all built-in','Highly structured, opinionated codebase for large teams'],
+      example:{ app:'Google Workspace (Drive, Docs)', stack:['Angular','Java','PostgreSQL','Spanner'], highlight:'Angular' } },
+    { id:'svelte', label:'Svelte / SvelteKit', category:'frontend',
+      bestFor:['Minimal boilerplate with near-vanilla JS feel','Small bundle sizes and fast runtime performance','SSR + routing built into SvelteKit'],
+      example:{ app:'NY Times interactive features', stack:['Svelte','Node.js','PostgreSQL'], highlight:'Svelte / SvelteKit' } },
+
+    // BACKEND
+    { id:'node-express', label:'Node.js + Express/NestJS', category:'backend',
+      bestFor:['JavaScript / TypeScript full-stack with shared types','Fast prototyping with huge npm ecosystem','Real-time apps via WebSockets, event-driven I/O'],
+      example:{ app:'LinkedIn', stack:['Node.js','React','PostgreSQL','Redis'], highlight:'Node.js' } },
+    { id:'python-django', label:'Python + Django', category:'backend',
+      bestFor:['Batteries-included: ORM, auth, admin UI out of the box','Rapid MVP builds for SaaS, dashboards, CMS-like apps','Strong conventions reduce decision fatigue'],
+      example:{ app:'Pinterest', stack:['Python','Django','PostgreSQL','Redis'], highlight:'Python + Django' } },
+    { id:'python-fastapi', label:'Python + FastAPI', category:'backend',
+      bestFor:['Async-friendly, type-driven, auto-docs-first design','Best for ML-backed services and microservices','Blazing fast with Starlette + Pydantic under the hood'],
+      example:{ app:'Uber ML microservices', stack:['Python','FastAPI','PostgreSQL','Redis'], highlight:'Python + FastAPI' } },
+    { id:'ruby-rails', label:'Ruby on Rails', category:'backend',
+      bestFor:['Rapid CRUD-based backends with strong conventions','Rich ecosystem of "ready-made" patterns and gems','Convention over configuration: great for MVPs'],
+      example:{ app:'Shopify', stack:['Ruby on Rails','PostgreSQL','Redis','Elasticsearch'], highlight:'Ruby on Rails' } },
+    { id:'java-spring', label:'Java + Spring Boot', category:'backend',
+      bestFor:['Large enterprise systems needing strict typing + ecosystem','Strong DI, extensive testing, long-term maintainability','Battle-tested for high-scale financial & telecom systems'],
+      example:{ app:'Netflix backend services', stack:['Java','Spring Boot','Cassandra','Redis'], highlight:'Java + Spring Boot' } },
+    { id:'go', label:'Go (Gin / Fiber / Chi)', category:'backend',
+      bestFor:['Raw performance with minimal memory footprint','Simple microservices, CLIs, and network-heavy tools','Fast compile times and easy deployment as a single binary'],
+      example:{ app:'Uber / Docker', stack:['Go','PostgreSQL','Redis','Kafka'], highlight:'Go' } },
+    { id:'serverless', label:'Node + Serverless', category:'backend',
+      bestFor:['Bursty, event-driven workloads (APIs, webhooks, cron)','Pay-per-use billing instead of idle server costs','Zero infrastructure management with AWS Lambda / Vercel Fn'],
+      example:{ app:'Vercel edge functions', stack:['Node.js','AWS Lambda','DynamoDB'], highlight:'Node + Serverless' } },
+
+    // DATABASE
+    { id:'postgres', label:'PostgreSQL', category:'database',
+      bestFor:['Strong consistency for financial & transactional systems','Advanced queries: JSON, window functions, full-text search','Highly extensible with PostGIS, TimescaleDB, pgvector'],
+      example:{ app:'Shopify', stack:['Ruby on Rails','PostgreSQL','Redis'], highlight:'PostgreSQL' } },
+    { id:'mysql', label:'MySQL', category:'database',
+      bestFor:['LAMP-style web apps with wide hosting support','Simple, battle-tested, and widely understood by teams','Good for read-heavy workloads and WordPress-style apps'],
+      example:{ app:'WordPress / Facebook (historically)', stack:['PHP','MySQL','Memcached'], highlight:'MySQL' } },
+    { id:'mongodb', label:'MongoDB', category:'database',
+      bestFor:['Semi-structured / schema-flexible document storage','Iterate fast without heavy migrations','Embedded arrays & nested docs map naturally to JS objects'],
+      example:{ app:'Airbnb (listings data)', stack:['React','Node.js','MongoDB','Redis'], highlight:'MongoDB' } },
+    { id:'sqlite', label:'SQLite', category:'database',
+      bestFor:['Lightweight, embedded DB for prototypes and local tools','Zero server setup — a single file is the database','Perfect for desktop apps, mobile, and edge deployments'],
+      example:{ app:'Obsidian / many Electron apps', stack:['Electron','SQLite','Node.js'], highlight:'SQLite' } },
+    { id:'redis', label:'Redis', category:'database',
+      bestFor:['Caching, sessions, rate-limiting at microsecond speed','Pub/sub messaging and simple queues (BullMQ, Sidekiq)','Leaderboards, counters, and in-memory sorted sets'],
+      example:{ app:'Twitter / X (caching & feeds)', stack:['Scala','Redis','MySQL','Hadoop'], highlight:'Redis' } },
+    { id:'elasticsearch', label:'Elasticsearch', category:'database',
+      bestFor:['Full-text search with relevance scoring','Log aggregation, analytics, and observability pipelines','Faceted search, autocomplete, and fuzzy matching at scale'],
+      example:{ app:'GitHub code & issue search', stack:['Ruby','Elasticsearch','PostgreSQL'], highlight:'Elasticsearch' } },
+
+    // CLOUD
+    { id:'cloud-managed', label:'AWS / Azure / GCP', category:'cloud',
+      bestFor:['Offload ops: managed scaling, backups, high availability','Pay for managed services (RDS, Lambda, GCS, Vertex)','Enterprise compliance, VPCs, IAM, and audit trails'],
+      example:{ app:'Stripe', stack:['Node.js','AWS','PostgreSQL','Redis'], highlight:'AWS / Azure / GCP' } },
+    { id:'docker-k8s', label:'Docker + Kubernetes', category:'cloud',
+      bestFor:['Consistent environments across dev, CI, and production','Orchestrating many services with auto-scaling & self-healing','Blue-green deploys, canary releases, and service mesh'],
+      example:{ app:'Airbnb / Spotify backend', stack:['React','Node.js','Docker','Kubernetes','PostgreSQL'], highlight:'Docker + Kubernetes' } },
+    { id:'vercel-netlify', label:'Vercel / Netlify', category:'cloud',
+      bestFor:['Zero-config CI/CD for frontend and edge functions','Git-push deploys with preview URLs per branch','Global CDN + edge caching out of the box'],
+      example:{ app:'Vercel.com itself', stack:['Next.js','Vercel','PostgreSQL','Redis'], highlight:'Vercel / Netlify' } },
+
+    // LLMs
+    { id:'openai-gpt5', label:'OpenAI GPT-5 class', category:'llm',
+      bestFor:['Strongest general reasoning and tool/function-call support','Complex multi-step agents and product integrations','Mature ecosystem with assistants, fine-tuning, batch API'],
+      example:{ app:'ChatGPT', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'OpenAI GPT-5 class' } },
+    { id:'claude-opus', label:'Anthropic Claude Opus', category:'llm',
+      bestFor:['Long-context (1M token) reasoning and analysis','High-quality prose and complex code with explanations','Deep research, nuanced document understanding'],
+      example:{ app:'Claude.ai', stack:['React','Python','Claude Opus','PostgreSQL'], highlight:'Anthropic Claude Opus' } },
+    { id:'claude-sonnet', label:'Anthropic Claude Sonnet', category:'llm',
+      bestFor:['Balanced quality + cost — the daily driver premium pick','Strong coding, analysis, and agentic workflows','Powers most production AI coding tools and agents'],
+      example:{ app:'Cursor IDE', stack:['Electron','React','Claude Sonnet','Node.js'], highlight:'Anthropic Claude Sonnet' } },
+    { id:'gemini-pro', label:'Google Gemini Pro', category:'llm',
+      bestFor:['Multimodal (text, image, video, audio) in one model','Deep Google Cloud & Workspace integration','Strong for RAG with Google Search grounding'],
+      example:{ app:'Google AI Studio', stack:['Angular','Python','Gemini Pro','BigQuery'], highlight:'Google Gemini Pro' } },
+    { id:'gemini-flash', label:'Google Gemini Flash', category:'llm',
+      bestFor:['High-volume, cost-sensitive inference at low latency','Good for RAG, summarization, and chat at scale','Best Gemini price-performance ratio'],
+      example:{ app:'Firebase GenKit / NotebookLM', stack:['Node.js','Gemini Flash','Firestore'], highlight:'Google Gemini Flash' } },
+    { id:'llama', label:'Meta Llama 3', category:'llm',
+      bestFor:['Open-source, self-hostable for full data privacy','Finetuning and domain adaptation on your own data','Air-gapped / on-prem deployments with no cloud dependency'],
+      example:{ app:'LM Studio / Ollama local inference', stack:['Python','Llama 3 70B','FastAPI'], highlight:'Meta Llama 3' } },
+    { id:'mistral', label:'Mistral / Mixtral', category:'llm',
+      bestFor:['Efficient open-source models for fast local/edge inference','MoE architecture (Mixtral) punches above its parameter weight','Good for on-prem or cost-sensitive European deployments'],
+      example:{ app:"Le Chat (Mistral's product)", stack:['Python','Mistral','FastAPI','PostgreSQL'], highlight:'Mistral / Mixtral' } },
+    { id:'whisper', label:'OpenAI Whisper', category:'llm',
+      bestFor:['Fast, accurate speech-to-text and translation','Multi-language transcription with speaker diarization','Voice-first apps, podcast indexing, meeting notes'],
+      example:{ app:'Otter.ai / Fireflies.ai', stack:['Python','Whisper','FastAPI','PostgreSQL'], highlight:'OpenAI Whisper' } },
+
+    // MODELS
+    { id:'gpt5', label:'GPT-5', category:'models',
+      bestFor:['Highest reasoning power — mission-critical AI agents','Lowest error rate for complex R&D and architecture tasks','Best for agentic loops that must self-correct and plan'],
+      example:{ app:'ChatGPT Pro / enterprise agents', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'GPT-5' } },
+    { id:'gpt5-mini', label:'GPT-5 Mini', category:'models',
+      bestFor:['Strong reasoning at lower cost and faster speed','Internal tools, data analysis, chatbots needing nuance','Great balance for most production API use cases'],
+      example:{ app:'Internal copilots / SaaS AI features', stack:['Node.js','GPT-5 Mini','PostgreSQL'], highlight:'GPT-5 Mini' } },
+    { id:'gpt5-nano', label:'GPT-5 Nano', category:'models',
+      bestFor:['Cheap, fast, repetitive tasks at high call volume','Summarization, classification, and simple logic','Edge inference and low-latency response requirements'],
+      example:{ app:'Bulk email classification / auto-tagging', stack:['Python','GPT-5 Nano','FastAPI'], highlight:'GPT-5 Nano' } },
+    { id:'claude-opus-46', label:'Claude 4.6 Opus', category:'models',
+      bestFor:['Deepest reasoning with massive context window','Complex code architecture, analysis, and long documents','When quality matters more than speed or cost'],
+      example:{ app:'Claude.ai research / long-form analysis', stack:['Python','Claude 4.6 Opus','FastAPI'], highlight:'Claude 4.6 Opus' } },
+    { id:'claude-sonnet-46', label:'Claude 4.6 Sonnet', category:'models',
+      bestFor:['Balanced quality + cost — the everyday premium pick','Strong coding, analysis, and agentic tasks','Powers most production Claude integrations'],
+      example:{ app:'Cursor AI / Claude Code', stack:['Electron','Claude 4.6 Sonnet','Node.js'], highlight:'Claude 4.6 Sonnet' } },
+    { id:'claude-haiku', label:'Claude 3 Haiku', category:'models',
+      bestFor:['Fast and cheap for simple summarization and chat','Light-workload pipelines needing low latency','Classification, routing, and triage at scale'],
+      example:{ app:'High-volume chat moderation', stack:['Node.js','Claude 3 Haiku','Redis'], highlight:'Claude 3 Haiku' } },
+    { id:'gemini-31-pro', label:'Gemini 3.1 Pro', category:'models',
+      bestFor:['Latest flagship Gemini: general + long-context + multimodal','Best for Google Cloud-native architectures','Handles text, images, video, and audio in one call'],
+      example:{ app:'Google AI Overviews / NotebookLM', stack:['Python','Gemini 3.1 Pro','BigQuery'], highlight:'Gemini 3.1 Pro' } },
+    { id:'gemini-flash-25', label:'Gemini 2.5 Flash', category:'models',
+      bestFor:['High-volume RAG and chat with low latency','Best price-to-performance in the Gemini family','Server-tier inference for millions of daily calls'],
+      example:{ app:'Firebase GenKit apps', stack:['Node.js','Gemini 2.5 Flash','Firestore'], highlight:'Gemini 2.5 Flash' } },
+    { id:'gemini-nano', label:'Gemini Nano', category:'models',
+      bestFor:['On-device inference for Android and mobile apps','Private, offline-capable AI without server calls','Lightweight enough for Pixel / mid-range Android devices'],
+      example:{ app:'Pixel Smart Reply / Gboard suggestions', stack:['Android','Gemini Nano','TFLite'], highlight:'Gemini Nano' } },
+    { id:'llama-70b', label:'Llama 3 70B', category:'models',
+      bestFor:['Best open-weights performance for self-hosted inference','Finetuning and LoRA adaptation for your domain','Research, experimentation, and custom agent backends'],
+      example:{ app:'Ollama / vLLM self-hosted deployments', stack:['Python','Llama 3 70B','vLLM','FastAPI'], highlight:'Llama 3 70B' } },
+    { id:'llama-8b', label:'Llama 3 8B', category:'models',
+      bestFor:['Local dev on a laptop GPU (8–16 GB VRAM)','Low-cost edge or on-prem inference','Fast iteration for finetuning without big hardware'],
+      example:{ app:'LM Studio local chatbot', stack:['Python','Llama 3 8B','Ollama'], highlight:'Llama 3 8B' } },
+
+    // TOOLS
+    { id:'vscode', label:'VS Code', category:'tools',
+      bestFor:['Lightweight, cross-language editor with huge plugin ecosystem','Excellent TypeScript, JS, and Python support built-in','Free, open-source, runs everywhere'],
+      example:{ app:'Used by ~75% of developers globally', stack:['VS Code','Extensions','Git'], highlight:'VS Code' } },
+    { id:'copilot', label:'VS Code + Copilot', category:'tools',
+      bestFor:['Fast, reliable autocomplete and inline suggestions','Chat-style help and test generation in the editor','Team-friendly: works with GitHub PRs and reviews'],
+      example:{ app:'GitHub Copilot Workspace', stack:['VS Code','GitHub Copilot','GPT-4.1'], highlight:'VS Code + Copilot' } },
+    { id:'cursor', label:'Cursor', category:'tools',
+      bestFor:['AI-first editing with project-wide context awareness','Multi-file Composer: one prompt changes many files at once','Switch freely between Claude / GPT-4 within the editor'],
+      example:{ app:'Cursor IDE itself', stack:['Electron','React','Claude / GPT-4','Node.js'], highlight:'Cursor' } },
+    { id:'jetbrains', label:'JetBrains IDEs', category:'tools',
+      bestFor:['Deep static analysis and refactoring for Java/Kotlin/Scala','Best-in-class debugger and profiler for JVM languages','Full JetBrains AI plugin for code review and generation'],
+      example:{ app:'Enterprise Spring Boot / Android apps', stack:['IntelliJ','JetBrains AI','Java'], highlight:'JetBrains IDEs' } },
+    { id:'aider', label:'Aider', category:'tools',
+      bestFor:['Terminal-based, Git-aware AI code editing in a repo','PR-style workflow: AI makes commits you can review/revert','Great for polyglot codebases and scripting use cases'],
+      example:{ app:'Open-source CLI coding sessions', stack:['Aider','Claude / GPT','Git'], highlight:'Aider' } },
+  ];
+
+  // ═══════════════════════════════════════
+  // BUILD MATRIX DATA
+  // ═══════════════════════════════════════
+  const MATRIX = [
+    { name:'MVP / SaaS App', stack:['react','node-express','postgres','vercel-netlify'], stackLabels:['React','Node.js','PostgreSQL','Vercel'], complexity:'Medium', example:'Notion, Linear, Loom' },
+    { name:'AI Chat Application', stack:['react','python-fastapi','claude-sonnet','postgres','claude-sonnet-46'], stackLabels:['React','FastAPI','Claude Sonnet','PostgreSQL'], complexity:'Medium', example:'Claude.ai, Perplexity' },
+    { name:'E-commerce Platform', stack:['react','ruby-rails','postgres','redis','elasticsearch'], stackLabels:['React','Rails','PostgreSQL','Redis','Elasticsearch'], complexity:'High', example:'Shopify, Etsy' },
+    { name:'Marketing / Landing Page', stack:['html-css','vercel-netlify'], stackLabels:['HTML/CSS + JS','Vercel'], complexity:'Low', example:'Most startup sites' },
+    { name:'ML API + Data Backend', stack:['python-fastapi','postgres','redis','cloud-managed'], stackLabels:['FastAPI','PostgreSQL','Redis','AWS'], complexity:'Medium', example:'Instagram, Duolingo' },
+    { name:'Voice AI App', stack:['python-fastapi','whisper','openai-gpt5','postgres'], stackLabels:['FastAPI','Whisper','GPT-5','PostgreSQL'], complexity:'Medium', example:'Otter.ai, Fireflies.ai' },
+    { name:'Self-hosted AI Platform', stack:['node-express','llama','llama-70b','postgres','docker-k8s'], stackLabels:['Node.js','Llama 3 70B','PostgreSQL','Kubernetes'], complexity:'High', example:'On-prem LLM portals' },
+    { name:'Mobile / Edge AI App', stack:['python-fastapi','gemini-flash','gemini-nano','sqlite'], stackLabels:['FastAPI','Gemini Nano','SQLite'], complexity:'Low–Med', example:'Android smart features' },
+    { name:'Enterprise Web App', stack:['angular','java-spring','postgres','docker-k8s','cloud-managed'], stackLabels:['Angular','Spring Boot','PostgreSQL','Kubernetes'], complexity:'Very High', example:'Google Workspace, SAP' },
+    { name:'Search & Analytics Pipeline', stack:['python-fastapi','elasticsearch','postgres','cloud-managed'], stackLabels:['FastAPI','Elasticsearch','PostgreSQL','AWS'], complexity:'High', example:'GitHub Search, Datadog' },
+    { name:'Real-time Collaboration Tool', stack:['react','node-express','redis','postgres','docker-k8s'], stackLabels:['React','Node.js','Redis','PostgreSQL'], complexity:'High', example:'Figma, Miro' },
+    { name:'Serverless API / Microservice', stack:['serverless','node-express','postgres','cloud-managed'], stackLabels:['Node.js','AWS Lambda','PostgreSQL'], complexity:'Low–Med', example:'API integrations, webhooks' },
+  ];
+
+  // ═══════════════════════════════════════
+  // Q&A WIZARD DATA
+  // ═══════════════════════════════════════
+  const QA_STEPS = [
+    {
+      id: 'type',
+      question: "What are you building?",
+      hint: "Pick the closest to your goal — you can refine later.",
+      options: [
+        { value:'web',     label:'🌐 Web App / SaaS' },
+        { value:'api',     label:'⚙️ API / Backend' },
+        { value:'ai',      label:'🤖 AI / LLM Product' },
+        { value:'mobile',  label:'📱 Mobile / Edge' },
+        { value:'data',    label:'📊 Data Pipeline' },
+        { value:'landing', label:'🎨 Landing Page' },
+      ],
+    },
+    {
+      id: 'ai',
+      question: "How central is AI to your product?",
+      hint: "This helps us pick the right LLM and architecture.",
+      options: [
+        { value:'none',  label:'🚫 No AI needed' },
+        { value:'light', label:'✨ Light AI  (summaries, search)' },
+        { value:'core',  label:'🧠 Core product  (chat, agents)' },
+        { value:'self',  label:'🔒 Self-hosted / private AI' },
+      ],
+    },
+    {
+      id: 'team',
+      question: "Who's building this?",
+      hint: "Team size shapes framework choice and complexity tolerance.",
+      options: [
+        { value:'solo',       label:'🧑 Solo / indie' },
+        { value:'small',      label:'👥 Small team (2–5)' },
+        { value:'enterprise', label:'🏢 Enterprise (6+)' },
+      ],
+    },
+    {
+      id: 'speed',
+      question: "How fast do you need to ship?",
+      hint: "Speed vs. long-term scale is the core trade-off.",
+      options: [
+        { value:'weekend', label:'⚡ This weekend' },
+        { value:'weeks',   label:'📅 1–4 weeks' },
+        { value:'months',  label:'🗓 3+ months' },
+      ],
+    },
+  ];
+
+  // ═══════════════════════════════════════
+  // PRESETS
+  // ═══════════════════════════════════════
+  const PRESETS = {
+    landing: {
+      name:'Marketing / Landing Page', headline:'Zero infra. Live in minutes.',
+      why:'HTML/CSS + plain JS is the simplest path to a live site. No build tooling, no framework overhead. Vercel gives you CI/CD on git push — free tier is more than enough.',
+      examples:'Apple.com marketing pages, most startup landing pages',
+      chips:['html-css','vercel-netlify'],
+      rules:['Use semantic HTML5 elements','Optimize images with lazy loading','Follow WCAG 2.1 AA accessibility','Prefer CSS custom properties for theming'],
+      model:null,
+    },
+    'lean-mvp': {
+      name:'Lean MVP / SaaS', headline:'Ship fast, scale later.',
+      why:'React + Node.js shares the TypeScript mental model across your full stack. PostgreSQL gives you a rock-solid relational foundation. Vercel removes infra from the equation entirely.',
+      examples:'Notion, Linear, Loom (early versions)',
+      chips:['react','node-express','postgres','vercel-netlify'],
+      rules:['Use TypeScript strict mode throughout','React: prefer hooks over class components','Node.js: async/await, avoid callback nesting','PostgreSQL: use migrations (not raw ALTER TABLE)','Vercel: one preview URL per PR'],
+      model:'claude-sonnet-4-6',
+    },
+    'ai-mvp': {
+      name:'AI-Powered Product (MVP)', headline:'Conversation-first, deployed in days.',
+      why:'FastAPI + Claude Sonnet is the fastest path to a working LLM product. Async by default, type-safe Pydantic models, auto-generated docs. Claude Sonnet balances quality and cost for a first launch.',
+      examples:'Early Claude.ai-style apps, Perplexity, AI writing assistants',
+      chips:['react','python-fastapi','postgres','claude-sonnet','vercel-netlify'],
+      rules:['FastAPI: always define Pydantic request/response models','LLM calls: include error handling + retry with exponential backoff','Stream responses to reduce perceived latency','Log all LLM input/output for debugging','Rate-limit endpoints that call LLMs'],
+      model:'claude-sonnet-4-6',
+    },
+    'ai-production': {
+      name:'Production AI Application', headline:'Built to handle real load.',
+      why:'Redis handles rate-limiting and caches expensive LLM responses. Managed cloud gives you autoscaling and reliability SLAs. This is the production-grade version of the AI MVP stack.',
+      examples:'Cursor, GitHub Copilot backends, internal AI assistants at scale',
+      chips:['react','python-fastapi','postgres','redis','claude-sonnet','cloud-managed'],
+      rules:['Cache LLM responses in Redis with TTL-based invalidation','Use pgvector for embedding storage if doing RAG','Track token budget per user/session to control costs','Sanitize all user input before sending to LLMs','Monitor p95 LLM latency — alert if >5s'],
+      model:'claude-sonnet-4-6',
+    },
+    'self-hosted-ai': {
+      name:'Self-Hosted AI Platform', headline:"Your data never leaves your infra.",
+      why:'Llama 3 70B + vLLM gives you near-frontier performance with zero cloud inference dependency. Kubernetes scales the serving layer. No vendor lock-in, no data leaving your premises.',
+      examples:'Enterprise LLM portals, air-gapped government AI tools, privacy-first SaaS',
+      chips:['node-express','llama','llama-70b','postgres','docker-k8s'],
+      rules:['Use vLLM or Ollama for optimized inference','Apply quantization (Q4/Q8) for memory efficiency','Kubernetes: set resource limits on LLM inference pods','Log all inference calls for audit and compliance','Health-check the inference server every 30s'],
+      model:'llama-70b',
+    },
+    enterprise: {
+      name:'Enterprise Web Application', headline:'Built for long-term maintainability.',
+      why:'Angular + Spring Boot is battle-tested for large teams. Strong typing from browser to DB, DI everywhere, and a testing story that enterprise risk teams accept.',
+      examples:'Google Workspace internal tools, SAP-style enterprise apps, banking portals',
+      chips:['angular','java-spring','postgres','docker-k8s','cloud-managed'],
+      rules:['Angular: use OnPush change detection strategy','Spring: prefer constructor injection over field injection','Validate all API inputs with Bean Validation (@Valid)','Use Flyway for database schema migrations','All services must expose /health and /metrics endpoints'],
+      model:'gpt5',
+    },
+    'api-microservice': {
+      name:'High-Performance API / Microservice', headline:'Maximum throughput, minimal overhead.',
+      why:'Go compiles to a single binary, handles tens of thousands of concurrent requests, and uses a fraction of the memory of Node or Python. Perfect for high-throughput internal APIs.',
+      examples:'Uber microservices, Docker itself, Cloudflare Workers backend',
+      chips:['go','postgres','redis','docker-k8s'],
+      rules:['Use context propagation for all request handlers','Return structured errors with typed error codes','Use sync.Pool for frequently allocated objects','Redis: use pipelines for batched operations','All Dockerfiles must use multi-stage builds'],
+      model:null,
+    },
+    'data-pipeline': {
+      name:'Data / ML Pipeline', headline:'From raw data to insights, at scale.',
+      why:'FastAPI serves your ML models with type-safe async endpoints. Elasticsearch handles analytics at scale. Redis caches expensive computations. Managed cloud scales with your data growth.',
+      examples:'Duolingo ML platform, Instagram recommendations, Datadog log pipeline',
+      chips:['python-fastapi','postgres','elasticsearch','redis','cloud-managed'],
+      rules:['Validate all data inputs with Pydantic models','Use async background tasks for heavy processing','Elasticsearch: define explicit mappings, avoid dynamic mapping','Cache ML predictions in Redis with feature-hash keys','Log inference latency and model version per prediction'],
+      model:'gemini-flash',
+    },
+    'mobile-ai': {
+      name:'Mobile / Edge AI App', headline:'AI on the device, not just the cloud.',
+      why:'Gemini Nano runs on-device for fast, private inference on Android. FastAPI backend handles heavier cloud tasks when needed. SQLite gives you local persistence with zero setup.',
+      examples:'Android Pixel features, Gboard AI suggestions, on-device translation',
+      chips:['python-fastapi','gemini-flash','gemini-nano','sqlite'],
+      rules:['Prefer on-device inference for latency-sensitive UX','Fall back to cloud API only when on-device fails','SQLite: use WAL mode for concurrent read performance','Compress model inputs to reduce bandwidth usage','Always handle offline / airplane mode gracefully'],
+      model:'gemini-nano',
+    },
+    'web-with-ai': {
+      name:'Web App + AI Features', headline:'Your existing app, supercharged with AI.',
+      why:'Add Claude Sonnet to your Node backend for summaries, classification, and smart suggestions. Minimal architecture changes, maximum user value delivered fast.',
+      examples:'Linear AI, Notion AI, GitHub Copilot in-app features',
+      chips:['react','node-express','postgres','claude-sonnet','vercel-netlify'],
+      rules:['Wrap all AI calls in a service layer for easy swapping','Use streaming for long-form AI responses','Show AI confidence / source where relevant','Rate-limit AI features per user plan tier','Collect user feedback (👍👎) to improve prompts over time'],
+      model:'claude-sonnet-4-6',
+    },
+  };
+
+  // ═══════════════════════════════════════
+  // RECOMMENDATION ENGINE
+  // ═══════════════════════════════════════
+  function getPresetKey(a) {
+    if (a.type === 'landing') return 'landing';
+    if (a.type === 'mobile')  return 'mobile-ai';
+    if (a.type === 'data')    return 'data-pipeline';
+    if (a.type === 'api')     return 'api-microservice';
+    if (a.team === 'enterprise') return 'enterprise';
+    if (a.ai === 'self')  return 'self-hosted-ai';
+    if (a.ai === 'core')  return a.speed === 'months' ? 'ai-production' : 'ai-mvp';
+    if (a.ai === 'light') return 'web-with-ai';
+    return 'lean-mvp';
+  }
+
+  // ═══════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════
+  const selectedIds = new Set();
+  let matrixVisible = false;
+  let hideTimer = null;
+  let qaStep = 0;
+  const qaAnswers = {};
+
+  // ═══════════════════════════════════════
+  // MODE SWITCHER
+  // ═══════════════════════════════════════
+  function switchMode(mode) {
+    const picker = document.getElementById('mode-picker');
+    const guided = document.getElementById('mode-guided');
+    document.getElementById('btn-mode-picker').classList.toggle('active', mode === 'picker');
+    document.getElementById('btn-mode-guided').classList.toggle('active', mode === 'guided');
+    picker.style.display = mode === 'picker' ? 'block' : 'none';
+    guided.style.display = mode === 'guided' ? 'block' : 'none';
+    if (mode === 'guided') {
+      const hasResult = document.getElementById('qa-result').classList.contains('visible');
+      if (!hasResult) renderQAStep(0);
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // Q&A WIZARD
+  // ═══════════════════════════════════════
+  function renderQAProgress() {
+    document.getElementById('qa-progress').innerHTML = QA_STEPS.map((_, i) =>
+      `<div class="qa-dot ${i < qaStep ? 'done' : i === qaStep ? 'active' : ''}"></div>`
+    ).join('');
+  }
+
+  function renderQAStep(step) {
+    qaStep = step;
+    renderQAProgress();
+    document.getElementById('qa-result').classList.remove('visible');
+    document.getElementById('qa-result').style.display = 'none';
+    const s = QA_STEPS[step];
+    const hasAnswer = !!qaAnswers[s.id];
+    document.getElementById('qa-step-container').innerHTML = `
+      <div class="qa-card">
+        <div class="qa-question">${s.question}</div>
+        <div class="qa-hint">${s.hint}</div>
+        <div class="qa-options">
+          ${s.options.map(o => `
+            <div class="qa-option${qaAnswers[s.id] === o.value ? ' selected' : ''}"
+                 onclick="selectQAOption('${s.id}','${o.value}',this)">
+              ${o.label}
+            </div>`).join('')}
+        </div>
+        <div class="qa-nav">
+          ${step > 0
+            ? `<button class="qa-back" onclick="renderQAStep(${step-1})">← Back</button>`
+            : '<span></span>'}
+          <span class="qa-step-label">${step+1} of ${QA_STEPS.length}</span>
+          <button class="qa-next ${hasAnswer ? 'enabled' : ''}" id="qa-next-btn"
+                  onclick="${step < QA_STEPS.length-1 ? `renderQAStep(${step+1})` : 'showQAResult()'}">
+            ${step < QA_STEPS.length-1 ? 'Next →' : 'Show My Stack →'}
+          </button>
+        </div>
+      </div>`;
+  }
+
+  function selectQAOption(stepId, value, el) {
+    qaAnswers[stepId] = value;
+    el.closest('.qa-options').querySelectorAll('.qa-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    const btn = document.getElementById('qa-next-btn');
+    if (btn) btn.classList.add('enabled');
+  }
+
+  function showQAResult() {
+    const preset = PRESETS[getPresetKey(qaAnswers)];
+    selectedIds.clear();
+    preset.chips.forEach(id => selectedIds.add(id));
+    renderChips();
+    updateCTA();
+
+    const chipHtml = preset.chips.map(id => {
+      const t = TECH.find(x => x.id === id);
+      return t ? `<span class="rec-chip">${t.label}</span>` : '';
+    }).join('');
+
+    const result = document.getElementById('qa-result');
+    result.innerHTML = `
+      <div class="rec-card">
+        <div class="rec-label">Recommended Stack</div>
+        <div class="rec-name">${preset.name}</div>
+        <div class="rec-headline">${preset.headline}</div>
+        <div class="rec-why">${preset.why}</div>
+        <div class="rec-chips">${chipHtml}</div>
+        <div class="rec-examples"><strong>Used by:</strong> ${preset.examples}</div>
+        <div class="rec-actions">
+          <button class="rec-btn-primary" onclick="openMatrix('matrix')">See what I can build →</button>
+          <button class="rec-btn-secondary" onclick="openMatrix('config')">Get Cortex config</button>
+          <button class="rec-btn-secondary" onclick="resetQA()">Start over</button>
+        </div>
+      </div>`;
+    result.style.display = 'block';
+    result.classList.add('visible');
+    document.getElementById('qa-step-container').innerHTML = '';
+    document.getElementById('qa-progress').innerHTML = '';
+  }
+
+  function openMatrix(tab) {
+    matrixVisible = true;
+    const matrix = document.getElementById('build-matrix');
+    matrix.classList.add('visible');
+    renderMatrix(); renderTips(); renderCortexConfig();
+    const tabs = document.querySelectorAll('.bm-tab');
+    document.querySelectorAll('.bm-panel').forEach(p => p.classList.remove('active'));
+    tabs.forEach(t => t.classList.remove('active'));
+    if (tab === 'config') {
+      tabs[2].classList.add('active');
+      document.getElementById('bm-panel-config').classList.add('active');
+    } else {
+      tabs[0].classList.add('active');
+      document.getElementById('bm-panel-matrix').classList.add('active');
+    }
+    matrix.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function resetQA() {
+    Object.keys(qaAnswers).forEach(k => delete qaAnswers[k]);
+    document.getElementById('qa-result').classList.remove('visible');
+    document.getElementById('qa-result').style.display = 'none';
+    document.getElementById('build-matrix').classList.remove('visible');
+    matrixVisible = false;
+    renderQAStep(0);
+  }
+
+  // ═══════════════════════════════════════
+  // CORTEX CONFIG GENERATOR
+  // ═══════════════════════════════════════
+  function renderCortexConfig() {
+    const el = document.getElementById('cortex-config-content');
+    const sel = TECH.filter(t => selectedIds.has(t.id));
+    if (!sel.length) { el.textContent = '# Select technologies above to generate your Cortex config'; return; }
+
+    let preset = null;
+    for (const p of Object.values(PRESETS)) {
+      const matched = p.chips.filter(id => selectedIds.has(id)).length;
+      if (matched >= Math.min(2, p.chips.length)) { preset = p; break; }
+    }
+
+    const bycat = cat => sel.filter(t => t.category === cat).map(t => t.label).join(', ');
+    const rules = preset ? preset.rules : ['Use TypeScript strict mode','Prefer async/await over callbacks','Write tests for all public APIs','Document non-obvious logic inline'];
+    const model = preset && preset.model ? preset.model : null;
+
+    const lines = [
+      '# Cortex Config — Generated for your stack',
+      '# Edit freely. Run: npx cortex compile → pushes to all AI tools',
+      '',
+      '## Stack',
+      bycat('frontend')  ? `- frontend:  ${bycat('frontend')}`  : null,
+      bycat('backend')   ? `- backend:   ${bycat('backend')}`   : null,
+      bycat('database')  ? `- database:  ${bycat('database')}`  : null,
+      bycat('cloud')     ? `- infra:     ${bycat('cloud')}`     : null,
+      bycat('llm')       ? `- llm:       ${bycat('llm')}`       : null,
+      bycat('models')    ? `- models:    ${bycat('models')}`    : null,
+      bycat('tools')     ? `- tools:     ${bycat('tools')}`     : null,
+      '',
+      '## Model',
+      model
+        ? `provider: anthropic\nmodel:    ${model}`
+        : `# model: <add your LLM to enable model-aware routing>`,
+      '',
+      '## Rules',
+      ...rules.map(r => `- ${r}`),
+      '',
+      '## Context Budget',
+      'max_tokens: 8000',
+      'compress:   true',
+      'priority:   stack, rules, examples',
+      '',
+      '## Compile targets  (npx cortex compile)',
+      'targets:',
+      '  - claude     # → CLAUDE.md',
+      '  - cursor     # → .cursorrules',
+      '  - copilot    # → .github/copilot-instructions.md',
+      '  - windsurf   # → .windsurfrules',
+      '  - gemini     # → .gemini/GEMINI.md',
+      '  - codex      # → .codex/instructions.md',
+    ].filter(l => l !== null).join('\n');
+
+    el.textContent = lines;
+  }
+
+  function copyConfig() {
+    const text = document.getElementById('cortex-config-content').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.cortex-config-copy');
+      btn.textContent = 'copied ✓';
+      setTimeout(() => btn.textContent = 'copy', 1600);
+    });
+  }
+
+  function copyInstall() {
+    navigator.clipboard.writeText('npx cortex init').then(() => {
+      const hint = document.getElementById('copy-hint');
+      hint.textContent = '✓ copied!';
+      hint.style.color = '#34d399';
+      setTimeout(() => { hint.textContent = 'click to copy'; hint.style.color = ''; }, 1600);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // RENDER CHIPS
+  // ═══════════════════════════════════════
+  function renderChips() {
+    const container = document.getElementById('sp-categories');
+    container.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const items = TECH.filter(t => t.category === cat.id);
+      if (!items.length) return;
+      const group = document.createElement('div');
+      group.className = 'sp-group';
+      const label = document.createElement('div');
+      label.className = 'sp-group-label';
+      label.innerHTML = `<span>${cat.icon}</span> ${cat.label}`;
+      group.appendChild(label);
+      const chips = document.createElement('div');
+      chips.className = 'sp-chips';
+      items.forEach(tech => {
+        const chip = document.createElement('div');
+        chip.className = 'sp-chip' + (selectedIds.has(tech.id) ? ' selected' : '');
+        chip.dataset.id = tech.id;
+        chip.textContent = tech.label;
+        chip.addEventListener('mouseenter', () => showTooltip(chip, tech));
+        chip.addEventListener('mouseleave', scheduleHide);
+        chip.addEventListener('click', () => handleChipClick(tech.id));
+        chip.addEventListener('touchstart', e => {
+          e.preventDefault();
+          const tt = document.getElementById('sp-tooltip');
+          if (tt.classList.contains('visible') && tt.dataset.techId === tech.id) handleChipClick(tech.id);
+          else showTooltip(chip, tech);
+        }, { passive:false });
+        chips.appendChild(chip);
+      });
+      group.appendChild(chips);
+      container.appendChild(group);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // CHIP INTERACTIONS
+  // ═══════════════════════════════════════
+  function handleChipClick(id) {
+    if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+    renderChips(); updateCTA();
+    if (matrixVisible) { renderMatrix(); renderTips(); renderCortexConfig(); }
+  }
+
+  function updateCTA() {
+    const btn = document.getElementById('sp-cta-btn');
+    const count = document.getElementById('sp-count');
+    const n = selectedIds.size;
+    if (n > 0) {
+      btn.classList.add('visible');
+      count.textContent = `${n} item${n > 1 ? 's' : ''} selected`;
+    } else {
+      btn.classList.remove('visible');
+      count.textContent = '';
+      if (matrixVisible) { document.getElementById('build-matrix').classList.remove('visible'); matrixVisible = false; }
+    }
+  }
+
+  function toggleMatrix() {
+    const matrix = document.getElementById('build-matrix');
+    matrixVisible = !matrixVisible;
+    if (matrixVisible) {
+      matrix.classList.add('visible');
+      renderMatrix(); renderTips(); renderCortexConfig();
+      matrix.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    } else {
+      matrix.classList.remove('visible');
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // TOOLTIP
+  // ═══════════════════════════════════════
+  function showTooltip(chip, tech) {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    const tt = document.getElementById('sp-tooltip');
+    tt.dataset.techId = tech.id;
+    document.getElementById('tt-name').textContent = tech.label;
+    document.getElementById('tt-bullets').innerHTML = tech.bestFor.map(b => `<li>${b}</li>`).join('');
+    document.getElementById('tt-app-name').innerHTML = `<strong>${tech.example.app}</strong>`;
+    document.getElementById('tt-mini-chips').innerHTML = tech.example.stack
+      .map(s => `<span class="tt-mini-chip${s === tech.example.highlight ? ' highlight' : ''}">${s}</span>`).join('');
+    positionTooltip(chip.getBoundingClientRect(), tt);
+    tt.classList.add('visible');
+  }
+
+  function scheduleHide() { hideTimer = setTimeout(() => document.getElementById('sp-tooltip').classList.remove('visible'), 120); }
+
+  function positionTooltip(rect, tt) {
+    const TW = tt.offsetWidth || 292, TH = tt.offsetHeight || 220, GAP = 10, vw = window.innerWidth;
+    let top = rect.top - TH - GAP;
+    if (top < 8) top = rect.bottom + GAP;
+    let left = rect.left;
+    if (left + TW > vw - 16) left = rect.right - TW;
+    if (left < 8) left = 8;
+    tt.style.top = top + 'px';
+    tt.style.left = left + 'px';
+  }
+
+  // ═══════════════════════════════════════
+  // BUILD MATRIX
+  // ═══════════════════════════════════════
+  const CX = { 'Low':'bm-low','Low–Med':'bm-med','Medium':'bm-med','High':'bm-high','Very High':'bm-vhigh' };
+
+  function renderMatrix() {
+    const sel = selectedIds;
+    const scored = MATRIX.map(row => {
+      const matched = row.stack.filter(id => sel.has(id)).length;
+      return { ...row, matched, total: row.stack.length, score: matched / row.stack.length };
+    }).sort((a,b) => b.score - a.score || b.matched - a.matched);
+
+    document.getElementById('bm-table-body').innerHTML = scored.map(row => {
+      const rowClass = row.matched === row.total && row.total > 0 ? 'bm-row-full' : row.matched > 0 ? 'bm-row-partial' : 'bm-row-none';
+      const badge = row.matched === row.total && row.total > 0
+        ? `<span class="bm-match-badge bm-match-full">✦ Full match</span>`
+        : row.matched > 0
+          ? `<span class="bm-match-badge bm-match-part">${row.matched}/${row.total}</span>`
+          : `<span class="bm-match-badge bm-match-low">—</span>`;
+      const tags = row.stackLabels.map((l,i) =>
+        `<span class="bm-stack-tag${sel.has(row.stack[i]) ? ' matched' : ''}">${l}</span>`).join('');
+      return `<tr class="${rowClass}">
+        <td>${row.name}</td>
+        <td><div class="bm-stack-tags">${tags}</div></td>
+        <td><span class="bm-complexity ${CX[row.complexity]||'bm-med'}">${row.complexity}</span></td>
+        <td style="color:#6b7280;font-size:0.75rem">${row.example}</td>
+        <td>${badge}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════
+  // STACK TIPS
+  // ═══════════════════════════════════════
+  function renderTips() {
+    const sel = selectedIds;
+    const cats = new Set(TECH.filter(t => sel.has(t.id)).map(t => t.category));
+    const tips = [];
+    if (cats.has('frontend') && cats.has('backend') && cats.has('database'))
+      tips.push({ title:'🏗 Full-stack ready', body:'You have frontend, backend, and database covered — great foundation for a production app. Add cloud infra for scale.' });
+    if (cats.has('llm') || cats.has('models'))
+      tips.push({ title:'🤖 AI-powered application', body:'Your stack includes an LLM/model. Consider adding a vector DB (pgvector, Pinecone) for RAG, and Redis for rate-limiting API calls.' });
+    if (cats.has('cloud'))
+      tips.push({ title:'☁️ Production-grade infra', body:'Cloud infra selected — plan for environment parity (dev → staging → prod) and use managed secrets (AWS SSM, GCP Secret Manager).' });
+    if (cats.has('backend') && !cats.has('frontend'))
+      tips.push({ title:'⚙️ API-first architecture', body:'Backend without a frontend — great for microservices or headless APIs. Add OpenAPI/Swagger docs from day one.' });
+    if (cats.has('frontend') && !cats.has('backend'))
+      tips.push({ title:'🖥 Frontend-heavy stack', body:'No backend selected — consider Vercel Functions or Netlify Functions to avoid standing up a full server.' });
+    if (cats.has('tools'))
+      tips.push({ title:'🛠 AI-assisted development', body:'Your toolchain includes AI coding tools. Run npx cortex init to give every tool the same project context automatically.' });
+    if (sel.size >= 5)
+      tips.push({ title:'📋 Complex stack — document early', body:`You've selected ${sel.size} technologies. Define an ADR (Architecture Decision Record) early so the team understands why each piece exists.` });
+
+    const container = document.getElementById('bm-tips-content');
+    container.innerHTML = tips.length
+      ? tips.map(t => `<div class="bm-tip"><div class="bm-tip-title">${t.title}</div><div class="bm-tip-body">${t.body}</div></div>`).join('')
+      : '<div class="bm-no-sel">Select some items above to see personalized stack tips.</div>';
+  }
+
+  // ═══════════════════════════════════════
+  // TAB SWITCH
+  // ═══════════════════════════════════════
+  function switchBMTab(id, btn) {
+    document.querySelectorAll('.bm-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.bm-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('bm-panel-' + id).classList.add('active');
+    if (id === 'config') renderCortexConfig();
+  }
+
+  // ═══════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════
+  renderChips();
+  </script>
 </body>
 </html>
