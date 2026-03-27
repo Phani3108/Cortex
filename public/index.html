@@ -312,6 +312,12 @@
       background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
       border-color: #6366f1; color: #a78bfa; font-weight: 600;
     }
+    /* Use-pill list for LLMs / models / tools */
+    .tt-use-pills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.1rem; }
+    .tt-use-pill {
+      font-size: 0.68rem; padding: 0.18rem 0.55rem; border-radius: 6px;
+      background: #1a1a1a; border: 1px solid #2a2a2a; color: #9ca3af; white-space: nowrap;
+    }
 
     @media (max-width: 600px) {
       h1 { font-size: 2rem; }
@@ -486,9 +492,16 @@
     <div class="tt-section-label">Best for</div>
     <ul class="tt-bullets" id="tt-bullets"></ul>
     <hr class="tt-sep">
-    <div class="tt-section-label">Powers</div>
-    <div class="tt-app-name" id="tt-app-name"></div>
-    <div class="tt-mini-chips" id="tt-mini-chips"></div>
+    <div class="tt-section-label" id="tt-bottom-label">Used in</div>
+    <!-- Stack chips mode (frontend/backend/db/cloud) -->
+    <div id="tt-stack-wrap">
+      <div class="tt-app-name" id="tt-app-name"></div>
+      <div class="tt-mini-chips" id="tt-mini-chips"></div>
+    </div>
+    <!-- App pills mode (llm/models/tools) -->
+    <div id="tt-apps-wrap" style="display:none">
+      <div class="tt-use-pills" id="tt-use-pills"></div>
+    </div>
   </div>
 
   <script>
@@ -577,83 +590,141 @@
       bestFor:['Zero-config CI/CD for frontend and edge functions','Git-push deploys with preview URLs per branch','Global CDN + edge caching out of the box'],
       example:{ app:'Vercel.com itself', stack:['Next.js','Vercel','PostgreSQL','Redis'], highlight:'Vercel / Netlify' } },
 
+    // EXTRA FRONTEND
+    { id:'nextjs', label:'Next.js', category:'frontend',
+      bestFor:['SSR + SSG + ISR in one framework — best for SEO-heavy React apps','File-based routing, API routes, and edge middleware built-in','Image, font, and script optimization out of the box'],
+      example:{ app:'Vercel / Hulu / TikTok web', stack:['Next.js','React','PostgreSQL','Vercel'], highlight:'Next.js' } },
+    { id:'tailwind', label:'Tailwind CSS', category:'frontend',
+      bestFor:['Utility-first CSS — build custom UIs without leaving HTML','Rapid UI prototyping with a consistent design system','Excellent with React/Next.js; tree-shaken in production for tiny bundles'],
+      example:{ app:'GitHub Primer UI / many SaaS dashboards', stack:['Tailwind','React','Next.js'], highlight:'Tailwind CSS' } },
+    { id:'typescript', label:'TypeScript', category:'frontend',
+      bestFor:['Static typing that catches bugs before they hit production','Shared types between frontend and backend (monorepo / tRPC)','Essential for large codebases — refactoring is safe, autocomplete is precise'],
+      example:{ app:'Slack, Notion, VS Code (all TypeScript-first)', stack:['TypeScript','React','Node.js'], highlight:'TypeScript' } },
+
+    // EXTRA BACKEND
+    { id:'dotnet', label:'C# / .NET', category:'backend',
+      bestFor:['Microsoft-ecosystem enterprise apps with strong tooling','High-performance APIs via ASP.NET Core — comparable speed to Go','Azure-native: App Service, Functions, and Cosmos DB work seamlessly'],
+      example:{ app:'Stack Overflow / Xbox backend / Azure services', stack:['C# / .NET','React','SQL Server','Azure'], highlight:'C# / .NET' } },
+    { id:'graphql', label:'GraphQL', category:'backend',
+      bestFor:['Client-driven queries — fetch exactly what the UI needs','Eliminates over-fetching / under-fetching vs. REST','Strongly typed schema serves as living API documentation'],
+      example:{ app:'GitHub API v4 / Shopify Storefront API / Twitter API', stack:['GraphQL','Node.js','PostgreSQL'], highlight:'GraphQL' } },
+
+    // EXTRA DATABASE
+    { id:'firebase', label:'Firebase / Firestore', category:'database',
+      bestFor:['Zero-ops BaaS: real-time sync, auth, hosting in one platform','Offline-first mobile apps with built-in conflict resolution','Perfect for MVPs — no server to manage, free tier is generous'],
+      example:{ app:'Duolingo mobile, Alibaba Xianyu, NPM registry', stack:['Firebase','React Native','Node.js'], highlight:'Firebase / Firestore' } },
+    { id:'supabase', label:'Supabase', category:'database',
+      bestFor:['Open-source Firebase alternative backed by PostgreSQL','Row-level security, realtime subscriptions, and storage built-in','Instant REST + GraphQL API generated from your schema'],
+      example:{ app:'Pika, Resend, many indie SaaS projects', stack:['Supabase','Next.js','PostgreSQL'], highlight:'Supabase' } },
+    { id:'pinecone', label:'Pinecone / pgvector', category:'database',
+      bestFor:['Vector similarity search for embeddings and RAG pipelines','Store and query AI-generated embeddings at scale','pgvector adds vector support to existing PostgreSQL instances'],
+      example:{ app:'Notion AI, Cursor codebase indexing, Perplexity RAG', stack:['Python','OpenAI Embeddings','Pinecone','FastAPI'], highlight:'Pinecone / pgvector' } },
+
     // LLMs
     { id:'openai-gpt5', label:'OpenAI GPT-5 class', category:'llm',
       bestFor:['Strongest general reasoning and tool/function-call support','Complex multi-step agents and product integrations','Mature ecosystem with assistants, fine-tuning, batch API'],
-      example:{ app:'ChatGPT', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'OpenAI GPT-5 class' } },
+      example:{ app:'ChatGPT', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'OpenAI GPT-5 class' },
+      uses:['ChatGPT / ChatGPT Pro','Microsoft Copilot (M365)','Notion AI','HubSpot AI','GitHub Copilot (base model)'] },
     { id:'claude-opus', label:'Anthropic Claude Opus', category:'llm',
-      bestFor:['Long-context (1M token) reasoning and analysis','High-quality prose and complex code with explanations','Deep research, nuanced document understanding'],
-      example:{ app:'Claude.ai', stack:['React','Python','Claude Opus','PostgreSQL'], highlight:'Anthropic Claude Opus' } },
+      bestFor:['Long-context (1M token) reasoning and analysis','High-quality prose and complex code with explanations','Deep research and nuanced multi-document understanding'],
+      example:{ app:'Claude.ai', stack:['React','Python','Claude Opus','PostgreSQL'], highlight:'Anthropic Claude Opus' },
+      uses:['Claude.ai Pro (deep research)','Cursor deep analysis mode','Enterprise legal doc review tools','Complex code architecture sessions'] },
     { id:'claude-sonnet', label:'Anthropic Claude Sonnet', category:'llm',
-      bestFor:['Balanced quality + cost — the daily driver premium pick','Strong coding, analysis, and agentic workflows','Powers most production AI coding tools and agents'],
-      example:{ app:'Cursor IDE', stack:['Electron','React','Claude Sonnet','Node.js'], highlight:'Anthropic Claude Sonnet' } },
+      bestFor:['Balanced quality + cost — the daily driver premium pick','Strong coding, analysis, and agentic workflows','Most production AI coding tools run on Sonnet'],
+      example:{ app:'Cursor IDE', stack:['Electron','React','Claude Sonnet','Node.js'], highlight:'Anthropic Claude Sonnet' },
+      uses:['Cursor IDE (default model)','Claude Code CLI','Replit AI','Sourcegraph Cody','Amazon Q Developer'] },
     { id:'gemini-pro', label:'Google Gemini Pro', category:'llm',
       bestFor:['Multimodal (text, image, video, audio) in one model','Deep Google Cloud & Workspace integration','Strong for RAG with Google Search grounding'],
-      example:{ app:'Google AI Studio', stack:['Angular','Python','Gemini Pro','BigQuery'], highlight:'Google Gemini Pro' } },
+      example:{ app:'Google AI Studio', stack:['Angular','Python','Gemini Pro','BigQuery'], highlight:'Google Gemini Pro' },
+      uses:['Google AI Studio','NotebookLM','Google Workspace AI features','Google Cloud Vertex AI apps','Android AI APIs'] },
     { id:'gemini-flash', label:'Google Gemini Flash', category:'llm',
-      bestFor:['High-volume, cost-sensitive inference at low latency','Good for RAG, summarization, and chat at scale','Best Gemini price-performance ratio'],
-      example:{ app:'Firebase GenKit / NotebookLM', stack:['Node.js','Gemini Flash','Firestore'], highlight:'Google Gemini Flash' } },
+      bestFor:['High-volume, cost-sensitive inference at low latency','Best for RAG, summarization, and chat at scale','Best Gemini price-performance ratio'],
+      example:{ app:'Firebase GenKit / NotebookLM', stack:['Node.js','Gemini Flash','Firestore'], highlight:'Google Gemini Flash' },
+      uses:['Firebase GenKit backends','Google Search AI summaries','High-volume chatbots','Bulk document processing pipelines'] },
     { id:'llama', label:'Meta Llama 3', category:'llm',
       bestFor:['Open-source, self-hostable for full data privacy','Finetuning and domain adaptation on your own data','Air-gapped / on-prem deployments with no cloud dependency'],
-      example:{ app:'LM Studio / Ollama local inference', stack:['Python','Llama 3 70B','FastAPI'], highlight:'Meta Llama 3' } },
+      example:{ app:'LM Studio / Ollama local inference', stack:['Python','Llama 3 70B','FastAPI'], highlight:'Meta Llama 3' },
+      uses:['Ollama local inference','LM Studio desktop app','vLLM production deployments','Perplexity (base)','Meta AI consumer product'] },
     { id:'mistral', label:'Mistral / Mixtral', category:'llm',
       bestFor:['Efficient open-source models for fast local/edge inference','MoE architecture (Mixtral) punches above its parameter weight','Good for on-prem or cost-sensitive European deployments'],
-      example:{ app:"Le Chat (Mistral's product)", stack:['Python','Mistral','FastAPI','PostgreSQL'], highlight:'Mistral / Mixtral' } },
+      example:{ app:"Le Chat (Mistral's product)", stack:['Python','Mistral','FastAPI','PostgreSQL'], highlight:'Mistral / Mixtral' },
+      uses:['Le Chat (mistral.ai)','Snowflake Cortex','Many EU-compliant enterprise LLM deployments','Edge inference on constrained hardware'] },
     { id:'whisper', label:'OpenAI Whisper', category:'llm',
       bestFor:['Fast, accurate speech-to-text and translation','Multi-language transcription with speaker diarization','Voice-first apps, podcast indexing, meeting notes'],
-      example:{ app:'Otter.ai / Fireflies.ai', stack:['Python','Whisper','FastAPI','PostgreSQL'], highlight:'OpenAI Whisper' } },
+      example:{ app:'Otter.ai / Fireflies.ai', stack:['Python','Whisper','FastAPI','PostgreSQL'], highlight:'OpenAI Whisper' },
+      uses:['Otter.ai meeting transcription','Fireflies.ai','Notion AI audio notes','Many podcast indexing tools','YouTube auto-caption pipelines'] },
 
     // MODELS
     { id:'gpt5', label:'GPT-5', category:'models',
       bestFor:['Highest reasoning power — mission-critical AI agents','Lowest error rate for complex R&D and architecture tasks','Best for agentic loops that must self-correct and plan'],
-      example:{ app:'ChatGPT Pro / enterprise agents', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'GPT-5' } },
+      example:{ app:'ChatGPT Pro / enterprise agents', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'GPT-5' },
+      uses:['ChatGPT Pro (default)','Microsoft Copilot Enterprise','High-stakes research agents','Complex code generation pipelines'] },
     { id:'gpt5-mini', label:'GPT-5 Mini', category:'models',
       bestFor:['Strong reasoning at lower cost and faster speed','Internal tools, data analysis, chatbots needing nuance','Great balance for most production API use cases'],
-      example:{ app:'Internal copilots / SaaS AI features', stack:['Node.js','GPT-5 Mini','PostgreSQL'], highlight:'GPT-5 Mini' } },
+      example:{ app:'Internal copilots / SaaS AI features', stack:['Node.js','GPT-5 Mini','PostgreSQL'], highlight:'GPT-5 Mini' },
+      uses:['SaaS AI feature integrations','Customer-facing chatbots','Data analysis dashboards','Code review assistants'] },
     { id:'gpt5-nano', label:'GPT-5 Nano', category:'models',
       bestFor:['Cheap, fast, repetitive tasks at high call volume','Summarization, classification, and simple logic','Edge inference and low-latency response requirements'],
-      example:{ app:'Bulk email classification / auto-tagging', stack:['Python','GPT-5 Nano','FastAPI'], highlight:'GPT-5 Nano' } },
+      example:{ app:'Bulk email classification / auto-tagging', stack:['Python','GPT-5 Nano','FastAPI'], highlight:'GPT-5 Nano' },
+      uses:['Email classification pipelines','Content moderation at scale','Real-time tag/label generation','Edge autocomplete features'] },
     { id:'claude-opus-46', label:'Claude 4.6 Opus', category:'models',
-      bestFor:['Deepest reasoning with massive context window','Complex code architecture, analysis, and long documents','When quality matters more than speed or cost'],
-      example:{ app:'Claude.ai research / long-form analysis', stack:['Python','Claude 4.6 Opus','FastAPI'], highlight:'Claude 4.6 Opus' } },
+      bestFor:['Deepest reasoning with massive context window','Complex code architecture, analysis, and long documents','When correctness matters more than speed or cost'],
+      example:{ app:'Claude.ai research / long-form analysis', stack:['Python','Claude 4.6 Opus','FastAPI'], highlight:'Claude 4.6 Opus' },
+      uses:['Claude.ai deep research sessions','Enterprise legal analysis','Full codebase architecture reviews','Long-document Q&A systems'] },
     { id:'claude-sonnet-46', label:'Claude 4.6 Sonnet', category:'models',
-      bestFor:['Balanced quality + cost — the everyday premium pick','Strong coding, analysis, and agentic tasks','Powers most production Claude integrations'],
-      example:{ app:'Cursor AI / Claude Code', stack:['Electron','Claude 4.6 Sonnet','Node.js'], highlight:'Claude 4.6 Sonnet' } },
+      bestFor:['Balanced quality + cost — the everyday premium pick','Strong coding, analysis, and agentic tasks','Powers most production Claude integrations today'],
+      example:{ app:'Cursor AI / Claude Code', stack:['Electron','Claude 4.6 Sonnet','Node.js'], highlight:'Claude 4.6 Sonnet' },
+      uses:['Cursor IDE daily coding','Claude Code CLI','Replit AI assistant','Sourcegraph Cody','Most production Anthropic API apps'] },
     { id:'claude-haiku', label:'Claude 3 Haiku', category:'models',
       bestFor:['Fast and cheap for simple summarization and chat','Light-workload pipelines needing low latency','Classification, routing, and triage at scale'],
-      example:{ app:'High-volume chat moderation', stack:['Node.js','Claude 3 Haiku','Redis'], highlight:'Claude 3 Haiku' } },
+      example:{ app:'High-volume chat moderation', stack:['Node.js','Claude 3 Haiku','Redis'], highlight:'Claude 3 Haiku' },
+      uses:['Real-time chat moderation','Intent classification systems','High-volume customer support routing','Lightweight autocomplete endpoints'] },
     { id:'gemini-31-pro', label:'Gemini 3.1 Pro', category:'models',
       bestFor:['Latest flagship Gemini: general + long-context + multimodal','Best for Google Cloud-native architectures','Handles text, images, video, and audio in one call'],
-      example:{ app:'Google AI Overviews / NotebookLM', stack:['Python','Gemini 3.1 Pro','BigQuery'], highlight:'Gemini 3.1 Pro' } },
+      example:{ app:'Google AI Overviews / NotebookLM', stack:['Python','Gemini 3.1 Pro','BigQuery'], highlight:'Gemini 3.1 Pro' },
+      uses:['Google AI Overviews','NotebookLM','Google Workspace AI','Vertex AI production apps','Multimodal document processors'] },
     { id:'gemini-flash-25', label:'Gemini 2.5 Flash', category:'models',
       bestFor:['High-volume RAG and chat with low latency','Best price-to-performance in the Gemini family','Server-tier inference for millions of daily calls'],
-      example:{ app:'Firebase GenKit apps', stack:['Node.js','Gemini 2.5 Flash','Firestore'], highlight:'Gemini 2.5 Flash' } },
+      example:{ app:'Firebase GenKit apps', stack:['Node.js','Gemini 2.5 Flash','Firestore'], highlight:'Gemini 2.5 Flash' },
+      uses:['Firebase GenKit production apps','Google Search AI summarization','High-volume RAG pipelines','Mobile backend AI endpoints'] },
     { id:'gemini-nano', label:'Gemini Nano', category:'models',
       bestFor:['On-device inference for Android and mobile apps','Private, offline-capable AI without server calls','Lightweight enough for Pixel / mid-range Android devices'],
-      example:{ app:'Pixel Smart Reply / Gboard suggestions', stack:['Android','Gemini Nano','TFLite'], highlight:'Gemini Nano' } },
+      example:{ app:'Pixel Smart Reply / Gboard suggestions', stack:['Android','Gemini Nano','TFLite'], highlight:'Gemini Nano' },
+      uses:['Pixel Smart Reply','Gboard next-word prediction','Android photo captioning','On-device grammar correction'] },
     { id:'llama-70b', label:'Llama 3 70B', category:'models',
       bestFor:['Best open-weights performance for self-hosted inference','Finetuning and LoRA adaptation for your domain','Research, experimentation, and custom agent backends'],
-      example:{ app:'Ollama / vLLM self-hosted deployments', stack:['Python','Llama 3 70B','vLLM','FastAPI'], highlight:'Llama 3 70B' } },
+      example:{ app:'Ollama / vLLM self-hosted deployments', stack:['Python','Llama 3 70B','vLLM','FastAPI'], highlight:'Llama 3 70B' },
+      uses:['Ollama self-hosted deployments','vLLM enterprise inference','Air-gapped healthcare AI tools','Private legal AI assistants','Custom finetuned domain models'] },
     { id:'llama-8b', label:'Llama 3 8B', category:'models',
       bestFor:['Local dev on a laptop GPU (8–16 GB VRAM)','Low-cost edge or on-prem inference','Fast iteration for finetuning without big hardware'],
-      example:{ app:'LM Studio local chatbot', stack:['Python','Llama 3 8B','Ollama'], highlight:'Llama 3 8B' } },
+      example:{ app:'LM Studio local chatbot', stack:['Python','Llama 3 8B','Ollama'], highlight:'Llama 3 8B' },
+      uses:['LM Studio laptop inference','Raspberry Pi / edge servers','Fast LoRA finetuning experiments','Offline coding assistants'] },
 
     // TOOLS
     { id:'vscode', label:'VS Code', category:'tools',
-      bestFor:['Lightweight, cross-language editor with huge plugin ecosystem','Excellent TypeScript, JS, and Python support built-in','Free, open-source, runs everywhere'],
-      example:{ app:'Used by ~75% of developers globally', stack:['VS Code','Extensions','Git'], highlight:'VS Code' } },
+      bestFor:['Lightweight, cross-language editor with huge plugin ecosystem','Excellent TypeScript, JS, and Python support built-in','Free, open-source, runs everywhere including the browser (github.dev)'],
+      example:{ app:'Used by ~75% of developers globally', stack:['VS Code','Extensions','Git'], highlight:'VS Code' },
+      uses:['~75% of developers globally (Stack Overflow survey)','GitHub.dev in-browser editor','Gitpod / Codespaces cloud environments','Remote SSH / container dev workflows'] },
     { id:'copilot', label:'VS Code + Copilot', category:'tools',
-      bestFor:['Fast, reliable autocomplete and inline suggestions','Chat-style help and test generation in the editor','Team-friendly: works with GitHub PRs and reviews'],
-      example:{ app:'GitHub Copilot Workspace', stack:['VS Code','GitHub Copilot','GPT-4.1'], highlight:'VS Code + Copilot' } },
+      bestFor:['Fast, reliable autocomplete and inline suggestions','Chat-style help and test generation in the editor','Team-friendly: works with GitHub PRs and code reviews'],
+      example:{ app:'GitHub Copilot Workspace', stack:['VS Code','GitHub Copilot','GPT-4.1'], highlight:'VS Code + Copilot' },
+      uses:['GitHub Copilot Workspace','Teams using GitHub + VS Code','Polyglot stacks needing broad language coverage','Enterprise orgs standardized on GitHub'] },
     { id:'cursor', label:'Cursor', category:'tools',
       bestFor:['AI-first editing with project-wide context awareness','Multi-file Composer: one prompt changes many files at once','Switch freely between Claude / GPT-4 within the editor'],
-      example:{ app:'Cursor IDE itself', stack:['Electron','React','Claude / GPT-4','Node.js'], highlight:'Cursor' } },
+      example:{ app:'Cursor IDE itself', stack:['Electron','React','Claude / GPT-4','Node.js'], highlight:'Cursor' },
+      uses:['Solo devs / AI-driven prototyping','Indie hackers building full products in days','Startups doing greenfield work','Any dev wanting multi-file AI edits'] },
     { id:'jetbrains', label:'JetBrains IDEs', category:'tools',
-      bestFor:['Deep static analysis and refactoring for Java/Kotlin/Scala','Best-in-class debugger and profiler for JVM languages','Full JetBrains AI plugin for code review and generation'],
-      example:{ app:'Enterprise Spring Boot / Android apps', stack:['IntelliJ','JetBrains AI','Java'], highlight:'JetBrains IDEs' } },
+      bestFor:['Deep static analysis and refactoring for Java/Kotlin/Scala','Best-in-class debugger and profiler for JVM languages','JetBrains AI plugin adds code review and generation on top'],
+      example:{ app:'Enterprise Spring Boot / Android apps', stack:['IntelliJ','JetBrains AI','Java'], highlight:'JetBrains IDEs' },
+      uses:['Java / Kotlin enterprise backends','Android development (Android Studio)','Spring Boot microservices','Large JVM-based banking / fintech systems'] },
     { id:'aider', label:'Aider', category:'tools',
       bestFor:['Terminal-based, Git-aware AI code editing in a repo','PR-style workflow: AI makes commits you can review/revert','Great for polyglot codebases and scripting use cases'],
-      example:{ app:'Open-source CLI coding sessions', stack:['Aider','Claude / GPT','Git'], highlight:'Aider' } },
+      example:{ app:'Open-source CLI coding sessions', stack:['Aider','Claude / GPT','Git'], highlight:'Aider' },
+      uses:['Open-source maintainers running batch fixes','CLI-first devs who prefer terminal workflows','Automated PR generation pipelines','Polyglot monorepos needing AI refactors'] },
+    { id:'windsurf', label:'Windsurf (Codeium)', category:'tools',
+      bestFor:['Flow-state AI editing with "Cascade" multi-step reasoning','Deep codebase indexing for context-aware autocomplete','Free tier is generous — good Cursor alternative for teams'],
+      example:{ app:'Codeium enterprise deployments', stack:['Windsurf','Claude / GPT','Node.js'], highlight:'Windsurf' },
+      uses:['Teams looking for a free Cursor alternative','Enterprise orgs wanting on-prem AI code tools','Codeium enterprise self-hosted deployments','Devs wanting "flow" multi-step AI edits'] },
   ];
 
   // ═══════════════════════════════════════
@@ -661,17 +732,20 @@
   // ═══════════════════════════════════════
   const MATRIX = [
     { name:'MVP / SaaS App', stack:['react','node-express','postgres','vercel-netlify'], stackLabels:['React','Node.js','PostgreSQL','Vercel'], complexity:'Medium', example:'Notion, Linear, Loom' },
-    { name:'AI Chat Application', stack:['react','python-fastapi','claude-sonnet','postgres','claude-sonnet-46'], stackLabels:['React','FastAPI','Claude Sonnet','PostgreSQL'], complexity:'Medium', example:'Claude.ai, Perplexity' },
-    { name:'E-commerce Platform', stack:['react','ruby-rails','postgres','redis','elasticsearch'], stackLabels:['React','Rails','PostgreSQL','Redis','Elasticsearch'], complexity:'High', example:'Shopify, Etsy' },
-    { name:'Marketing / Landing Page', stack:['html-css','vercel-netlify'], stackLabels:['HTML/CSS + JS','Vercel'], complexity:'Low', example:'Most startup sites' },
-    { name:'ML API + Data Backend', stack:['python-fastapi','postgres','redis','cloud-managed'], stackLabels:['FastAPI','PostgreSQL','Redis','AWS'], complexity:'Medium', example:'Instagram, Duolingo' },
-    { name:'Voice AI App', stack:['python-fastapi','whisper','openai-gpt5','postgres'], stackLabels:['FastAPI','Whisper','GPT-5','PostgreSQL'], complexity:'Medium', example:'Otter.ai, Fireflies.ai' },
-    { name:'Self-hosted AI Platform', stack:['node-express','llama','llama-70b','postgres','docker-k8s'], stackLabels:['Node.js','Llama 3 70B','PostgreSQL','Kubernetes'], complexity:'High', example:'On-prem LLM portals' },
-    { name:'Mobile / Edge AI App', stack:['python-fastapi','gemini-flash','gemini-nano','sqlite'], stackLabels:['FastAPI','Gemini Nano','SQLite'], complexity:'Low–Med', example:'Android smart features' },
-    { name:'Enterprise Web App', stack:['angular','java-spring','postgres','docker-k8s','cloud-managed'], stackLabels:['Angular','Spring Boot','PostgreSQL','Kubernetes'], complexity:'Very High', example:'Google Workspace, SAP' },
-    { name:'Search & Analytics Pipeline', stack:['python-fastapi','elasticsearch','postgres','cloud-managed'], stackLabels:['FastAPI','Elasticsearch','PostgreSQL','AWS'], complexity:'High', example:'GitHub Search, Datadog' },
-    { name:'Real-time Collaboration Tool', stack:['react','node-express','redis','postgres','docker-k8s'], stackLabels:['React','Node.js','Redis','PostgreSQL'], complexity:'High', example:'Figma, Miro' },
-    { name:'Serverless API / Microservice', stack:['serverless','node-express','postgres','cloud-managed'], stackLabels:['Node.js','AWS Lambda','PostgreSQL'], complexity:'Low–Med', example:'API integrations, webhooks' },
+    { name:'AI Chat Application', stack:['react','python-fastapi','claude-sonnet','postgres','claude-sonnet-46'], stackLabels:['React','FastAPI','Claude Sonnet','PostgreSQL'], complexity:'Medium', example:'Claude.ai, Perplexity, Poe' },
+    { name:'E-commerce Platform', stack:['react','ruby-rails','postgres','redis','elasticsearch'], stackLabels:['React','Rails','PostgreSQL','Redis','Elasticsearch'], complexity:'High', example:'Shopify, Etsy, BigCommerce' },
+    { name:'Marketing / Landing Page', stack:['html-css','vercel-netlify'], stackLabels:['HTML/CSS + JS','Vercel'], complexity:'Low', example:'Most startup & product sites' },
+    { name:'Full-stack TypeScript App', stack:['react','nextjs','typescript','node-express','postgres'], stackLabels:['React','Next.js','TypeScript','Node.js','PostgreSQL'], complexity:'Medium', example:'Vercel, Linear, Retool' },
+    { name:'ML API + Data Backend', stack:['python-fastapi','postgres','redis','cloud-managed'], stackLabels:['FastAPI','PostgreSQL','Redis','AWS'], complexity:'Medium', example:'Instagram ML, Duolingo' },
+    { name:'Voice AI App', stack:['python-fastapi','whisper','openai-gpt5','postgres'], stackLabels:['FastAPI','Whisper','GPT-5','PostgreSQL'], complexity:'Medium', example:'Otter.ai, Fireflies.ai, Fathom' },
+    { name:'Self-hosted AI Platform', stack:['node-express','llama','llama-70b','postgres','docker-k8s'], stackLabels:['Node.js','Llama 3 70B','PostgreSQL','Kubernetes'], complexity:'High', example:'On-prem LLM portals, PrivateGPT' },
+    { name:'Mobile / Edge AI App', stack:['python-fastapi','gemini-flash','gemini-nano','sqlite'], stackLabels:['FastAPI','Gemini Nano','SQLite'], complexity:'Low–Med', example:'Android AI features, Pixel apps' },
+    { name:'Enterprise Web App', stack:['angular','java-spring','postgres','docker-k8s','cloud-managed'], stackLabels:['Angular','Spring Boot','PostgreSQL','Kubernetes'], complexity:'Very High', example:'Google Workspace, SAP, Salesforce' },
+    { name:'Search & Analytics Pipeline', stack:['python-fastapi','elasticsearch','pinecone','postgres','cloud-managed'], stackLabels:['FastAPI','Elasticsearch','pgvector','PostgreSQL','AWS'], complexity:'High', example:'GitHub Search, Datadog, Elastic Cloud' },
+    { name:'Real-time Collaboration Tool', stack:['react','node-express','redis','postgres','docker-k8s'], stackLabels:['React','Node.js','Redis','PostgreSQL'], complexity:'High', example:'Figma, Miro, Linear' },
+    { name:'Serverless API / Microservice', stack:['serverless','node-express','postgres','cloud-managed'], stackLabels:['Node.js','AWS Lambda','PostgreSQL'], complexity:'Low–Med', example:'Stripe webhooks, API integrations' },
+    { name:'Zero-ops RAG App', stack:['react','supabase','pinecone','claude-sonnet','vercel-netlify'], stackLabels:['React','Supabase','pgvector','Claude Sonnet','Vercel'], complexity:'Low–Med', example:'Notion AI-style search, docs Q&A' },
+    { name:'Firebase Mobile App', stack:['react','firebase','sqlite'], stackLabels:['React / React Native','Firebase','SQLite'], complexity:'Low', example:'Early-stage apps, indie products' },
   ];
 
   // ═══════════════════════════════════════
@@ -1109,15 +1183,35 @@
   // ═══════════════════════════════════════
   // TOOLTIP
   // ═══════════════════════════════════════
+  const AI_CATS = new Set(['llm','models','tools']);
+
   function showTooltip(chip, tech) {
     if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
     const tt = document.getElementById('sp-tooltip');
     tt.dataset.techId = tech.id;
     document.getElementById('tt-name').textContent = tech.label;
     document.getElementById('tt-bullets').innerHTML = tech.bestFor.map(b => `<li>${b}</li>`).join('');
-    document.getElementById('tt-app-name').innerHTML = `<strong>${tech.example.app}</strong>`;
-    document.getElementById('tt-mini-chips').innerHTML = tech.example.stack
-      .map(s => `<span class="tt-mini-chip${s === tech.example.highlight ? ' highlight' : ''}">${s}</span>`).join('');
+
+    const stackWrap = document.getElementById('tt-stack-wrap');
+    const appsWrap  = document.getElementById('tt-apps-wrap');
+    const label     = document.getElementById('tt-bottom-label');
+
+    if (AI_CATS.has(tech.category)) {
+      // For LLMs / models / tools: show app name pills, no stack chips
+      label.textContent = 'Used in';
+      stackWrap.style.display = 'none';
+      appsWrap.style.display  = 'block';
+      document.getElementById('tt-use-pills').innerHTML =
+        (tech.uses || [tech.example.app]).map(u => `<span class="tt-use-pill">${u}</span>`).join('');
+    } else {
+      // For frontend / backend / db / cloud: show highlighted stack chips
+      label.textContent = 'Powering';
+      stackWrap.style.display = 'block';
+      appsWrap.style.display  = 'none';
+      document.getElementById('tt-app-name').innerHTML = `<strong>${tech.example.app}</strong>`;
+      document.getElementById('tt-mini-chips').innerHTML = tech.example.stack
+        .map(s => `<span class="tt-mini-chip${s === tech.example.highlight ? ' highlight' : ''}">${s}</span>`).join('');
+    }
     positionTooltip(chip.getBoundingClientRect(), tt);
     tt.classList.add('visible');
   }
@@ -1169,6 +1263,37 @@
   // ═══════════════════════════════════════
   // STACK TIPS
   // ═══════════════════════════════════════
+  const GUIDE_SECTIONS = [
+    {
+      heading: '🗺 When to pick which stack',
+      items: [
+        { label:'MVP / startup', body:'React + Node.js + PostgreSQL (or MongoDB / Firebase for zero-ops). Ship in days, not months.' },
+        { label:'Enterprise / long-lived system', body:'Angular or React + Java/Spring or C#/.NET + PostgreSQL/SQL Server. Optimize for maintainability over speed.' },
+        { label:'High-performance / low-latency', body:'Go or Node.js + Redis + PostgreSQL, with Kubernetes for scaling. Compile to a single binary; measure p99.' },
+        { label:'Data-intensive / ML-heavy', body:'Python (FastAPI/Django) + PostgreSQL + Elasticsearch or Pinecone. Vector DBs are essential for RAG.' },
+      ],
+    },
+    {
+      heading: '🧠 When to pick which LLM family',
+      items: [
+        { label:'Max intelligence, agent-heavy', body:'OpenAI GPT-5 class or Claude Opus. Use when correctness matters more than cost.' },
+        { label:'Cost-efficient, high-volume (chat/RAG)', body:'Claude Sonnet/Haiku or Gemini Flash. Great price-to-performance for production APIs.' },
+        { label:'Privacy-first / self-hosted / on-prem', body:'Llama 3 70B or 8B + CodeLlama variants. Full control, no data leaves your infra.' },
+        { label:'Voice-centric apps', body:'OpenAI GPT-4o family + Whisper. Best speech-to-text + language understanding pairing.' },
+        { label:'Mobile / on-device', body:'Gemini Nano or small Llama-style models. Runs on-device, private, zero latency.' },
+      ],
+    },
+    {
+      heading: '🛠 When to pick which coding tool',
+      items: [
+        { label:'Solo dev / AI-driven prototyping', body:'Cursor + Claude/GPT-4 for fast, project-wide multi-file changes and greenfield work.' },
+        { label:'Team with Copilot culture', body:'VS Code + GitHub Copilot for broad language coverage, autocomplete, and PR-integrated reviews.' },
+        { label:'Java/Kotlin / enterprise backend', body:'JetBrains IntelliJ + JetBrains AI for deep language understanding, refactoring, and debugging.' },
+        { label:'Self-hosted / privacy-first coding', body:'VS Code or JetBrains + self-hosted Llama/Mistral-based model. No code leaves your network.' },
+      ],
+    },
+  ];
+
   function renderTips() {
     const sel = selectedIds;
     const cats = new Set(TECH.filter(t => sel.has(t.id)).map(t => t.category));
@@ -1188,10 +1313,22 @@
     if (sel.size >= 5)
       tips.push({ title:'📋 Complex stack — document early', body:`You've selected ${sel.size} technologies. Define an ADR (Architecture Decision Record) early so the team understands why each piece exists.` });
 
-    const container = document.getElementById('bm-tips-content');
-    container.innerHTML = tips.length
-      ? tips.map(t => `<div class="bm-tip"><div class="bm-tip-title">${t.title}</div><div class="bm-tip-body">${t.body}</div></div>`).join('')
-      : '<div class="bm-no-sel">Select some items above to see personalized stack tips.</div>';
+    const personalHtml = tips.length
+      ? `<div style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#6366f1;margin-bottom:0.65rem;margin-top:0.5rem">Your Stack</div>`
+        + tips.map(t => `<div class="bm-tip"><div class="bm-tip-title">${t.title}</div><div class="bm-tip-body">${t.body}</div></div>`).join('')
+      : `<div class="bm-no-sel" style="margin-bottom:1.5rem">Select items above to see personalized tips for your stack.</div>`;
+
+    const guideHtml = GUIDE_SECTIONS.map(sec => `
+      <div style="margin-top:1.5rem">
+        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#6366f1;margin-bottom:0.65rem">${sec.heading}</div>
+        ${sec.items.map(it => `
+          <div class="bm-tip" style="margin-bottom:0.45rem">
+            <div class="bm-tip-title" style="color:#c4c4c4">→ ${it.label}</div>
+            <div class="bm-tip-body">${it.body}</div>
+          </div>`).join('')}
+      </div>`).join('');
+
+    document.getElementById('bm-tips-content').innerHTML = personalHtml + guideHtml;
   }
 
   // ═══════════════════════════════════════
