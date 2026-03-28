@@ -49,6 +49,19 @@ You use Claude Code, Cursor, Copilot, Gemini, and others — but each has its ow
 - **📚 Shareable Skills** — Package reusable expertise (TDD, security audits, debugging) as portable skill files
 - **🔄 Sync from Upstream** — Pull community rules and skills from remote registries
 
+### 🏛️ Stack Intelligence (Interactive — [Live Site](https://cortex1.vercel.app/))
+
+Three interactive modes to help you pick the right tech stack:
+
+- **Pick My Stack** — Browse 40+ technologies across Frontend, Backend, Database, Deployment, Tooling, and Architecture Patterns. Select what you use and see a scored build matrix of what you can build, with stack tips and a ready-to-use Cortex config.
+
+- **Guide Me** — A 4-step wizard that asks what you're building, what matters most, your team size, and your budget — then recommends a proven stack combination with real-world examples.
+
+- **Architect My Project** — A deep 9-step architecture advisor powered by real startup intelligence:
+  - 9 adaptive questions: project type (with "similar to" real products), core user workflow, scale, team size & timeline, data requirements (10 options), authentication needs, infrastructure, team skills, and compliance
+  - 33 live insight rules that fire in real-time as you answer — covering N+1 query traps, connection pooling pitfalls, multi-tenant data isolation, compliance constraints, and more
+  - Output includes: **Core Stack with per-tech reasoning** (why each technology, what real companies use it), **Architecture Patterns** with implementation detail, **Startup Traps** (real post-mortem failure patterns specific to your choices), **Compliance & Security** warnings, **Month-by-month Scaling Roadmap**, and **Alternative Approaches** with "best when" guidance
+
 ---
 
 ## 🛠️ Installation
