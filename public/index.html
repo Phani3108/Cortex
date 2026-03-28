@@ -8,115 +8,413 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a0a;
-      color: #e0e0e0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+      background: #0a0a0a; color: #e0e0e0;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start; padding: 2rem;
     }
-    .container { max-width: 720px; text-align: center; }
+    .container { max-width: 760px; width: 100%; text-align: center; padding-top: 3rem; }
+    code { font-family: 'SF Mono','Fira Code',monospace; }
+
+    /* HERO */
     h1 {
-      font-size: 3rem;
-      font-weight: 800;
+      font-size: 3rem; font-weight: 800;
       background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
     }
-    .tagline {
-      font-size: 1.25rem;
-      color: #9ca3af;
-      margin-bottom: 2rem;
+    .tagline { font-size: 1.25rem; color: #e0e0e0; font-weight: 600; margin-bottom: 0.65rem; }
+    .sub-tagline {
+      font-size: 0.92rem; color: #9ca3af; margin-bottom: 2rem;
+      line-height: 1.65; max-width: 560px; margin-left: auto; margin-right: auto;
     }
-    .features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      text-align: left;
-    }
-    .feature {
-      background: #161616;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-    .feature h3 {
-      font-size: 0.95rem;
-      color: #a78bfa;
-      margin-bottom: 0.4rem;
-    }
-    .feature p {
-      font-size: 0.85rem;
-      color: #9ca3af;
-      line-height: 1.5;
-    }
+
+    /* FEATURES */
+    .features { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; text-align: left; }
+    .feature { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; }
+    .feature-icon { font-size: 1.1rem; margin-bottom: 0.45rem; display: block; }
+    .feature h3 { font-size: 0.92rem; color: #a78bfa; margin-bottom: 0.4rem; font-weight: 700; }
+    .feature p { font-size: 0.82rem; color: #9ca3af; line-height: 1.55; }
+
+    /* INSTALL */
     .install-box {
-      background: #161616;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 1rem;
-      color: #a78bfa;
-      display: inline-block;
+      background: #161616; border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1.1rem 1.5rem; margin-bottom: 1.5rem;
+      font-family: 'SF Mono','Fira Code',monospace; font-size: 1rem; color: #a78bfa;
+      display: inline-block; cursor: pointer; transition: border-color 0.2s;
     }
-    .install-box span { color: #6b7280; }
-    .links { display: flex; gap: 1rem; justify-content: center; }
+    .install-box:hover { border-color: #6366f1; }
+    .install-box span.dollar { color: #6b7280; }
+    .copy-hint { font-size: 0.7rem; color: #4b5563; margin-left: 0.75rem; }
+    .links { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; }
     .links a {
-      color: #a78bfa;
-      text-decoration: none;
-      font-size: 0.95rem;
-      padding: 0.6rem 1.5rem;
-      border: 1px solid #3b3b5c;
-      border-radius: 8px;
+      color: #a78bfa; text-decoration: none; font-size: 0.92rem;
+      padding: 0.6rem 1.5rem; border: 1px solid #3b3b5c; border-radius: 8px;
       transition: background 0.2s, border-color 0.2s;
     }
-    .links a:hover {
-      background: #1e1b4b;
-      border-color: #6366f1;
+    .links a:hover { background: #1e1b4b; border-color: #6366f1; }
+    .providers { font-size: 0.82rem; color: #6b7280; }
+
+    /* CLI COMMANDS */
+    #cli-section { margin-top: 2.5rem; text-align: left; }
+    .cli-header { text-align: center; margin-bottom: 1.25rem; }
+    .cli-header h2 { font-size: 1.05rem; font-weight: 700; color: #c4c4c4; margin-bottom: 0.3rem; }
+    .cli-header p { font-size: 0.8rem; color: #6b7280; }
+    .cli-grid { display: flex; flex-direction: column; gap: 0.45rem; }
+    .cli-row {
+      display: flex; align-items: baseline; gap: 1rem;
+      background: #111; border: 1px solid #1e1e1e; border-radius: 8px;
+      padding: 0.6rem 1rem; font-family: 'SF Mono','Fira Code',monospace;
     }
-    .providers {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: #6b7280;
+    .cli-cmd { font-size: 0.8rem; color: #a78bfa; white-space: nowrap; min-width: 230px; }
+    .cli-dollar { color: #4b5563; }
+    .cli-desc { font-size: 0.76rem; color: #6b7280; }
+
+    /* DIVIDER */
+    .sp-divider { border: none; border-top: 1px solid #1e1e1e; margin: 3rem 0 2.5rem; }
+
+    /* EXPLORER HEADER */
+    .explorer-header { text-align: center; margin-bottom: 1.5rem; }
+    .explorer-header h2 {
+      font-size: 1.5rem; font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
     }
-     @media (max-width: 600px) {
+    .explorer-header p { font-size: 0.85rem; color: #6b7280; }
+
+    /* MODE SWITCHER */
+    .explorer-modes { display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 2rem; }
+    .ex-mode-btn {
+      padding: 0.6rem 1.5rem; border-radius: 10px; border: 1px solid #2a2a2a;
+      background: #111; color: #9ca3af; font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .ex-mode-btn.active {
+      background: rgba(99,102,241,0.12); border-color: #6366f1; color: #a78bfa;
+    }
+    .ex-mode-btn:hover:not(.active) { border-color: #4b5563; color: #e0e0e0; }
+
+    /* STACK PICKER */
+    #stack-picker { text-align: left; width: 100%; }
+    .sp-group { margin-bottom: 1.25rem; }
+    .sp-group-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #6b7280; margin-bottom: 0.55rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sp-group-label::after { content: ''; flex: 1; height: 1px; background: #1e1e1e; }
+    .sp-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .sp-chip {
+      padding: 0.32rem 0.85rem; border-radius: 999px; border: 1px solid #2a2a2a;
+      background: #111; cursor: pointer; font-size: 0.78rem; color: #c4c4c4;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, color 0.15s;
+      user-select: none; white-space: nowrap; position: relative;
+    }
+    .sp-chip:hover { border-color: #6366f1; background: #1e1b4b; color: #e0e0e0; }
+    .sp-chip.selected {
+      border-color: #6366f1; background: #1e1b4b; color: #a78bfa;
+      box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+    }
+    .sp-chip.selected::before { content: '✓ '; font-size: 0.65rem; opacity: 0.8; }
+    .sp-cta-wrap { margin-top: 1.5rem; text-align: center; min-height: 2.5rem; }
+    .sp-cta {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.65rem 1.75rem;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none; border-radius: 10px; color: #fff;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      opacity: 0; pointer-events: none; transform: translateY(4px);
+    }
+    .sp-cta.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .sp-cta:hover { opacity: 0.88; }
+    .sp-count { margin-top: 0.6rem; font-size: 0.75rem; color: #6b7280; text-align: center; min-height: 1rem; }
+
+    /* Q&A WIZARD */
+    #mode-guided { width: 100%; }
+    .qa-progress { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.75rem; }
+    .qa-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #2a2a2a;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .qa-dot.active { background: #6366f1; transform: scale(1.3); }
+    .qa-dot.done { background: #a855f7; }
+    .qa-card {
+      background: #111; border: 1px solid #2a2a2a; border-radius: 16px;
+      padding: 1.75rem; text-align: left; animation: fadeSlide 0.2s ease;
+    }
+    .qa-question { font-size: 1rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.3rem; }
+    .qa-hint { font-size: 0.78rem; color: #6b7280; margin-bottom: 1.25rem; }
+    .qa-options { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .qa-option {
+      padding: 0.5rem 1.1rem; border-radius: 10px; border: 1px solid #2a2a2a;
+      background: #161616; color: #c4c4c4; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .qa-option:hover { border-color: #6366f1; color: #e0e0e0; background: #1a1a2e; }
+    .qa-option.selected { border-color: #6366f1; background: rgba(99,102,241,0.15); color: #a78bfa; font-weight: 600; }
+    .qa-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+    .qa-back {
+      padding: 0.5rem 1rem; border: 1px solid #2a2a2a; background: none;
+      color: #6b7280; font-size: 0.82rem; border-radius: 8px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .qa-back:hover { color: #e0e0e0; border-color: #4b5563; }
+    .qa-next {
+      padding: 0.5rem 1.4rem; background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none; border-radius: 8px; color: #fff; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; opacity: 0.35; pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .qa-next.enabled { opacity: 1; pointer-events: auto; }
+    .qa-step-label { font-size: 0.72rem; color: #4b5563; }
+
+    /* RECOMMENDATION CARD */
+    #qa-result { display: none; animation: fadeSlide 0.25s ease; }
+    #qa-result.visible { display: block; }
+    .rec-card {
+      background: linear-gradient(135deg, rgba(99,102,241,0.07), rgba(168,85,247,0.07));
+      border: 1px solid #3b3b5c; border-radius: 16px; padding: 1.5rem;
+      text-align: left; margin-bottom: 1rem;
+    }
+    .rec-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #6366f1; margin-bottom: 0.5rem;
+    }
+    .rec-name { font-size: 1.2rem; font-weight: 800; color: #e0e0e0; margin-bottom: 0.25rem; }
+    .rec-headline { font-size: 0.9rem; color: #a78bfa; font-weight: 600; margin-bottom: 0.75rem; }
+    .rec-why { font-size: 0.82rem; color: #9ca3af; line-height: 1.6; margin-bottom: 1rem; }
+    .rec-examples { font-size: 0.75rem; color: #6b7280; margin-bottom: 1rem; }
+    .rec-examples strong { color: #c4c4c4; }
+    .rec-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.1rem; }
+    .rec-chip {
+      font-size: 0.74rem; padding: 0.22rem 0.75rem; border-radius: 999px;
+      background: rgba(99,102,241,0.15); border: 1px solid #6366f1; color: #a78bfa;
+    }
+    .rec-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+    .rec-btn-primary {
+      padding: 0.55rem 1.4rem;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none; border-radius: 8px; color: #fff;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+    }
+    .rec-btn-primary:hover { opacity: 0.85; }
+    .rec-btn-secondary {
+      padding: 0.55rem 1.2rem; border: 1px solid #3b3b5c; background: none;
+      border-radius: 8px; color: #a78bfa; font-size: 0.82rem; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .rec-btn-secondary:hover { background: rgba(99,102,241,0.08); }
+
+    /* BUILD MATRIX */
+    #build-matrix { margin-top: 1.5rem; display: none; animation: fadeSlide 0.25s ease; }
+    #build-matrix.visible { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .bm-tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid #2a2a2a; margin-bottom: 1.25rem; }
+    .bm-tab {
+      padding: 0.55rem 1.2rem; font-size: 0.82rem; font-weight: 500; color: #6b7280;
+      border: none; background: none; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s;
+    }
+    .bm-tab.active { color: #a78bfa; border-bottom-color: #6366f1; }
+    .bm-tab:hover:not(.active) { color: #e0e0e0; }
+    .bm-panel { display: none; }
+    .bm-panel.active { display: block; }
+    .bm-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .bm-table thead th {
+      text-align: left; padding: 0.5rem 0.75rem; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: #6b7280;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .bm-table tbody tr { border-bottom: 1px solid #161616; transition: background 0.1s; }
+    .bm-table tbody tr:hover { background: #111; }
+    .bm-table td { padding: 0.65rem 0.75rem; vertical-align: top; color: #c4c4c4; line-height: 1.4; }
+    .bm-table td:first-child { color: #e0e0e0; font-weight: 500; }
+    .bm-row-full td:first-child { border-left: 3px solid #6366f1; }
+    .bm-row-partial { opacity: 0.72; }
+    .bm-row-none { opacity: 0.3; }
+    .bm-match-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600;
+    }
+    .bm-match-full  { background: rgba(99,102,241,0.18); color: #a78bfa; }
+    .bm-match-part  { background: rgba(168,85,247,0.12); color: #c084fc; }
+    .bm-match-low   { background: #1a1a1a; color: #6b7280; }
+    .bm-complexity { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; display: inline-block; }
+    .bm-low   { background: rgba(16,185,129,0.12); color: #34d399; }
+    .bm-med   { background: rgba(245,158,11,0.12);  color: #fbbf24; }
+    .bm-high  { background: rgba(239,68,68,0.12);   color: #f87171; }
+    .bm-vhigh { background: rgba(239,68,68,0.2);    color: #fc8181; }
+    .bm-stack-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .bm-stack-tag {
+      font-size: 0.68rem; padding: 0.1rem 0.4rem; border-radius: 4px;
+      background: #1a1a1a; color: #9ca3af; white-space: nowrap;
+    }
+    .bm-stack-tag.matched { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .bm-tips { display: flex; flex-direction: column; gap: 0.75rem; }
+    .bm-tip {
+      background: #111; border: 1px solid #1e1e1e; border-left: 3px solid #6366f1;
+      border-radius: 8px; padding: 0.85rem 1rem;
+    }
+    .bm-tip-title { font-size: 0.82rem; font-weight: 600; color: #a78bfa; margin-bottom: 0.25rem; }
+    .bm-tip-body { font-size: 0.78rem; color: #9ca3af; line-height: 1.5; }
+    .bm-no-sel { text-align: center; color: #4b5563; font-size: 0.82rem; padding: 2rem 0; }
+
+    /* CORTEX CONFIG */
+    .cortex-config-wrap { background: #0d0d1a; border: 1px solid #2a2a3a; border-radius: 10px; overflow: hidden; }
+    .cortex-config-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.6rem 1rem; background: #111122; border-bottom: 1px solid #2a2a3a;
+    }
+    .cortex-config-filename { font-family: 'SF Mono','Fira Code',monospace; font-size: 0.75rem; color: #6b7280; }
+    .cortex-config-copy {
+      font-size: 0.72rem; color: #6366f1; cursor: pointer;
+      border: none; background: none; transition: color 0.15s;
+    }
+    .cortex-config-copy:hover { color: #a78bfa; }
+    .cortex-config-pre {
+      font-family: 'SF Mono','Fira Code',monospace; font-size: 0.75rem; line-height: 1.75;
+      padding: 1rem; color: #c4c4c4; white-space: pre; text-align: left;
+      max-height: 400px; overflow-y: auto;
+    }
+
+    /* TOOLTIP */
+    #sp-tooltip {
+      position: fixed; width: 292px; background: #12122a; border: 1px solid #3b3b5c;
+      border-radius: 12px; padding: 1rem 1.1rem; pointer-events: none;
+      opacity: 0; transition: opacity 0.15s ease; z-index: 9999;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    #sp-tooltip.visible { opacity: 1; }
+    .tt-name { font-size: 0.9rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.6rem; }
+    .tt-section-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #6366f1; margin-bottom: 0.35rem;
+    }
+    .tt-bullets { list-style: none; margin-bottom: 0.75rem; }
+    .tt-bullets li {
+      font-size: 0.76rem; color: #9ca3af; line-height: 1.45;
+      padding-left: 0.9rem; position: relative; margin-bottom: 0.2rem;
+    }
+    .tt-bullets li::before { content: '·'; position: absolute; left: 0.2rem; color: #a855f7; }
+    .tt-sep { border: none; border-top: 1px solid #1e1e2e; margin: 0.6rem 0; }
+    .tt-app-name { font-size: 0.72rem; color: #6b7280; margin-bottom: 0.4rem; }
+    .tt-app-name strong { color: #c4c4c4; }
+    .tt-mini-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tt-mini-chip {
+      font-size: 0.68rem; padding: 0.18rem 0.55rem; border-radius: 999px;
+      border: 1px solid #2a2a2a; background: #1a1a1a; color: #6b7280; white-space: nowrap;
+    }
+    .tt-mini-chip.highlight {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+      border-color: #6366f1; color: #a78bfa; font-weight: 600;
+    }
+    /* Use-pill list for LLMs / models / tools */
+    .tt-use-pills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.1rem; }
+    .tt-use-pill {
+      font-size: 0.68rem; padding: 0.18rem 0.55rem; border-radius: 6px;
+      background: #1a1a1a; border: 1px solid #2a2a2a; color: #9ca3af; white-space: nowrap;
+    }
+
+    /* ARCHITECT MODE */
+    #mode-architect { width: 100%; display: none; }
+    .arch-layout { display: grid; grid-template-columns: 1fr 220px; gap: 1rem; align-items: start; }
+    .arch-insights-panel {
+      background: #111; border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1rem; max-height: 480px; overflow-y: auto; position: sticky; top: 1rem;
+    }
+    .arch-insights-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #6366f1; margin-bottom: 0.65rem;
+    }
+    .arch-insight {
+      padding: 0.55rem 0.75rem; border-radius: 8px; margin-bottom: 0.45rem;
+      font-size: 0.76rem; line-height: 1.45; border-left: 3px solid;
+    }
+    .arch-insight-warning { background: rgba(245,158,11,0.08); border-color: #f59e0b; color: #fbbf24; }
+    .arch-insight-tip     { background: rgba(99,102,241,0.08); border-color: #6366f1; color: #a5b4fc; }
+    .arch-insight-pattern { background: rgba(168,85,247,0.08); border-color: #a855f7; color: #c084fc; }
+    .arch-insight-tool    { background: rgba(16,185,129,0.08); border-color: #10b981; color: #34d399; }
+    .arch-insight-type { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.15rem; }
+    .arch-no-insights { text-align: center; color: #4b5563; font-size: 0.78rem; padding: 1.5rem 0.5rem; line-height: 1.5; }
+
+    /* Multi-select option */
+    .qa-option.multi-selected { border-color: #a855f7; background: rgba(168,85,247,0.15); color: #c084fc; font-weight: 600; }
+    .qa-option.multi-selected::before { content: '✓ '; font-size: 0.7rem; }
+
+    /* Architecture recommendation sections */
+    .arch-rec-sections { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+    .arch-rec-section {
+      background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 1rem;
+      text-align: left;
+    }
+    .arch-rec-section-title {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .arch-rec-section-title.stack    { color: #6366f1; }
+    .arch-rec-section-title.patterns { color: #a855f7; }
+    .arch-rec-section-title.warnings { color: #f59e0b; }
+    .arch-rec-section-title.scaling  { color: #10b981; }
+    .arch-rec-section-title.tools    { color: #34d399; }
+    .arch-rec-section-title.alt      { color: #6b7280; }
+    .arch-rec-section p { font-size: 0.8rem; color: #9ca3af; line-height: 1.55; }
+    .arch-rec-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    @media (max-width: 600px) {
       h1 { font-size: 2rem; }
       .features { grid-template-columns: 1fr; }
+      #build-matrix { overflow-x: auto; }
+      .bm-table { min-width: 520px; }
+      #sp-tooltip { width: 240px; font-size: 0.85em; }
+      .explorer-modes { flex-direction: column; align-items: center; }
+      .cli-cmd { min-width: 180px; }
+      .arch-layout { grid-template-columns: 1fr; }
+      .arch-insights-panel { max-height: 250px; position: static; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Cortex</h1>
-    <p class="tagline">Universal AI Context Engine — carry your intelligence across every AI coding tool</p>
 
+    <!-- HERO -->
+    <h1>Cortex</h1>
+    <p class="tagline">Write your AI rules once. Ship them everywhere.</p>
+    <p class="sub-tagline">
+      Define <code style="color:#a78bfa">.cortex/</code> once — Cortex compiles your context, rules, and model preferences to
+      Claude Code, Cursor, Copilot, Windsurf, Gemini CLI, and 4 more. One source of truth for your entire AI toolchain.
+    </p>
+
+    <!-- FEATURES -->
     <div class="features">
       <div class="feature">
-        <h3>One Source of Truth</h3>
-        <p>Define rules once in .cortex/, compile to every provider format automatically.</p>
+        <span class="feature-icon">⚡</span>
+        <h3>Stop rewriting rules</h3>
+        <p>One <code style="color:#c4c4c4;font-size:0.9em">.cortex/</code> directory. Nine provider formats generated automatically. No more copy-pasting <code style="color:#c4c4c4;font-size:0.9em">.cursorrules</code> across tools.</p>
       </div>
       <div class="feature">
-        <h3>9 Providers</h3>
-        <p>Claude, Cursor, Copilot, Windsurf, Gemini, OpenAI, Codex, Kiro, Antigravity.</p>
+        <span class="feature-icon">📊</span>
+        <h3>Token budget, visible</h3>
+        <p>Every rule is impact-scored and token-counted. Cortex trims, compresses, and warns before your AI hits a context wall mid-session.</p>
       </div>
       <div class="feature">
-        <h3>Token Intelligence</h3>
-        <p>Budget analysis, rule scoring, prompt compression, and cost optimization.</p>
+        <span class="feature-icon">🧠</span>
+        <h3>Model-aware by default</h3>
+        <p>Detects Claude, GPT, Gemini, Llama. Tunes context delivery to each model's strengths. Switch models without losing your project's memory.</p>
       </div>
       <div class="feature">
-        <h3>Model Awareness</h3>
-        <p>Family-first detection, model comparison, switch detection, and health scoring.</p>
+        <span class="feature-icon">🌐</span>
+        <h3>Community intelligence</h3>
+        <p>Import battle-tested rule sets for React, FastAPI, Go, and more. Your <code style="color:#c4c4c4;font-size:0.9em">.cortex/</code> is portable, shareable, and git-tracked.</p>
       </div>
     </div>
 
-    <div class="install-box">
-      <span>$</span> npx cortex init
+    <!-- INSTALL -->
+    <div class="install-box" onclick="copyInstall(this)" title="Click to copy">
+      <span class="dollar">$</span> npx cortex init<span class="copy-hint" id="copy-hint">click to copy</span>
     </div>
 
     <div class="links">
@@ -124,8 +422,1630 @@
       <a href="https://www.npmjs.com/package/cortex" target="_blank" rel="noopener">npm</a>
       <a href="https://cortex1.vercel.app/" target="_blank" rel="noopener">Live Site</a>
     </div>
-
     <p class="providers">Works with Claude Code &middot; Cursor &middot; GitHub Copilot &middot; Windsurf &middot; Gemini CLI &middot; OpenAI Codex &middot; Kiro</p>
+
+    <!-- CLI COMMANDS -->
+    <section id="cli-section">
+      <div class="cli-header">
+        <h2>Everything you need, one CLI</h2>
+        <p>Install once globally or run via <code style="color:#a78bfa">npx</code> — zero config</p>
+      </div>
+      <div class="cli-grid">
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex init</span>
+          <span class="cli-desc">Bootstrap <code>.cortex/</code> in any project — detects your stack automatically</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex compile</span>
+          <span class="cli-desc">Compile rules to all 9 AI provider formats at once</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex score</span>
+          <span class="cli-desc">Analyze token budget, rule impact, and compression savings</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex health</span>
+          <span class="cli-desc">Check model compatibility and provider health scores</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> npx cortex add react</span>
+          <span class="cli-desc">Install community rule packages for your stack</span>
+        </div>
+        <div class="cli-row">
+          <span class="cli-cmd"><span class="cli-dollar">$</span> cortex switch claude</span>
+          <span class="cli-desc">Switch active AI provider and recompile context instantly</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIVIDER -->
+    <hr class="sp-divider">
+
+    <!-- STACK EXPLORER -->
+    <section id="stack-explorer">
+      <div class="explorer-header">
+        <h2>Stack Intelligence</h2>
+        <p>Discover what you can build — or let us guide you to the right stack</p>
+      </div>
+
+      <div class="explorer-modes">
+        <button class="ex-mode-btn active" id="btn-mode-picker" onclick="switchMode('picker')">
+          🔧&nbsp; Pick My Stack
+        </button>
+        <button class="ex-mode-btn" id="btn-mode-guided" onclick="switchMode('guided')">
+          🧭&nbsp; Guide Me →
+        </button>
+        <button class="ex-mode-btn" id="btn-mode-architect" onclick="switchMode('architect')">
+          🏛&nbsp; Architect My Project
+        </button>
+      </div>
+
+      <!-- MODE A: Stack Picker -->
+      <div id="mode-picker">
+        <div id="sp-categories"></div>
+        <div class="sp-cta-wrap">
+          <button class="sp-cta" id="sp-cta-btn" onclick="toggleMatrix()">
+            What can I build? <span>→</span>
+          </button>
+          <div class="sp-count" id="sp-count"></div>
+        </div>
+      </div>
+
+      <!-- MODE C: Architect -->
+      <div id="mode-architect">
+        <div class="qa-progress" id="arch-progress"></div>
+        <div class="arch-layout">
+          <div>
+            <div id="arch-step-container"></div>
+            <div id="arch-result"></div>
+          </div>
+          <div class="arch-insights-panel" id="arch-insights-panel">
+            <div class="arch-insights-label">Live Insights <span id="arch-insights-count"></span></div>
+            <div id="arch-insights-list">
+              <div class="arch-no-insights">Answer questions to see real-time architecture insights</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE B: Q&A Wizard -->
+      <div id="mode-guided" style="display:none">
+        <div class="qa-progress" id="qa-progress"></div>
+        <div id="qa-step-container"></div>
+        <div id="qa-result"></div>
+      </div>
+
+      <!-- BUILD MATRIX (shared) -->
+      <div id="build-matrix">
+        <div class="bm-tabs">
+          <button class="bm-tab active" data-panel="matrix" onclick="switchBMTab('matrix',this)">Build Matrix</button>
+          <button class="bm-tab" data-panel="tips" onclick="switchBMTab('tips',this)">Stack Tips</button>
+          <button class="bm-tab" data-panel="config" onclick="switchBMTab('config',this)">Cortex Config</button>
+        </div>
+        <div class="bm-panel active" id="bm-panel-matrix">
+          <table class="bm-table">
+            <thead>
+              <tr>
+                <th>What You Can Build</th>
+                <th>Core Stack</th>
+                <th>Complexity</th>
+                <th>Real Example</th>
+                <th>Match</th>
+              </tr>
+            </thead>
+            <tbody id="bm-table-body"></tbody>
+          </table>
+        </div>
+        <div class="bm-panel" id="bm-panel-tips">
+          <div class="bm-tips" id="bm-tips-content"></div>
+        </div>
+        <div class="bm-panel" id="bm-panel-config">
+          <div class="cortex-config-wrap">
+            <div class="cortex-config-header">
+              <span class="cortex-config-filename">.cortex/main.md</span>
+              <button class="cortex-config-copy" onclick="copyConfig()">copy</button>
+            </div>
+            <pre class="cortex-config-pre" id="cortex-config-content"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
+
+  <!-- Global tooltip -->
+  <div id="sp-tooltip">
+    <div class="tt-name" id="tt-name"></div>
+    <div class="tt-section-label">Best for</div>
+    <ul class="tt-bullets" id="tt-bullets"></ul>
+    <hr class="tt-sep">
+    <div class="tt-section-label" id="tt-bottom-label">Used in</div>
+    <!-- Stack chips mode (frontend/backend/db/cloud) -->
+    <div id="tt-stack-wrap">
+      <div class="tt-app-name" id="tt-app-name"></div>
+      <div class="tt-mini-chips" id="tt-mini-chips"></div>
+    </div>
+    <!-- App pills mode (llm/models/tools) -->
+    <div id="tt-apps-wrap" style="display:none">
+      <div class="tt-use-pills" id="tt-use-pills"></div>
+    </div>
+  </div>
+
+  <script>
+  // ═══════════════════════════════════════
+  // TECH DATA
+  // ═══════════════════════════════════════
+  const CATEGORIES = [
+    { id: 'frontend', label: 'Frontend',      icon: '🖥' },
+    { id: 'backend',  label: 'Backend',       icon: '⚙️' },
+    { id: 'database', label: 'Database',      icon: '🗄' },
+    { id: 'cloud',    label: 'Cloud / Infra', icon: '☁️' },
+    { id: 'llm',      label: 'LLMs',          icon: '🧠' },
+    { id: 'models',   label: 'Models',        icon: '🎯' },
+    { id: 'tools',    label: 'Coding Tools',  icon: '🛠' },
+    { id: 'patterns', label: 'Architecture Patterns', icon: '🏛' },
+  ];
+
+  const TECH = [
+    // FRONTEND
+    { id:'html-css',  label:'HTML/CSS + JS', category:'frontend',
+      bestFor:['Static pages, landing pages, marketing sites','Simple UIs without heavy interactivity or frameworks','Zero build-step, ultra-fast delivery'],
+      example:{ app:'Apple.com marketing pages', stack:['HTML/CSS','Vanilla JS','Netlify'], highlight:'HTML/CSS' } },
+    { id:'react', label:'React', category:'frontend',
+      bestFor:['Dynamic, component-based UIs with reusable logic','SSR / SEO-heavy apps via Next.js','Large ecosystem: hooks, routing, rich libraries'],
+      example:{ app:'Facebook / Instagram', stack:['React','Node.js','MySQL','Redis'], highlight:'React' } },
+    { id:'vue', label:'Vue', category:'frontend',
+      bestFor:['Gentle learning curve with reactive component structure','Medium-size apps that need structure without complexity','Excellent two-way data binding and templates'],
+      example:{ app:'GitLab', stack:['Vue','Ruby on Rails','PostgreSQL'], highlight:'Vue' } },
+    { id:'angular', label:'Angular', category:'frontend',
+      bestFor:['Large enterprise apps needing strong typing from day one','Full-battery framework: DI, forms, routing, HTTP all built-in','Highly structured, opinionated codebase for large teams'],
+      example:{ app:'Google Workspace (Drive, Docs)', stack:['Angular','Java','PostgreSQL','Spanner'], highlight:'Angular' } },
+    { id:'svelte', label:'Svelte / SvelteKit', category:'frontend',
+      bestFor:['Minimal boilerplate with near-vanilla JS feel','Small bundle sizes and fast runtime performance','SSR + routing built into SvelteKit'],
+      example:{ app:'NY Times interactive features', stack:['Svelte','Node.js','PostgreSQL'], highlight:'Svelte / SvelteKit' } },
+
+    // BACKEND
+    { id:'node-express', label:'Node.js + Express/NestJS', category:'backend',
+      bestFor:['JavaScript / TypeScript full-stack with shared types','Fast prototyping with huge npm ecosystem','Real-time apps via WebSockets, event-driven I/O'],
+      example:{ app:'LinkedIn', stack:['Node.js','React','PostgreSQL','Redis'], highlight:'Node.js' } },
+    { id:'python-django', label:'Python + Django', category:'backend',
+      bestFor:['Batteries-included: ORM, auth, admin UI out of the box','Rapid MVP builds for SaaS, dashboards, CMS-like apps','Strong conventions reduce decision fatigue'],
+      example:{ app:'Pinterest', stack:['Python','Django','PostgreSQL','Redis'], highlight:'Python + Django' } },
+    { id:'python-fastapi', label:'Python + FastAPI', category:'backend',
+      bestFor:['Async-friendly, type-driven, auto-docs-first design','Best for ML-backed services and microservices','Blazing fast with Starlette + Pydantic under the hood'],
+      example:{ app:'Uber ML microservices', stack:['Python','FastAPI','PostgreSQL','Redis'], highlight:'Python + FastAPI' } },
+    { id:'ruby-rails', label:'Ruby on Rails', category:'backend',
+      bestFor:['Rapid CRUD-based backends with strong conventions','Rich ecosystem of "ready-made" patterns and gems','Convention over configuration: great for MVPs'],
+      example:{ app:'Shopify', stack:['Ruby on Rails','PostgreSQL','Redis','Elasticsearch'], highlight:'Ruby on Rails' } },
+    { id:'java-spring', label:'Java + Spring Boot', category:'backend',
+      bestFor:['Large enterprise systems needing strict typing + ecosystem','Strong DI, extensive testing, long-term maintainability','Battle-tested for high-scale financial & telecom systems'],
+      example:{ app:'Netflix backend services', stack:['Java','Spring Boot','Cassandra','Redis'], highlight:'Java + Spring Boot' } },
+    { id:'go', label:'Go (Gin / Fiber / Chi)', category:'backend',
+      bestFor:['Raw performance with minimal memory footprint','Simple microservices, CLIs, and network-heavy tools','Fast compile times and easy deployment as a single binary'],
+      example:{ app:'Uber / Docker', stack:['Go','PostgreSQL','Redis','Kafka'], highlight:'Go' } },
+    { id:'serverless', label:'Node + Serverless', category:'backend',
+      bestFor:['Bursty, event-driven workloads (APIs, webhooks, cron)','Pay-per-use billing instead of idle server costs','Zero infrastructure management with AWS Lambda / Vercel Fn'],
+      example:{ app:'Vercel edge functions', stack:['Node.js','AWS Lambda','DynamoDB'], highlight:'Node + Serverless' } },
+
+    // DATABASE
+    { id:'postgres', label:'PostgreSQL', category:'database',
+      bestFor:['Strong consistency for financial & transactional systems','Advanced queries: JSON, window functions, full-text search','Highly extensible with PostGIS, TimescaleDB, pgvector'],
+      example:{ app:'Shopify', stack:['Ruby on Rails','PostgreSQL','Redis'], highlight:'PostgreSQL' } },
+    { id:'mysql', label:'MySQL', category:'database',
+      bestFor:['LAMP-style web apps with wide hosting support','Simple, battle-tested, and widely understood by teams','Good for read-heavy workloads and WordPress-style apps'],
+      example:{ app:'WordPress / Facebook (historically)', stack:['PHP','MySQL','Memcached'], highlight:'MySQL' } },
+    { id:'mongodb', label:'MongoDB', category:'database',
+      bestFor:['Semi-structured / schema-flexible document storage','Iterate fast without heavy migrations','Embedded arrays & nested docs map naturally to JS objects'],
+      example:{ app:'Airbnb (listings data)', stack:['React','Node.js','MongoDB','Redis'], highlight:'MongoDB' } },
+    { id:'sqlite', label:'SQLite', category:'database',
+      bestFor:['Lightweight, embedded DB for prototypes and local tools','Zero server setup — a single file is the database','Perfect for desktop apps, mobile, and edge deployments'],
+      example:{ app:'Obsidian / many Electron apps', stack:['Electron','SQLite','Node.js'], highlight:'SQLite' } },
+    { id:'redis', label:'Redis', category:'database',
+      bestFor:['Caching, sessions, rate-limiting at microsecond speed','Pub/sub messaging and simple queues (BullMQ, Sidekiq)','Leaderboards, counters, and in-memory sorted sets'],
+      example:{ app:'Twitter / X (caching & feeds)', stack:['Scala','Redis','MySQL','Hadoop'], highlight:'Redis' } },
+    { id:'elasticsearch', label:'Elasticsearch', category:'database',
+      bestFor:['Full-text search with relevance scoring','Log aggregation, analytics, and observability pipelines','Faceted search, autocomplete, and fuzzy matching at scale'],
+      example:{ app:'GitHub code & issue search', stack:['Ruby','Elasticsearch','PostgreSQL'], highlight:'Elasticsearch' } },
+
+    // CLOUD
+    { id:'cloud-managed', label:'AWS / Azure / GCP', category:'cloud',
+      bestFor:['Offload ops: managed scaling, backups, high availability','Pay for managed services (RDS, Lambda, GCS, Vertex)','Enterprise compliance, VPCs, IAM, and audit trails'],
+      example:{ app:'Stripe', stack:['Node.js','AWS','PostgreSQL','Redis'], highlight:'AWS / Azure / GCP' } },
+    { id:'docker-k8s', label:'Docker + Kubernetes', category:'cloud',
+      bestFor:['Consistent environments across dev, CI, and production','Orchestrating many services with auto-scaling & self-healing','Blue-green deploys, canary releases, and service mesh'],
+      example:{ app:'Airbnb / Spotify backend', stack:['React','Node.js','Docker','Kubernetes','PostgreSQL'], highlight:'Docker + Kubernetes' } },
+    { id:'vercel-netlify', label:'Vercel / Netlify', category:'cloud',
+      bestFor:['Zero-config CI/CD for frontend and edge functions','Git-push deploys with preview URLs per branch','Global CDN + edge caching out of the box'],
+      example:{ app:'Vercel.com itself', stack:['Next.js','Vercel','PostgreSQL','Redis'], highlight:'Vercel / Netlify' } },
+
+    // EXTRA FRONTEND
+    { id:'nextjs', label:'Next.js', category:'frontend',
+      bestFor:['SSR + SSG + ISR in one framework — best for SEO-heavy React apps','File-based routing, API routes, and edge middleware built-in','Image, font, and script optimization out of the box'],
+      example:{ app:'Vercel / Hulu / TikTok web', stack:['Next.js','React','PostgreSQL','Vercel'], highlight:'Next.js' } },
+    { id:'tailwind', label:'Tailwind CSS', category:'frontend',
+      bestFor:['Utility-first CSS — build custom UIs without leaving HTML','Rapid UI prototyping with a consistent design system','Excellent with React/Next.js; tree-shaken in production for tiny bundles'],
+      example:{ app:'GitHub Primer UI / many SaaS dashboards', stack:['Tailwind','React','Next.js'], highlight:'Tailwind CSS' } },
+    { id:'typescript', label:'TypeScript', category:'frontend',
+      bestFor:['Static typing that catches bugs before they hit production','Shared types between frontend and backend (monorepo / tRPC)','Essential for large codebases — refactoring is safe, autocomplete is precise'],
+      example:{ app:'Slack, Notion, VS Code (all TypeScript-first)', stack:['TypeScript','React','Node.js'], highlight:'TypeScript' } },
+
+    // EXTRA BACKEND
+    { id:'dotnet', label:'C# / .NET', category:'backend',
+      bestFor:['Microsoft-ecosystem enterprise apps with strong tooling','High-performance APIs via ASP.NET Core — comparable speed to Go','Azure-native: App Service, Functions, and Cosmos DB work seamlessly'],
+      example:{ app:'Stack Overflow / Xbox backend / Azure services', stack:['C# / .NET','React','SQL Server','Azure'], highlight:'C# / .NET' } },
+    { id:'graphql', label:'GraphQL', category:'backend',
+      bestFor:['Client-driven queries — fetch exactly what the UI needs','Eliminates over-fetching / under-fetching vs. REST','Strongly typed schema serves as living API documentation'],
+      example:{ app:'GitHub API v4 / Shopify Storefront API / Twitter API', stack:['GraphQL','Node.js','PostgreSQL'], highlight:'GraphQL' } },
+
+    // EXTRA DATABASE
+    { id:'firebase', label:'Firebase / Firestore', category:'database',
+      bestFor:['Zero-ops BaaS: real-time sync, auth, hosting in one platform','Offline-first mobile apps with built-in conflict resolution','Perfect for MVPs — no server to manage, free tier is generous'],
+      example:{ app:'Duolingo mobile, Alibaba Xianyu, NPM registry', stack:['Firebase','React Native','Node.js'], highlight:'Firebase / Firestore' } },
+    { id:'supabase', label:'Supabase', category:'database',
+      bestFor:['Open-source Firebase alternative backed by PostgreSQL','Row-level security, realtime subscriptions, and storage built-in','Instant REST + GraphQL API generated from your schema'],
+      example:{ app:'Pika, Resend, many indie SaaS projects', stack:['Supabase','Next.js','PostgreSQL'], highlight:'Supabase' } },
+    { id:'pinecone', label:'Pinecone / pgvector', category:'database',
+      bestFor:['Vector similarity search for embeddings and RAG pipelines','Store and query AI-generated embeddings at scale','pgvector adds vector support to existing PostgreSQL instances'],
+      example:{ app:'Notion AI, Cursor codebase indexing, Perplexity RAG', stack:['Python','OpenAI Embeddings','Pinecone','FastAPI'], highlight:'Pinecone / pgvector' } },
+
+    // LLMs
+    { id:'openai-gpt5', label:'OpenAI GPT-5 class', category:'llm',
+      bestFor:['Strongest general reasoning and tool/function-call support','Complex multi-step agents and product integrations','Mature ecosystem with assistants, fine-tuning, batch API'],
+      example:{ app:'ChatGPT', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'OpenAI GPT-5 class' },
+      uses:['ChatGPT / ChatGPT Pro','Microsoft Copilot (M365)','Notion AI','HubSpot AI','GitHub Copilot (base model)'] },
+    { id:'claude-opus', label:'Anthropic Claude Opus', category:'llm',
+      bestFor:['Long-context (1M token) reasoning and analysis','High-quality prose and complex code with explanations','Deep research and nuanced multi-document understanding'],
+      example:{ app:'Claude.ai', stack:['React','Python','Claude Opus','PostgreSQL'], highlight:'Anthropic Claude Opus' },
+      uses:['Claude.ai Pro (deep research)','Cursor deep analysis mode','Enterprise legal doc review tools','Complex code architecture sessions'] },
+    { id:'claude-sonnet', label:'Anthropic Claude Sonnet', category:'llm',
+      bestFor:['Balanced quality + cost — the daily driver premium pick','Strong coding, analysis, and agentic workflows','Most production AI coding tools run on Sonnet'],
+      example:{ app:'Cursor IDE', stack:['Electron','React','Claude Sonnet','Node.js'], highlight:'Anthropic Claude Sonnet' },
+      uses:['Cursor IDE (default model)','Claude Code CLI','Replit AI','Sourcegraph Cody','Amazon Q Developer'] },
+    { id:'gemini-pro', label:'Google Gemini Pro', category:'llm',
+      bestFor:['Multimodal (text, image, video, audio) in one model','Deep Google Cloud & Workspace integration','Strong for RAG with Google Search grounding'],
+      example:{ app:'Google AI Studio', stack:['Angular','Python','Gemini Pro','BigQuery'], highlight:'Google Gemini Pro' },
+      uses:['Google AI Studio','NotebookLM','Google Workspace AI features','Google Cloud Vertex AI apps','Android AI APIs'] },
+    { id:'gemini-flash', label:'Google Gemini Flash', category:'llm',
+      bestFor:['High-volume, cost-sensitive inference at low latency','Best for RAG, summarization, and chat at scale','Best Gemini price-performance ratio'],
+      example:{ app:'Firebase GenKit / NotebookLM', stack:['Node.js','Gemini Flash','Firestore'], highlight:'Google Gemini Flash' },
+      uses:['Firebase GenKit backends','Google Search AI summaries','High-volume chatbots','Bulk document processing pipelines'] },
+    { id:'llama', label:'Meta Llama 3', category:'llm',
+      bestFor:['Open-source, self-hostable for full data privacy','Finetuning and domain adaptation on your own data','Air-gapped / on-prem deployments with no cloud dependency'],
+      example:{ app:'LM Studio / Ollama local inference', stack:['Python','Llama 3 70B','FastAPI'], highlight:'Meta Llama 3' },
+      uses:['Ollama local inference','LM Studio desktop app','vLLM production deployments','Perplexity (base)','Meta AI consumer product'] },
+    { id:'mistral', label:'Mistral / Mixtral', category:'llm',
+      bestFor:['Efficient open-source models for fast local/edge inference','MoE architecture (Mixtral) punches above its parameter weight','Good for on-prem or cost-sensitive European deployments'],
+      example:{ app:"Le Chat (Mistral's product)", stack:['Python','Mistral','FastAPI','PostgreSQL'], highlight:'Mistral / Mixtral' },
+      uses:['Le Chat (mistral.ai)','Snowflake Cortex','Many EU-compliant enterprise LLM deployments','Edge inference on constrained hardware'] },
+    { id:'whisper', label:'OpenAI Whisper', category:'llm',
+      bestFor:['Fast, accurate speech-to-text and translation','Multi-language transcription with speaker diarization','Voice-first apps, podcast indexing, meeting notes'],
+      example:{ app:'Otter.ai / Fireflies.ai', stack:['Python','Whisper','FastAPI','PostgreSQL'], highlight:'OpenAI Whisper' },
+      uses:['Otter.ai meeting transcription','Fireflies.ai','Notion AI audio notes','Many podcast indexing tools','YouTube auto-caption pipelines'] },
+
+    // MODELS
+    { id:'gpt5', label:'GPT-5', category:'models',
+      bestFor:['Highest reasoning power — mission-critical AI agents','Lowest error rate for complex R&D and architecture tasks','Best for agentic loops that must self-correct and plan'],
+      example:{ app:'ChatGPT Pro / enterprise agents', stack:['React','Python','GPT-5','PostgreSQL'], highlight:'GPT-5' },
+      uses:['ChatGPT Pro (default)','Microsoft Copilot Enterprise','High-stakes research agents','Complex code generation pipelines'] },
+    { id:'gpt5-mini', label:'GPT-5 Mini', category:'models',
+      bestFor:['Strong reasoning at lower cost and faster speed','Internal tools, data analysis, chatbots needing nuance','Great balance for most production API use cases'],
+      example:{ app:'Internal copilots / SaaS AI features', stack:['Node.js','GPT-5 Mini','PostgreSQL'], highlight:'GPT-5 Mini' },
+      uses:['SaaS AI feature integrations','Customer-facing chatbots','Data analysis dashboards','Code review assistants'] },
+    { id:'gpt5-nano', label:'GPT-5 Nano', category:'models',
+      bestFor:['Cheap, fast, repetitive tasks at high call volume','Summarization, classification, and simple logic','Edge inference and low-latency response requirements'],
+      example:{ app:'Bulk email classification / auto-tagging', stack:['Python','GPT-5 Nano','FastAPI'], highlight:'GPT-5 Nano' },
+      uses:['Email classification pipelines','Content moderation at scale','Real-time tag/label generation','Edge autocomplete features'] },
+    { id:'claude-opus-46', label:'Claude 4.6 Opus', category:'models',
+      bestFor:['Deepest reasoning with massive context window','Complex code architecture, analysis, and long documents','When correctness matters more than speed or cost'],
+      example:{ app:'Claude.ai research / long-form analysis', stack:['Python','Claude 4.6 Opus','FastAPI'], highlight:'Claude 4.6 Opus' },
+      uses:['Claude.ai deep research sessions','Enterprise legal analysis','Full codebase architecture reviews','Long-document Q&A systems'] },
+    { id:'claude-sonnet-46', label:'Claude 4.6 Sonnet', category:'models',
+      bestFor:['Balanced quality + cost — the everyday premium pick','Strong coding, analysis, and agentic tasks','Powers most production Claude integrations today'],
+      example:{ app:'Cursor AI / Claude Code', stack:['Electron','Claude 4.6 Sonnet','Node.js'], highlight:'Claude 4.6 Sonnet' },
+      uses:['Cursor IDE daily coding','Claude Code CLI','Replit AI assistant','Sourcegraph Cody','Most production Anthropic API apps'] },
+    { id:'claude-haiku', label:'Claude 3 Haiku', category:'models',
+      bestFor:['Fast and cheap for simple summarization and chat','Light-workload pipelines needing low latency','Classification, routing, and triage at scale'],
+      example:{ app:'High-volume chat moderation', stack:['Node.js','Claude 3 Haiku','Redis'], highlight:'Claude 3 Haiku' },
+      uses:['Real-time chat moderation','Intent classification systems','High-volume customer support routing','Lightweight autocomplete endpoints'] },
+    { id:'gemini-31-pro', label:'Gemini 3.1 Pro', category:'models',
+      bestFor:['Latest flagship Gemini: general + long-context + multimodal','Best for Google Cloud-native architectures','Handles text, images, video, and audio in one call'],
+      example:{ app:'Google AI Overviews / NotebookLM', stack:['Python','Gemini 3.1 Pro','BigQuery'], highlight:'Gemini 3.1 Pro' },
+      uses:['Google AI Overviews','NotebookLM','Google Workspace AI','Vertex AI production apps','Multimodal document processors'] },
+    { id:'gemini-flash-25', label:'Gemini 2.5 Flash', category:'models',
+      bestFor:['High-volume RAG and chat with low latency','Best price-to-performance in the Gemini family','Server-tier inference for millions of daily calls'],
+      example:{ app:'Firebase GenKit apps', stack:['Node.js','Gemini 2.5 Flash','Firestore'], highlight:'Gemini 2.5 Flash' },
+      uses:['Firebase GenKit production apps','Google Search AI summarization','High-volume RAG pipelines','Mobile backend AI endpoints'] },
+    { id:'gemini-nano', label:'Gemini Nano', category:'models',
+      bestFor:['On-device inference for Android and mobile apps','Private, offline-capable AI without server calls','Lightweight enough for Pixel / mid-range Android devices'],
+      example:{ app:'Pixel Smart Reply / Gboard suggestions', stack:['Android','Gemini Nano','TFLite'], highlight:'Gemini Nano' },
+      uses:['Pixel Smart Reply','Gboard next-word prediction','Android photo captioning','On-device grammar correction'] },
+    { id:'llama-70b', label:'Llama 3 70B', category:'models',
+      bestFor:['Best open-weights performance for self-hosted inference','Finetuning and LoRA adaptation for your domain','Research, experimentation, and custom agent backends'],
+      example:{ app:'Ollama / vLLM self-hosted deployments', stack:['Python','Llama 3 70B','vLLM','FastAPI'], highlight:'Llama 3 70B' },
+      uses:['Ollama self-hosted deployments','vLLM enterprise inference','Air-gapped healthcare AI tools','Private legal AI assistants','Custom finetuned domain models'] },
+    { id:'llama-8b', label:'Llama 3 8B', category:'models',
+      bestFor:['Local dev on a laptop GPU (8–16 GB VRAM)','Low-cost edge or on-prem inference','Fast iteration for finetuning without big hardware'],
+      example:{ app:'LM Studio local chatbot', stack:['Python','Llama 3 8B','Ollama'], highlight:'Llama 3 8B' },
+      uses:['LM Studio laptop inference','Raspberry Pi / edge servers','Fast LoRA finetuning experiments','Offline coding assistants'] },
+
+    // TOOLS
+    { id:'vscode', label:'VS Code', category:'tools',
+      bestFor:['Lightweight, cross-language editor with huge plugin ecosystem','Excellent TypeScript, JS, and Python support built-in','Free, open-source, runs everywhere including the browser (github.dev)'],
+      example:{ app:'Used by ~75% of developers globally', stack:['VS Code','Extensions','Git'], highlight:'VS Code' },
+      uses:['~75% of developers globally (Stack Overflow survey)','GitHub.dev in-browser editor','Gitpod / Codespaces cloud environments','Remote SSH / container dev workflows'] },
+    { id:'copilot', label:'VS Code + Copilot', category:'tools',
+      bestFor:['Fast, reliable autocomplete and inline suggestions','Chat-style help and test generation in the editor','Team-friendly: works with GitHub PRs and code reviews'],
+      example:{ app:'GitHub Copilot Workspace', stack:['VS Code','GitHub Copilot','GPT-4.1'], highlight:'VS Code + Copilot' },
+      uses:['GitHub Copilot Workspace','Teams using GitHub + VS Code','Polyglot stacks needing broad language coverage','Enterprise orgs standardized on GitHub'] },
+    { id:'cursor', label:'Cursor', category:'tools',
+      bestFor:['AI-first editing with project-wide context awareness','Multi-file Composer: one prompt changes many files at once','Switch freely between Claude / GPT-4 within the editor'],
+      example:{ app:'Cursor IDE itself', stack:['Electron','React','Claude / GPT-4','Node.js'], highlight:'Cursor' },
+      uses:['Solo devs / AI-driven prototyping','Indie hackers building full products in days','Startups doing greenfield work','Any dev wanting multi-file AI edits'] },
+    { id:'jetbrains', label:'JetBrains IDEs', category:'tools',
+      bestFor:['Deep static analysis and refactoring for Java/Kotlin/Scala','Best-in-class debugger and profiler for JVM languages','JetBrains AI plugin adds code review and generation on top'],
+      example:{ app:'Enterprise Spring Boot / Android apps', stack:['IntelliJ','JetBrains AI','Java'], highlight:'JetBrains IDEs' },
+      uses:['Java / Kotlin enterprise backends','Android development (Android Studio)','Spring Boot microservices','Large JVM-based banking / fintech systems'] },
+    { id:'aider', label:'Aider', category:'tools',
+      bestFor:['Terminal-based, Git-aware AI code editing in a repo','PR-style workflow: AI makes commits you can review/revert','Great for polyglot codebases and scripting use cases'],
+      example:{ app:'Open-source CLI coding sessions', stack:['Aider','Claude / GPT','Git'], highlight:'Aider' },
+      uses:['Open-source maintainers running batch fixes','CLI-first devs who prefer terminal workflows','Automated PR generation pipelines','Polyglot monorepos needing AI refactors'] },
+    { id:'windsurf', label:'Windsurf (Codeium)', category:'tools',
+      bestFor:['Flow-state AI editing with "Cascade" multi-step reasoning','Deep codebase indexing for context-aware autocomplete','Free tier is generous — good Cursor alternative for teams'],
+      example:{ app:'Codeium enterprise deployments', stack:['Windsurf','Claude / GPT','Node.js'], highlight:'Windsurf' },
+      uses:['Teams looking for a free Cursor alternative','Enterprise orgs wanting on-prem AI code tools','Codeium enterprise self-hosted deployments','Devs wanting "flow" multi-step AI edits'] },
+
+    // ARCHITECTURE PATTERNS
+    { id:'pat-local-first', label:'Local-First / Offline', category:'patterns',
+      bestFor:['Apps that must work without internet (field, mobile, rural)','Instant UI response — read/write to local SQLite, sync later','Full data ownership on user devices'],
+      example:{ app:'Linear, Figma, Obsidian', stack:['SQLite','OPFS','PowerSync','React'], highlight:'SQLite' },
+      uses:['Linear offline mode','Figma local multiplayer','Obsidian vault sync','Field service apps'] },
+    { id:'pat-cdc', label:'CDC / Event Sourcing', category:'patterns',
+      bestFor:['Capture every data change as an immutable event stream','Replay history, audit trails, and temporal queries','Decouple services via event-driven integration'],
+      example:{ app:'Stripe ledger, banking systems', stack:['Debezium','Kafka','PostgreSQL'], highlight:'Debezium' },
+      uses:['Stripe transaction ledger','Banking audit systems','E-commerce order pipelines','Data warehouse ETL'] },
+    { id:'pat-cqrs', label:'CQRS (Read/Write Split)', category:'patterns',
+      bestFor:['Separate read and write models for independent scaling','Optimize reads with denormalized views, writes with event stores','Ideal for read-heavy dashboards with complex write logic'],
+      example:{ app:'Trading platforms, analytics dashboards', stack:['Node.js','PostgreSQL','Redis','Elasticsearch'], highlight:'Redis' },
+      uses:['Financial trading systems','Real-time analytics dashboards','High-read e-commerce catalogs','Reporting systems'] },
+    { id:'pat-master-replica', label:'Master-Replica DB', category:'patterns',
+      bestFor:['Scale reads horizontally with read replicas','Single write primary keeps consistency simple','pgBouncer / ProxySQL for connection pooling'],
+      example:{ app:'GitHub, Shopify at scale', stack:['PostgreSQL','pgBouncer','Read Replicas'], highlight:'PostgreSQL' },
+      uses:['GitHub database layer','Shopify multi-region reads','Any app past 10K concurrent users','SaaS with heavy reporting queries'] },
+    { id:'pat-job-queues', label:'Job Queues / Workers', category:'patterns',
+      bestFor:['Offload heavy processing (emails, PDFs, ML inference) from request path','Retry failed jobs with backoff, dead-letter queues','Temporal / Inngest for durable multi-step workflows'],
+      example:{ app:'Resend, Vercel builds, CI/CD pipelines', stack:['BullMQ','Redis','Node.js'], highlight:'BullMQ' },
+      uses:['Email sending pipelines','PDF generation services','CI/CD build runners','ML batch inference queues'] },
+    { id:'pat-realtime', label:'Real-time Sync', category:'patterns',
+      bestFor:['Live collaboration, presence indicators, instant updates','WebSockets or Supabase Realtime for push-based data','Conflict resolution for concurrent edits (CRDTs)'],
+      example:{ app:'Figma, Notion, Slack', stack:['Socket.io','Supabase Realtime','Redis Pub/Sub'], highlight:'Socket.io' },
+      uses:['Figma multiplayer canvas','Notion live blocks','Slack message delivery','Multiplayer game state sync'] },
+    { id:'pat-edge', label:'Edge Computing', category:'patterns',
+      bestFor:['Run logic at CDN edge for sub-50ms latency globally','Cloudflare Workers, Vercel Edge, Deno Deploy','Great for auth checks, A/B tests, geo-routing, personalization'],
+      example:{ app:'Vercel middleware, Cloudflare apps', stack:['Cloudflare Workers','Vercel Edge','Deno Deploy'], highlight:'Cloudflare Workers' },
+      uses:['Vercel edge middleware','Cloudflare geo-routing','A/B testing at the edge','Auth token validation at CDN'] },
+    { id:'pat-auto-api', label:'Auto-generated APIs', category:'patterns',
+      bestFor:['Instant REST / GraphQL from your database schema','Skip boilerplate CRUD — focus on business logic','Hasura, PostgREST, Prisma accelerate time-to-API'],
+      example:{ app:'Hasura-powered backends, Supabase APIs', stack:['Hasura','PostgREST','Prisma','PostgreSQL'], highlight:'Hasura' },
+      uses:['Supabase auto-REST','Hasura instant GraphQL','Internal admin dashboards','Rapid MVP backends'] },
+    { id:'pat-auth', label:'Auth / Identity', category:'patterns',
+      bestFor:['Offload auth complexity: OAuth, MFA, SSO, RBAC','Clerk, Auth0, Supabase Auth, or Keycloak for self-hosted','Session management, JWT rotation, and social login handled'],
+      example:{ app:'Most modern SaaS apps', stack:['Auth0','Clerk','Supabase Auth','Keycloak'], highlight:'Auth0' },
+      uses:['SaaS multi-tenant auth','Enterprise SSO integration','Social login flows','Self-hosted identity (Keycloak)'] },
+    { id:'pat-cdn-swr', label:'CDN + SWR Caching', category:'patterns',
+      bestFor:['Serve stale content instantly, revalidate in background','ISR (Next.js), stale-while-revalidate headers, Cloudflare cache','Dramatically reduces origin load and improves perceived speed'],
+      example:{ app:'Vercel ISR, e-commerce product pages', stack:['Next.js ISR','Cloudflare','Vercel','Redis'], highlight:'Next.js ISR' },
+      uses:['E-commerce product pages','Blog/CMS with ISR','Marketing sites with dynamic data','API response caching'] },
+    { id:'pat-durable', label:'Durable Workflows', category:'patterns',
+      bestFor:['Long-running, multi-step processes that survive crashes','Temporal, Inngest: automatic retries, timeouts, compensation','Order fulfillment, onboarding sequences, ETL pipelines'],
+      example:{ app:'Stripe payment flows, order fulfillment', stack:['Temporal','Inngest','Node.js'], highlight:'Temporal' },
+      uses:['Stripe payment orchestration','E-commerce order fulfillment','User onboarding sequences','Multi-step ETL pipelines'] },
+    { id:'pat-microservices', label:'Microservices', category:'patterns',
+      bestFor:['Independent deployment and scaling of each service','Team autonomy — each team owns their service and data','gRPC for internal comms, API gateway for external traffic'],
+      example:{ app:'Netflix, Uber, Spotify backend', stack:['Kubernetes','gRPC','API Gateway','Docker'], highlight:'Kubernetes' },
+      uses:['Netflix service mesh','Uber dispatch system','Spotify backend services','Large enterprise platform decomposition'] },
+  ];
+
+  // ═══════════════════════════════════════
+  // BUILD MATRIX DATA
+  // ═══════════════════════════════════════
+  const MATRIX = [
+    { name:'MVP / SaaS App', stack:['react','node-express','postgres','vercel-netlify'], stackLabels:['React','Node.js','PostgreSQL','Vercel'], complexity:'Medium', example:'Notion, Linear, Loom' },
+    { name:'AI Chat Application', stack:['react','python-fastapi','claude-sonnet','postgres','claude-sonnet-46'], stackLabels:['React','FastAPI','Claude Sonnet','PostgreSQL'], complexity:'Medium', example:'Claude.ai, Perplexity, Poe' },
+    { name:'E-commerce Platform', stack:['react','ruby-rails','postgres','redis','elasticsearch'], stackLabels:['React','Rails','PostgreSQL','Redis','Elasticsearch'], complexity:'High', example:'Shopify, Etsy, BigCommerce' },
+    { name:'Marketing / Landing Page', stack:['html-css','vercel-netlify'], stackLabels:['HTML/CSS + JS','Vercel'], complexity:'Low', example:'Most startup & product sites' },
+    { name:'Full-stack TypeScript App', stack:['react','nextjs','typescript','node-express','postgres'], stackLabels:['React','Next.js','TypeScript','Node.js','PostgreSQL'], complexity:'Medium', example:'Vercel, Linear, Retool' },
+    { name:'ML API + Data Backend', stack:['python-fastapi','postgres','redis','cloud-managed'], stackLabels:['FastAPI','PostgreSQL','Redis','AWS'], complexity:'Medium', example:'Instagram ML, Duolingo' },
+    { name:'Voice AI App', stack:['python-fastapi','whisper','openai-gpt5','postgres'], stackLabels:['FastAPI','Whisper','GPT-5','PostgreSQL'], complexity:'Medium', example:'Otter.ai, Fireflies.ai, Fathom' },
+    { name:'Self-hosted AI Platform', stack:['node-express','llama','llama-70b','postgres','docker-k8s'], stackLabels:['Node.js','Llama 3 70B','PostgreSQL','Kubernetes'], complexity:'High', example:'On-prem LLM portals, PrivateGPT' },
+    { name:'Mobile / Edge AI App', stack:['python-fastapi','gemini-flash','gemini-nano','sqlite'], stackLabels:['FastAPI','Gemini Nano','SQLite'], complexity:'Low–Med', example:'Android AI features, Pixel apps' },
+    { name:'Enterprise Web App', stack:['angular','java-spring','postgres','docker-k8s','cloud-managed'], stackLabels:['Angular','Spring Boot','PostgreSQL','Kubernetes'], complexity:'Very High', example:'Google Workspace, SAP, Salesforce' },
+    { name:'Search & Analytics Pipeline', stack:['python-fastapi','elasticsearch','pinecone','postgres','cloud-managed'], stackLabels:['FastAPI','Elasticsearch','pgvector','PostgreSQL','AWS'], complexity:'High', example:'GitHub Search, Datadog, Elastic Cloud' },
+    { name:'Real-time Collaboration Tool', stack:['react','node-express','redis','postgres','docker-k8s'], stackLabels:['React','Node.js','Redis','PostgreSQL'], complexity:'High', example:'Figma, Miro, Linear' },
+    { name:'Serverless API / Microservice', stack:['serverless','node-express','postgres','cloud-managed'], stackLabels:['Node.js','AWS Lambda','PostgreSQL'], complexity:'Low–Med', example:'Stripe webhooks, API integrations' },
+    { name:'Zero-ops RAG App', stack:['react','supabase','pinecone','claude-sonnet','vercel-netlify'], stackLabels:['React','Supabase','pgvector','Claude Sonnet','Vercel'], complexity:'Low–Med', example:'Notion AI-style search, docs Q&A' },
+    { name:'Firebase Mobile App', stack:['react','firebase','sqlite'], stackLabels:['React / React Native','Firebase','SQLite'], complexity:'Low', example:'Early-stage apps, indie products' },
+  ];
+
+  // ═══════════════════════════════════════
+  // Q&A WIZARD DATA
+  // ═══════════════════════════════════════
+  const QA_STEPS = [
+    {
+      id: 'type',
+      question: "What are you building?",
+      hint: "Pick the closest to your goal — you can refine later.",
+      options: [
+        { value:'web',     label:'🌐 Web App / SaaS' },
+        { value:'api',     label:'⚙️ API / Backend' },
+        { value:'ai',      label:'🤖 AI / LLM Product' },
+        { value:'mobile',  label:'📱 Mobile / Edge' },
+        { value:'data',    label:'📊 Data Pipeline' },
+        { value:'landing', label:'🎨 Landing Page' },
+      ],
+    },
+    {
+      id: 'ai',
+      question: "How central is AI to your product?",
+      hint: "This helps us pick the right LLM and architecture.",
+      options: [
+        { value:'none',  label:'🚫 No AI needed' },
+        { value:'light', label:'✨ Light AI  (summaries, search)' },
+        { value:'core',  label:'🧠 Core product  (chat, agents)' },
+        { value:'self',  label:'🔒 Self-hosted / private AI' },
+      ],
+    },
+    {
+      id: 'team',
+      question: "Who's building this?",
+      hint: "Team size shapes framework choice and complexity tolerance.",
+      options: [
+        { value:'solo',       label:'🧑 Solo / indie' },
+        { value:'small',      label:'👥 Small team (2–5)' },
+        { value:'enterprise', label:'🏢 Enterprise (6+)' },
+      ],
+    },
+    {
+      id: 'speed',
+      question: "How fast do you need to ship?",
+      hint: "Speed vs. long-term scale is the core trade-off.",
+      options: [
+        { value:'weekend', label:'⚡ This weekend' },
+        { value:'weeks',   label:'📅 1–4 weeks' },
+        { value:'months',  label:'🗓 3+ months' },
+      ],
+    },
+  ];
+
+  // ═══════════════════════════════════════
+  // PRESETS
+  // ═══════════════════════════════════════
+  const PRESETS = {
+    landing: {
+      name:'Marketing / Landing Page', headline:'Zero infra. Live in minutes.',
+      why:'HTML/CSS + plain JS is the simplest path to a live site. No build tooling, no framework overhead. Vercel gives you CI/CD on git push — free tier is more than enough.',
+      examples:'Apple.com marketing pages, most startup landing pages',
+      chips:['html-css','vercel-netlify'],
+      rules:['Use semantic HTML5 elements','Optimize images with lazy loading','Follow WCAG 2.1 AA accessibility','Prefer CSS custom properties for theming'],
+      model:null,
+    },
+    'lean-mvp': {
+      name:'Lean MVP / SaaS', headline:'Ship fast, scale later.',
+      why:'React + Node.js shares the TypeScript mental model across your full stack. PostgreSQL gives you a rock-solid relational foundation. Vercel removes infra from the equation entirely.',
+      examples:'Notion, Linear, Loom (early versions)',
+      chips:['react','node-express','postgres','vercel-netlify'],
+      rules:['Use TypeScript strict mode throughout','React: prefer hooks over class components','Node.js: async/await, avoid callback nesting','PostgreSQL: use migrations (not raw ALTER TABLE)','Vercel: one preview URL per PR'],
+      model:'claude-sonnet-4-6',
+    },
+    'ai-mvp': {
+      name:'AI-Powered Product (MVP)', headline:'Conversation-first, deployed in days.',
+      why:'FastAPI + Claude Sonnet is the fastest path to a working LLM product. Async by default, type-safe Pydantic models, auto-generated docs. Claude Sonnet balances quality and cost for a first launch.',
+      examples:'Early Claude.ai-style apps, Perplexity, AI writing assistants',
+      chips:['react','python-fastapi','postgres','claude-sonnet','vercel-netlify'],
+      rules:['FastAPI: always define Pydantic request/response models','LLM calls: include error handling + retry with exponential backoff','Stream responses to reduce perceived latency','Log all LLM input/output for debugging','Rate-limit endpoints that call LLMs'],
+      model:'claude-sonnet-4-6',
+    },
+    'ai-production': {
+      name:'Production AI Application', headline:'Built to handle real load.',
+      why:'Redis handles rate-limiting and caches expensive LLM responses. Managed cloud gives you autoscaling and reliability SLAs. This is the production-grade version of the AI MVP stack.',
+      examples:'Cursor, GitHub Copilot backends, internal AI assistants at scale',
+      chips:['react','python-fastapi','postgres','redis','claude-sonnet','cloud-managed'],
+      rules:['Cache LLM responses in Redis with TTL-based invalidation','Use pgvector for embedding storage if doing RAG','Track token budget per user/session to control costs','Sanitize all user input before sending to LLMs','Monitor p95 LLM latency — alert if >5s'],
+      model:'claude-sonnet-4-6',
+    },
+    'self-hosted-ai': {
+      name:'Self-Hosted AI Platform', headline:"Your data never leaves your infra.",
+      why:'Llama 3 70B + vLLM gives you near-frontier performance with zero cloud inference dependency. Kubernetes scales the serving layer. No vendor lock-in, no data leaving your premises.',
+      examples:'Enterprise LLM portals, air-gapped government AI tools, privacy-first SaaS',
+      chips:['node-express','llama','llama-70b','postgres','docker-k8s'],
+      rules:['Use vLLM or Ollama for optimized inference','Apply quantization (Q4/Q8) for memory efficiency','Kubernetes: set resource limits on LLM inference pods','Log all inference calls for audit and compliance','Health-check the inference server every 30s'],
+      model:'llama-70b',
+    },
+    enterprise: {
+      name:'Enterprise Web Application', headline:'Built for long-term maintainability.',
+      why:'Angular + Spring Boot is battle-tested for large teams. Strong typing from browser to DB, DI everywhere, and a testing story that enterprise risk teams accept.',
+      examples:'Google Workspace internal tools, SAP-style enterprise apps, banking portals',
+      chips:['angular','java-spring','postgres','docker-k8s','cloud-managed'],
+      rules:['Angular: use OnPush change detection strategy','Spring: prefer constructor injection over field injection','Validate all API inputs with Bean Validation (@Valid)','Use Flyway for database schema migrations','All services must expose /health and /metrics endpoints'],
+      model:'gpt5',
+    },
+    'api-microservice': {
+      name:'High-Performance API / Microservice', headline:'Maximum throughput, minimal overhead.',
+      why:'Go compiles to a single binary, handles tens of thousands of concurrent requests, and uses a fraction of the memory of Node or Python. Perfect for high-throughput internal APIs.',
+      examples:'Uber microservices, Docker itself, Cloudflare Workers backend',
+      chips:['go','postgres','redis','docker-k8s'],
+      rules:['Use context propagation for all request handlers','Return structured errors with typed error codes','Use sync.Pool for frequently allocated objects','Redis: use pipelines for batched operations','All Dockerfiles must use multi-stage builds'],
+      model:null,
+    },
+    'data-pipeline': {
+      name:'Data / ML Pipeline', headline:'From raw data to insights, at scale.',
+      why:'FastAPI serves your ML models with type-safe async endpoints. Elasticsearch handles analytics at scale. Redis caches expensive computations. Managed cloud scales with your data growth.',
+      examples:'Duolingo ML platform, Instagram recommendations, Datadog log pipeline',
+      chips:['python-fastapi','postgres','elasticsearch','redis','cloud-managed'],
+      rules:['Validate all data inputs with Pydantic models','Use async background tasks for heavy processing','Elasticsearch: define explicit mappings, avoid dynamic mapping','Cache ML predictions in Redis with feature-hash keys','Log inference latency and model version per prediction'],
+      model:'gemini-flash',
+    },
+    'mobile-ai': {
+      name:'Mobile / Edge AI App', headline:'AI on the device, not just the cloud.',
+      why:'Gemini Nano runs on-device for fast, private inference on Android. FastAPI backend handles heavier cloud tasks when needed. SQLite gives you local persistence with zero setup.',
+      examples:'Android Pixel features, Gboard AI suggestions, on-device translation',
+      chips:['python-fastapi','gemini-flash','gemini-nano','sqlite'],
+      rules:['Prefer on-device inference for latency-sensitive UX','Fall back to cloud API only when on-device fails','SQLite: use WAL mode for concurrent read performance','Compress model inputs to reduce bandwidth usage','Always handle offline / airplane mode gracefully'],
+      model:'gemini-nano',
+    },
+    'web-with-ai': {
+      name:'Web App + AI Features', headline:'Your existing app, supercharged with AI.',
+      why:'Add Claude Sonnet to your Node backend for summaries, classification, and smart suggestions. Minimal architecture changes, maximum user value delivered fast.',
+      examples:'Linear AI, Notion AI, GitHub Copilot in-app features',
+      chips:['react','node-express','postgres','claude-sonnet','vercel-netlify'],
+      rules:['Wrap all AI calls in a service layer for easy swapping','Use streaming for long-form AI responses','Show AI confidence / source where relevant','Rate-limit AI features per user plan tier','Collect user feedback (👍👎) to improve prompts over time'],
+      model:'claude-sonnet-4-6',
+    },
+  };
+
+  // ═══════════════════════════════════════
+  // RECOMMENDATION ENGINE
+  // ═══════════════════════════════════════
+  function getPresetKey(a) {
+    if (a.type === 'landing') return 'landing';
+    if (a.type === 'mobile')  return 'mobile-ai';
+    if (a.type === 'data')    return 'data-pipeline';
+    if (a.type === 'api')     return 'api-microservice';
+    if (a.team === 'enterprise') return 'enterprise';
+    if (a.ai === 'self')  return 'self-hosted-ai';
+    if (a.ai === 'core')  return a.speed === 'months' ? 'ai-production' : 'ai-mvp';
+    if (a.ai === 'light') return 'web-with-ai';
+    return 'lean-mvp';
+  }
+
+  // ═══════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════
+  const selectedIds = new Set();
+  let matrixVisible = false;
+  let hideTimer = null;
+  let qaStep = 0;
+  const qaAnswers = {};
+
+  // ═══════════════════════════════════════
+  // MODE SWITCHER
+  // ═══════════════════════════════════════
+  function switchMode(mode) {
+    const picker   = document.getElementById('mode-picker');
+    const guided   = document.getElementById('mode-guided');
+    const architect = document.getElementById('mode-architect');
+    document.getElementById('btn-mode-picker').classList.toggle('active', mode === 'picker');
+    document.getElementById('btn-mode-guided').classList.toggle('active', mode === 'guided');
+    document.getElementById('btn-mode-architect').classList.toggle('active', mode === 'architect');
+    picker.style.display   = mode === 'picker'   ? 'block' : 'none';
+    guided.style.display   = mode === 'guided'   ? 'block' : 'none';
+    architect.style.display = mode === 'architect' ? 'block' : 'none';
+    if (mode === 'guided') {
+      const hasResult = document.getElementById('qa-result').classList.contains('visible');
+      if (!hasResult) renderQAStep(0);
+    }
+    if (mode === 'architect') {
+      if (!archCurrentStepId && Object.keys(archAnswers).length === 0) resetArch();
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // Q&A WIZARD
+  // ═══════════════════════════════════════
+  function renderQAProgress() {
+    document.getElementById('qa-progress').innerHTML = QA_STEPS.map((_, i) =>
+      `<div class="qa-dot ${i < qaStep ? 'done' : i === qaStep ? 'active' : ''}"></div>`
+    ).join('');
+  }
+
+  function renderQAStep(step) {
+    qaStep = step;
+    renderQAProgress();
+    document.getElementById('qa-result').classList.remove('visible');
+    document.getElementById('qa-result').style.display = 'none';
+    const s = QA_STEPS[step];
+    const hasAnswer = !!qaAnswers[s.id];
+    document.getElementById('qa-step-container').innerHTML = `
+      <div class="qa-card">
+        <div class="qa-question">${s.question}</div>
+        <div class="qa-hint">${s.hint}</div>
+        <div class="qa-options">
+          ${s.options.map(o => `
+            <div class="qa-option${qaAnswers[s.id] === o.value ? ' selected' : ''}"
+                 onclick="selectQAOption('${s.id}','${o.value}',this)">
+              ${o.label}
+            </div>`).join('')}
+        </div>
+        <div class="qa-nav">
+          ${step > 0
+            ? `<button class="qa-back" onclick="renderQAStep(${step-1})">← Back</button>`
+            : '<span></span>'}
+          <span class="qa-step-label">${step+1} of ${QA_STEPS.length}</span>
+          <button class="qa-next ${hasAnswer ? 'enabled' : ''}" id="qa-next-btn"
+                  onclick="${step < QA_STEPS.length-1 ? `renderQAStep(${step+1})` : 'showQAResult()'}">
+            ${step < QA_STEPS.length-1 ? 'Next →' : 'Show My Stack →'}
+          </button>
+        </div>
+      </div>`;
+  }
+
+  function selectQAOption(stepId, value, el) {
+    qaAnswers[stepId] = value;
+    el.closest('.qa-options').querySelectorAll('.qa-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    const btn = document.getElementById('qa-next-btn');
+    if (btn) btn.classList.add('enabled');
+  }
+
+  function showQAResult() {
+    const preset = PRESETS[getPresetKey(qaAnswers)];
+    selectedIds.clear();
+    preset.chips.forEach(id => selectedIds.add(id));
+    renderChips();
+    updateCTA();
+
+    const chipHtml = preset.chips.map(id => {
+      const t = TECH.find(x => x.id === id);
+      return t ? `<span class="rec-chip">${t.label}</span>` : '';
+    }).join('');
+
+    const result = document.getElementById('qa-result');
+    result.innerHTML = `
+      <div class="rec-card">
+        <div class="rec-label">Recommended Stack</div>
+        <div class="rec-name">${preset.name}</div>
+        <div class="rec-headline">${preset.headline}</div>
+        <div class="rec-why">${preset.why}</div>
+        <div class="rec-chips">${chipHtml}</div>
+        <div class="rec-examples"><strong>Used by:</strong> ${preset.examples}</div>
+        <div class="rec-actions">
+          <button class="rec-btn-primary" onclick="openMatrix('matrix')">See what I can build →</button>
+          <button class="rec-btn-secondary" onclick="openMatrix('config')">Get Cortex config</button>
+          <button class="rec-btn-secondary" onclick="resetQA()">Start over</button>
+        </div>
+      </div>`;
+    result.style.display = 'block';
+    result.classList.add('visible');
+    document.getElementById('qa-step-container').innerHTML = '';
+    document.getElementById('qa-progress').innerHTML = '';
+  }
+
+  function openMatrix(tab) {
+    matrixVisible = true;
+    const matrix = document.getElementById('build-matrix');
+    matrix.classList.add('visible');
+    renderMatrix(); renderTips(); renderCortexConfig();
+    const tabs = document.querySelectorAll('.bm-tab');
+    document.querySelectorAll('.bm-panel').forEach(p => p.classList.remove('active'));
+    tabs.forEach(t => t.classList.remove('active'));
+    if (tab === 'config') {
+      tabs[2].classList.add('active');
+      document.getElementById('bm-panel-config').classList.add('active');
+    } else {
+      tabs[0].classList.add('active');
+      document.getElementById('bm-panel-matrix').classList.add('active');
+    }
+    matrix.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function resetQA() {
+    Object.keys(qaAnswers).forEach(k => delete qaAnswers[k]);
+    document.getElementById('qa-result').classList.remove('visible');
+    document.getElementById('qa-result').style.display = 'none';
+    document.getElementById('build-matrix').classList.remove('visible');
+    matrixVisible = false;
+    renderQAStep(0);
+  }
+
+  // ═══════════════════════════════════════
+  // CORTEX CONFIG GENERATOR
+  // ═══════════════════════════════════════
+  function renderCortexConfig() {
+    const el = document.getElementById('cortex-config-content');
+    const sel = TECH.filter(t => selectedIds.has(t.id));
+    if (!sel.length) { el.textContent = '# Select technologies above to generate your Cortex config'; return; }
+
+    let preset = null;
+    for (const p of Object.values(PRESETS)) {
+      const matched = p.chips.filter(id => selectedIds.has(id)).length;
+      if (matched >= Math.min(2, p.chips.length)) { preset = p; break; }
+    }
+
+    const bycat = cat => sel.filter(t => t.category === cat).map(t => t.label).join(', ');
+    const rules = preset ? preset.rules : ['Use TypeScript strict mode','Prefer async/await over callbacks','Write tests for all public APIs','Document non-obvious logic inline'];
+    const model = preset && preset.model ? preset.model : null;
+
+    const lines = [
+      '# Cortex Config — Generated for your stack',
+      '# Edit freely. Run: npx cortex compile → pushes to all AI tools',
+      '',
+      '## Stack',
+      bycat('frontend')  ? `- frontend:  ${bycat('frontend')}`  : null,
+      bycat('backend')   ? `- backend:   ${bycat('backend')}`   : null,
+      bycat('database')  ? `- database:  ${bycat('database')}`  : null,
+      bycat('cloud')     ? `- infra:     ${bycat('cloud')}`     : null,
+      bycat('llm')       ? `- llm:       ${bycat('llm')}`       : null,
+      bycat('models')    ? `- models:    ${bycat('models')}`    : null,
+      bycat('tools')     ? `- tools:     ${bycat('tools')}`     : null,
+      '',
+      '## Model',
+      model
+        ? `provider: anthropic\nmodel:    ${model}`
+        : `# model: <add your LLM to enable model-aware routing>`,
+      '',
+      '## Rules',
+      ...rules.map(r => `- ${r}`),
+      '',
+      '## Context Budget',
+      'max_tokens: 8000',
+      'compress:   true',
+      'priority:   stack, rules, examples',
+      '',
+      '## Compile targets  (npx cortex compile)',
+      'targets:',
+      '  - claude     # → CLAUDE.md',
+      '  - cursor     # → .cursorrules',
+      '  - copilot    # → .github/copilot-instructions.md',
+      '  - windsurf   # → .windsurfrules',
+      '  - gemini     # → .gemini/GEMINI.md',
+      '  - codex      # → .codex/instructions.md',
+    ].filter(l => l !== null).join('\n');
+
+    el.textContent = lines;
+  }
+
+  function copyConfig() {
+    const text = document.getElementById('cortex-config-content').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.cortex-config-copy');
+      btn.textContent = 'copied ✓';
+      setTimeout(() => btn.textContent = 'copy', 1600);
+    });
+  }
+
+  function copyInstall() {
+    navigator.clipboard.writeText('npx cortex init').then(() => {
+      const hint = document.getElementById('copy-hint');
+      hint.textContent = '✓ copied!';
+      hint.style.color = '#34d399';
+      setTimeout(() => { hint.textContent = 'click to copy'; hint.style.color = ''; }, 1600);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // RENDER CHIPS
+  // ═══════════════════════════════════════
+  function renderChips() {
+    const container = document.getElementById('sp-categories');
+    container.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const items = TECH.filter(t => t.category === cat.id);
+      if (!items.length) return;
+      const group = document.createElement('div');
+      group.className = 'sp-group';
+      const label = document.createElement('div');
+      label.className = 'sp-group-label';
+      label.innerHTML = `<span>${cat.icon}</span> ${cat.label}`;
+      group.appendChild(label);
+      const chips = document.createElement('div');
+      chips.className = 'sp-chips';
+      items.forEach(tech => {
+        const chip = document.createElement('div');
+        chip.className = 'sp-chip' + (selectedIds.has(tech.id) ? ' selected' : '');
+        chip.dataset.id = tech.id;
+        chip.textContent = tech.label;
+        chip.addEventListener('mouseenter', () => showTooltip(chip, tech));
+        chip.addEventListener('mouseleave', scheduleHide);
+        chip.addEventListener('click', () => handleChipClick(tech.id));
+        chip.addEventListener('touchstart', e => {
+          e.preventDefault();
+          const tt = document.getElementById('sp-tooltip');
+          if (tt.classList.contains('visible') && tt.dataset.techId === tech.id) handleChipClick(tech.id);
+          else showTooltip(chip, tech);
+        }, { passive:false });
+        chips.appendChild(chip);
+      });
+      group.appendChild(chips);
+      container.appendChild(group);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // CHIP INTERACTIONS
+  // ═══════════════════════════════════════
+  function handleChipClick(id) {
+    if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+    renderChips(); updateCTA();
+    if (matrixVisible) { renderMatrix(); renderTips(); renderCortexConfig(); }
+  }
+
+  function updateCTA() {
+    const btn = document.getElementById('sp-cta-btn');
+    const count = document.getElementById('sp-count');
+    const n = selectedIds.size;
+    if (n > 0) {
+      btn.classList.add('visible');
+      count.textContent = `${n} item${n > 1 ? 's' : ''} selected`;
+    } else {
+      btn.classList.remove('visible');
+      count.textContent = '';
+      if (matrixVisible) { document.getElementById('build-matrix').classList.remove('visible'); matrixVisible = false; }
+    }
+  }
+
+  function toggleMatrix() {
+    const matrix = document.getElementById('build-matrix');
+    matrixVisible = !matrixVisible;
+    if (matrixVisible) {
+      matrix.classList.add('visible');
+      renderMatrix(); renderTips(); renderCortexConfig();
+      matrix.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    } else {
+      matrix.classList.remove('visible');
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // TOOLTIP
+  // ═══════════════════════════════════════
+  const AI_CATS = new Set(['llm','models','tools']);
+
+  function showTooltip(chip, tech) {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    const tt = document.getElementById('sp-tooltip');
+    tt.dataset.techId = tech.id;
+    document.getElementById('tt-name').textContent = tech.label;
+    document.getElementById('tt-bullets').innerHTML = tech.bestFor.map(b => `<li>${b}</li>`).join('');
+
+    const stackWrap = document.getElementById('tt-stack-wrap');
+    const appsWrap  = document.getElementById('tt-apps-wrap');
+    const label     = document.getElementById('tt-bottom-label');
+
+    if (AI_CATS.has(tech.category)) {
+      // For LLMs / models / tools: show app name pills, no stack chips
+      label.textContent = 'Used in';
+      stackWrap.style.display = 'none';
+      appsWrap.style.display  = 'block';
+      document.getElementById('tt-use-pills').innerHTML =
+        (tech.uses || [tech.example.app]).map(u => `<span class="tt-use-pill">${u}</span>`).join('');
+    } else {
+      // For frontend / backend / db / cloud: show highlighted stack chips
+      label.textContent = 'Powering';
+      stackWrap.style.display = 'block';
+      appsWrap.style.display  = 'none';
+      document.getElementById('tt-app-name').innerHTML = `<strong>${tech.example.app}</strong>`;
+      document.getElementById('tt-mini-chips').innerHTML = tech.example.stack
+        .map(s => `<span class="tt-mini-chip${s === tech.example.highlight ? ' highlight' : ''}">${s}</span>`).join('');
+    }
+    positionTooltip(chip.getBoundingClientRect(), tt);
+    tt.classList.add('visible');
+  }
+
+  function scheduleHide() { hideTimer = setTimeout(() => document.getElementById('sp-tooltip').classList.remove('visible'), 120); }
+
+  function positionTooltip(rect, tt) {
+    const TW = tt.offsetWidth || 292, TH = tt.offsetHeight || 220, GAP = 10, vw = window.innerWidth;
+    let top = rect.top - TH - GAP;
+    if (top < 8) top = rect.bottom + GAP;
+    let left = rect.left;
+    if (left + TW > vw - 16) left = rect.right - TW;
+    if (left < 8) left = 8;
+    tt.style.top = top + 'px';
+    tt.style.left = left + 'px';
+  }
+
+  // ═══════════════════════════════════════
+  // BUILD MATRIX
+  // ═══════════════════════════════════════
+  const CX = { 'Low':'bm-low','Low–Med':'bm-med','Medium':'bm-med','High':'bm-high','Very High':'bm-vhigh' };
+
+  function renderMatrix() {
+    const sel = selectedIds;
+    const scored = MATRIX.map(row => {
+      const matched = row.stack.filter(id => sel.has(id)).length;
+      return { ...row, matched, total: row.stack.length, score: matched / row.stack.length };
+    }).sort((a,b) => b.score - a.score || b.matched - a.matched);
+
+    document.getElementById('bm-table-body').innerHTML = scored.map(row => {
+      const rowClass = row.matched === row.total && row.total > 0 ? 'bm-row-full' : row.matched > 0 ? 'bm-row-partial' : 'bm-row-none';
+      const badge = row.matched === row.total && row.total > 0
+        ? `<span class="bm-match-badge bm-match-full">✦ Full match</span>`
+        : row.matched > 0
+          ? `<span class="bm-match-badge bm-match-part">${row.matched}/${row.total}</span>`
+          : `<span class="bm-match-badge bm-match-low">—</span>`;
+      const tags = row.stackLabels.map((l,i) =>
+        `<span class="bm-stack-tag${sel.has(row.stack[i]) ? ' matched' : ''}">${l}</span>`).join('');
+      return `<tr class="${rowClass}">
+        <td>${row.name}</td>
+        <td><div class="bm-stack-tags">${tags}</div></td>
+        <td><span class="bm-complexity ${CX[row.complexity]||'bm-med'}">${row.complexity}</span></td>
+        <td style="color:#6b7280;font-size:0.75rem">${row.example}</td>
+        <td>${badge}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════
+  // STACK TIPS
+  // ═══════════════════════════════════════
+  const GUIDE_SECTIONS = [
+    {
+      heading: '🗺 When to pick which stack',
+      items: [
+        { label:'MVP / startup', body:'React + Node.js + PostgreSQL (or MongoDB / Firebase for zero-ops). Ship in days, not months.' },
+        { label:'Enterprise / long-lived system', body:'Angular or React + Java/Spring or C#/.NET + PostgreSQL/SQL Server. Optimize for maintainability over speed.' },
+        { label:'High-performance / low-latency', body:'Go or Node.js + Redis + PostgreSQL, with Kubernetes for scaling. Compile to a single binary; measure p99.' },
+        { label:'Data-intensive / ML-heavy', body:'Python (FastAPI/Django) + PostgreSQL + Elasticsearch or Pinecone. Vector DBs are essential for RAG.' },
+      ],
+    },
+    {
+      heading: '🧠 When to pick which LLM family',
+      items: [
+        { label:'Max intelligence, agent-heavy', body:'OpenAI GPT-5 class or Claude Opus. Use when correctness matters more than cost.' },
+        { label:'Cost-efficient, high-volume (chat/RAG)', body:'Claude Sonnet/Haiku or Gemini Flash. Great price-to-performance for production APIs.' },
+        { label:'Privacy-first / self-hosted / on-prem', body:'Llama 3 70B or 8B + CodeLlama variants. Full control, no data leaves your infra.' },
+        { label:'Voice-centric apps', body:'OpenAI GPT-4o family + Whisper. Best speech-to-text + language understanding pairing.' },
+        { label:'Mobile / on-device', body:'Gemini Nano or small Llama-style models. Runs on-device, private, zero latency.' },
+      ],
+    },
+    {
+      heading: '🛠 When to pick which coding tool',
+      items: [
+        { label:'Solo dev / AI-driven prototyping', body:'Cursor + Claude/GPT-4 for fast, project-wide multi-file changes and greenfield work.' },
+        { label:'Team with Copilot culture', body:'VS Code + GitHub Copilot for broad language coverage, autocomplete, and PR-integrated reviews.' },
+        { label:'Java/Kotlin / enterprise backend', body:'JetBrains IntelliJ + JetBrains AI for deep language understanding, refactoring, and debugging.' },
+        { label:'Self-hosted / privacy-first coding', body:'VS Code or JetBrains + self-hosted Llama/Mistral-based model. No code leaves your network.' },
+      ],
+    },
+  ];
+
+  function renderTips() {
+    const sel = selectedIds;
+    const cats = new Set(TECH.filter(t => sel.has(t.id)).map(t => t.category));
+    const tips = [];
+    if (cats.has('frontend') && cats.has('backend') && cats.has('database'))
+      tips.push({ title:'🏗 Full-stack ready', body:'You have frontend, backend, and database covered — great foundation for a production app. Add cloud infra for scale.' });
+    if (cats.has('llm') || cats.has('models'))
+      tips.push({ title:'🤖 AI-powered application', body:'Your stack includes an LLM/model. Consider adding a vector DB (pgvector, Pinecone) for RAG, and Redis for rate-limiting API calls.' });
+    if (cats.has('cloud'))
+      tips.push({ title:'☁️ Production-grade infra', body:'Cloud infra selected — plan for environment parity (dev → staging → prod) and use managed secrets (AWS SSM, GCP Secret Manager).' });
+    if (cats.has('backend') && !cats.has('frontend'))
+      tips.push({ title:'⚙️ API-first architecture', body:'Backend without a frontend — great for microservices or headless APIs. Add OpenAPI/Swagger docs from day one.' });
+    if (cats.has('frontend') && !cats.has('backend'))
+      tips.push({ title:'🖥 Frontend-heavy stack', body:'No backend selected — consider Vercel Functions or Netlify Functions to avoid standing up a full server.' });
+    if (cats.has('tools'))
+      tips.push({ title:'🛠 AI-assisted development', body:'Your toolchain includes AI coding tools. Run npx cortex init to give every tool the same project context automatically.' });
+    if (sel.size >= 5)
+      tips.push({ title:'📋 Complex stack — document early', body:`You've selected ${sel.size} technologies. Define an ADR (Architecture Decision Record) early so the team understands why each piece exists.` });
+
+    const personalHtml = tips.length
+      ? `<div style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#6366f1;margin-bottom:0.65rem;margin-top:0.5rem">Your Stack</div>`
+        + tips.map(t => `<div class="bm-tip"><div class="bm-tip-title">${t.title}</div><div class="bm-tip-body">${t.body}</div></div>`).join('')
+      : `<div class="bm-no-sel" style="margin-bottom:1.5rem">Select items above to see personalized tips for your stack.</div>`;
+
+    const guideHtml = GUIDE_SECTIONS.map(sec => `
+      <div style="margin-top:1.5rem">
+        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#6366f1;margin-bottom:0.65rem">${sec.heading}</div>
+        ${sec.items.map(it => `
+          <div class="bm-tip" style="margin-bottom:0.45rem">
+            <div class="bm-tip-title" style="color:#c4c4c4">→ ${it.label}</div>
+            <div class="bm-tip-body">${it.body}</div>
+          </div>`).join('')}
+      </div>`).join('');
+
+    document.getElementById('bm-tips-content').innerHTML = personalHtml + guideHtml;
+  }
+
+  // ═══════════════════════════════════════
+  // TAB SWITCH
+  // ═══════════════════════════════════════
+  function switchBMTab(id, btn) {
+    document.querySelectorAll('.bm-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.bm-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('bm-panel-' + id).classList.add('active');
+    if (id === 'config') renderCortexConfig();
+  }
+
+  // ═══════════════════════════════════════
+  // ARCHITECT MY PROJECT
+  // ═══════════════════════════════════════
+  let archAnswers = {};
+  let archCurrentStepId = null;
+  let archHistory = [];
+  let accumulatedInsights = new Map();
+
+  // Real-world examples per project type
+  const SIMILAR_PRODUCTS = {
+    'saas':          { ex: 'Notion, Linear, Intercom, Figma, Loom', note: 'Most funded SaaS products in 2024 ship React + Node/Python + Postgres.' },
+    'marketplace':   { ex: 'Airbnb, Etsy, Upwork, TaskRabbit', note: 'Airbnb ran on Rails + MySQL for years before migrating. Premature microservices nearly killed them.' },
+    'internal-tool': { ex: 'Grafana, Retool, Metabase, Datadog dashboards', note: 'Internal tools need zero downtime and fast iteration over scale.' },
+    'ai-product':    { ex: 'Perplexity, Character.ai, Cursor, GitHub Copilot', note: 'AI products live or die by latency. Streaming responses + vector retrieval are table stakes.' },
+    'api-service':   { ex: 'Stripe, Twilio, SendGrid, Plaid', note: 'API-first companies obsess over p99 latency, versioning, and uptime SLAs from day 1.' },
+    'mobile':        { ex: 'Instagram (Django), TikTok (Go), Snapchat (Python), WhatsApp (Erlang)', note: 'Instagram ran Python/Django until 1B users. The stack matters less than execution speed.' },
+    'data-platform': { ex: 'Segment, Mixpanel, dbt, Amplitude', note: 'Data platforms split OLTP (user actions) from OLAP (analytics). Trying to do both in one DB kills you.' },
+  };
+
+  // Startup failure patterns per stack choice
+  const FAILURE_PATTERNS = {
+    'n1-queries':    '⚠ N+1 query trap: Fetching related data in a loop kills most apps at 1K users. Use eager loading (Prisma include, Django select_related) from day 1.',
+    'no-indexes':    '⚠ Missing indexes: A table with 100K rows and no index on a WHERE column causes full table scans. Add indexes as you add queries, not after.',
+    'no-cache':      '⚠ No caching layer: Hitting the DB for every API call doesn\'t scale. Add Redis for sessions, rate limiting, and hot-path queries.',
+    'no-queue':      '⚠ Synchronous everything: Sending email, resizing images, or calling 3rd-party APIs in the request thread blocks users. Use a job queue (BullMQ, pg-boss) from week 1.',
+    'no-cdn':        '⚠ No CDN: Serving images/JS from your origin server collapses under traffic. Put Cloudflare or CloudFront in front of everything on day 1.',
+    'microservices-early': '⚠ Microservices too early: Netflix, Airbnb, and Uber all started as monoliths. Distributed systems add latency, operational complexity, and debugging hell. Ship a modular monolith first.',
+    'no-connection-pool': '⚠ No connection pooling: Each serverless function opening a new Postgres connection exhausts the DB (max ~100 connections). Use PgBouncer or Neon.',
+    'mongo-schema':  '⚠ MongoDB schema chaos: "Schema-less" becomes "schema nightmare" at scale. Without validation (Zod, Joi, Mongoose), your data becomes inconsistent.',
+    'no-monitoring': '⚠ Flying blind: Most startups find out about outages from users. Add Sentry (errors), uptime checks, and basic DB slow-query logs before you launch.',
+    'auth-diy':      '⚠ Rolling your own auth: Building authentication is a security minefield. Use Clerk, Auth0, or Supabase Auth. Every week you spend on auth is a week not building your product.',
+    'no-rls':        '⚠ Missing row-level security: Multi-tenant SaaS apps without proper data isolation leak customer data. Test this before you launch.',
+    'blob-in-db':    '⚠ Storing files in the DB: BLOBs in Postgres bloat your DB, slow backups, and wreck performance. Always use object storage (S3/R2).',
+    'spa-seo':       '⚠ SPA + SEO mismatch: A React SPA with client-side rendering is invisible to Google. If you need SEO (marketing, content, e-commerce), use Next.js SSR/SSG.',
+    'no-migrations': '⚠ No schema migrations: Manually ALTER TABLE in production is how startups lose data. Use Prisma Migrate, Flyway, or Alembic from your first commit.',
+  };
+
+  const ARCH_STEPS = [
+    {
+      id: 'project-type',
+      question: 'What kind of product are you building?',
+      hint: 'Think: what does it look similar to?',
+      multi: false,
+      options: [
+        { value: 'saas',          label: '🌐 SaaS Web App  —  like Notion, Linear, Figma' },
+        { value: 'marketplace',   label: '🛒 Marketplace  —  like Airbnb, Etsy, Upwork' },
+        { value: 'internal-tool', label: '🔧 Internal Tool / Dashboard  —  like Retool, Grafana' },
+        { value: 'ai-product',    label: '🤖 AI Product  —  like Perplexity, Cursor, Character.ai' },
+        { value: 'api-service',   label: '⚙️ API / Developer Platform  —  like Stripe, Twilio' },
+        { value: 'mobile',        label: '📱 Mobile App  —  like Instagram, TikTok, Duolingo' },
+        { value: 'data-platform', label: '📊 Data / Analytics Platform  —  like Segment, Mixpanel' },
+      ],
+    },
+    {
+      id: 'core-workflow',
+      question: "What's the core thing users do in your app?",
+      hint: 'The primary user action determines your data model and query patterns.',
+      multi: false,
+      options: [
+        { value: 'crud',             label: '📋 Create & manage records (forms, lists, tables)' },
+        { value: 'collab',           label: '🤝 Real-time collaboration (edit together, presence)' },
+        { value: 'transactions',     label: '💳 Buy, sell, or transfer (payments, orders, bookings)' },
+        { value: 'content',          label: '📰 Consume content (feed, articles, media, social)' },
+        { value: 'search-discovery', label: '🔍 Search & discovery (find items, people, knowledge)' },
+        { value: 'ai-chat',          label: '🧠 AI-assisted work (chat, generate, summarise)' },
+        { value: 'analytics-view',   label: '📈 View dashboards & metrics (reports, charts)' },
+      ],
+    },
+    {
+      id: 'scale',
+      question: 'What scale are you targeting in the next 12 months?',
+      hint: 'Be honest — over-engineering for scale kills more startups than under-engineering.',
+      multi: false,
+      options: [
+        { value: 'tiny',   label: '👤 < 1K users  —  MVP, internal tool, or early beta' },
+        { value: 'small',  label: '👥 1K – 50K users  —  early product-market fit' },
+        { value: 'medium', label: '🏢 50K – 500K users  —  growth stage, paying customers' },
+        { value: 'large',  label: '🌍 500K+ users  —  raised Series A or already at scale' },
+      ],
+    },
+    {
+      id: 'team',
+      question: "How big is your team, and what's your launch timeline?",
+      hint: 'A solo founder shipping in 2 weeks needs a very different stack than a 10-person team with 6 months.',
+      multi: false,
+      options: [
+        { value: 'solo-fast',  label: '⚡ Solo or 2 people, ship in 2–4 weeks' },
+        { value: 'small-3mo',  label: '👥 2–5 people, ship in 1–3 months' },
+        { value: 'team-6mo',   label: '🏢 5–15 people, 3–6 months to launch' },
+        { value: 'team-long',  label: '🚀 15+ people, building for 6+ months' },
+      ],
+    },
+    {
+      id: 'data-patterns',
+      question: 'What data & feature requirements apply to your app?',
+      hint: 'Select all that apply — these are the #1 driver of architecture decisions and where most startups make the wrong call.',
+      multi: true,
+      options: [
+        { value: 'realtime',    label: '⚡ Real-time (live cursors, notifications, presence)' },
+        { value: 'offline',     label: '📴 Offline-first (works without internet, syncs later)' },
+        { value: 'read-heavy',  label: '📖 Read-heavy (dashboards, feeds, >10x reads vs writes)' },
+        { value: 'write-heavy', label: '✍️ Write-heavy (event streams, logging, IoT data)' },
+        { value: 'fulltext',    label: '🔍 Full-text or faceted search' },
+        { value: 'vector',      label: '🧠 AI / Vector search (embeddings, RAG, semantic)' },
+        { value: 'timeseries',  label: '📈 Time-series / metrics (analytics, monitoring)' },
+        { value: 'largefiles',  label: '📁 Large file uploads (images, video, documents)' },
+        { value: 'multitenant', label: '🏢 Multi-tenant (isolated data per customer / org)' },
+        { value: 'payments',    label: '💳 Payments or financial transactions' },
+      ],
+    },
+    {
+      id: 'auth-needs',
+      question: 'What authentication does your product need?',
+      hint: 'Auth is where most startups waste weeks they could spend on their core product.',
+      multi: false,
+      options: [
+        { value: 'none',       label: '🔓 None / public access' },
+        { value: 'basic',      label: '📧 Email + password (basic accounts)' },
+        { value: 'social',     label: '🔑 Social OAuth (Google, GitHub, Apple)' },
+        { value: 'enterprise', label: '🏢 Enterprise SSO / SAML (B2B SaaS)' },
+        { value: 'mfa',        label: '🛡️ MFA + advanced security (fintech, healthcare)' },
+      ],
+    },
+    {
+      id: 'infra',
+      question: 'What are your infrastructure preferences?',
+      hint: 'Each choice has real trade-offs in cost, complexity, and speed to launch.',
+      multi: false,
+      options: [
+        { value: 'any-cloud',  label: '☁️ Any cloud — just recommend the best' },
+        { value: 'serverless', label: '⚡ Serverless / managed — minimize ops overhead' },
+        { value: 'containers', label: '🐳 Containers / VMs — full control, portable' },
+        { value: 'on-prem',    label: '🏗️ On-premises / self-hosted — data sovereignty' },
+        { value: 'edge',       label: '🌐 Edge-first — sub-100ms globally (Cloudflare, Vercel)' },
+      ],
+    },
+    {
+      id: 'team-skills',
+      question: "What does your team already know?",
+      hint: "The best stack is the one you can execute fast. Don't relearn everything for your first version.",
+      multi: true,
+      options: [
+        { value: 'js-ts',      label: '🟨 JavaScript / TypeScript' },
+        { value: 'python',     label: '🐍 Python' },
+        { value: 'java-csharp',label: '☕ Java / C# / .NET' },
+        { value: 'go-rust',    label: '🦀 Go / Rust' },
+        { value: 'react',      label: '⚛️ React / Next.js' },
+        { value: 'devops',     label: '🔧 Docker / Kubernetes / Terraform' },
+        { value: 'ml-ai',      label: '🤖 ML / AI / LLM APIs' },
+        { value: 'sql',        label: '🗄️ SQL / relational databases' },
+      ],
+    },
+    {
+      id: 'compliance',
+      question: 'Any regulatory or compliance requirements?',
+      hint: 'These constrain your cloud provider choices and can eliminate entire architecture options.',
+      multi: true,
+      options: [
+        { value: 'none',      label: '✅ None — move fast, tackle later' },
+        { value: 'gdpr',      label: '🇪🇺 GDPR — EU user data privacy' },
+        { value: 'hipaa',     label: '🏥 HIPAA — healthcare / patient data' },
+        { value: 'soc2',      label: '🔒 SOC 2 — B2B SaaS enterprise requirement' },
+        { value: 'pci',       label: '💳 PCI-DSS — handling card payments directly' },
+        { value: 'airgapped', label: '🔌 Air-gapped — no external network access' },
+      ],
+    },
+  ];
+
+  const INSIGHT_RULES = [
+    // Compliance — hardest constraints first
+    { id:'hipaa-llm',      type:'warning', test:a=>(a['compliance']||[]).includes('hipaa'),     text:"HIPAA: OpenAI, Anthropic, and Google AI APIs are NOT HIPAA-compliant without a BAA. You'll need a vendor BAA or self-hosted model (Ollama + Llama 3)." },
+    { id:'hipaa-storage',  type:'warning', test:a=>(a['compliance']||[]).includes('hipaa'),     text:'HIPAA requires: encryption at rest (AES-256) + in transit (TLS 1.2+), audit logs for every PHI access, and access controls. Plan 2–4 extra weeks of compliance work.' },
+    { id:'gdpr-residency', type:'warning', test:a=>(a['compliance']||[]).includes('gdpr'),      text:'GDPR: EU user data must stay in EU regions. AWS eu-west-1 (Ireland), GCP europe-west1 (Belgium), or Azure North Europe. Add right-to-erasure logic to your data layer.' },
+    { id:'airgapped',      type:'warning', test:a=>(a['compliance']||[]).includes('airgapped'), text:'Air-gapped: Zero external API calls. Self-host everything — Ollama for LLMs, self-hosted Postgres, MinIO for storage, Keycloak for auth. Budget 3x the normal infra cost.' },
+    { id:'soc2-logging',   type:'warning', test:a=>(a['compliance']||[]).includes('soc2'),      text:'SOC 2: Structured audit logging (who accessed what, when), role-based access controls, change management process, and continuous monitoring. Start this in month 1, not month 12.' },
+    { id:'pci-scope',      type:'warning', test:a=>(a['compliance']||[]).includes('pci'),       text:'PCI-DSS: Never touch raw card data — use Stripe.js or Braintree to tokenize on the client. If you store, process, or transmit card data, annual QSA audit required. Stripe eliminates most of this.' },
+    // Auth insights
+    { id:'auth-diy',       type:'warning', test:a=>a['auth-needs']&&a['auth-needs']!=='none',   text:'Auth pitfall: Rolling your own auth (hashing, sessions, tokens) takes 2–3 weeks and is a security minefield. Use Clerk, Auth0, or Supabase Auth. Every day spent on auth is a day not building your product.' },
+    { id:'auth-enterprise',type:'warning', test:a=>a['auth-needs']==='enterprise',              text:'Enterprise SSO: SAML 2.0 integration alone takes 2–3 weeks. Use WorkOS or Auth0 — they handle Okta, Azure AD, and Google Workspace out of the box. This is often a blocker for enterprise deals.' },
+    // Data patterns
+    { id:'n1-warning',      type:'warning', test:a=>['crud','collab','transactions'].includes(a['core-workflow']), text:'N+1 query trap: The most common startup database killer. If you fetch a list then loop to get related data, you send N+1 queries. Use Prisma include, Django select_related, or DataLoader from day 1.' },
+    { id:'no-index-warn',   type:'warning', test:a=>['medium','large'].includes(a['scale']),    text:'Missing indexes: A table with 500K rows and no index on a WHERE column causes full table scans. Profile your slow queries before launch. Every unindexed foreign key is a future incident.' },
+    { id:'offline-pattern', type:'pattern', test:a=>(a['data-patterns']||[]).includes('offline'), text:'Offline-first: Local-First architecture — SQLite (OPFS in browser), PowerSync or ElectricSQL for sync. Conflict resolution is hard: define your strategy (last-write-wins vs CRDT) before writing a line of code.' },
+    { id:'realtime-pattern',type:'pattern', test:a=>(a['data-patterns']||[]).includes('realtime'), text:'Real-time: WebSockets are stateful and break horizontal scaling. Use Supabase Realtime, Ably, or Liveblocks — they handle connection management, presence, and broadcasting for you.' },
+    { id:'read-heavy-scale',type:'tip',     test:a=>(a['data-patterns']||[]).includes('read-heavy')&&['medium','large'].includes(a['scale']), text:'Read-heavy at scale: Add Redis (cache hot queries, sessions, rate limits) + Postgres read replicas. Most read-heavy apps see 10x performance improvement from Redis before needing DB hardware changes.' },
+    { id:'write-heavy',     type:'pattern', test:a=>(a['data-patterns']||[]).includes('write-heavy'), text:'Write-heavy: Synchronous DB writes in request handlers are your enemy. Add BullMQ or pg-boss for async jobs. High-frequency writes belong in Redis streams or a dedicated time-series DB, not Postgres.' },
+    { id:'fulltext',        type:'tool',    test:a=>(a['data-patterns']||[]).includes('fulltext'), text:'Full-text search: Postgres pg_tsvector works for <1M rows. At scale, use Typesense (fastest, open-source) or Elasticsearch. Algolia is easiest but $500+/mo at 1M records.' },
+    { id:'vector-db',       type:'tool',    test:a=>(a['data-patterns']||[]).includes('vector'), text:'Vector / RAG: pgvector (Postgres extension) handles <5M vectors. For larger scale, Pinecone or Qdrant. RAG requires a chunking + embedding pipeline — plan this before you build the chat interface.' },
+    { id:'timeseries',      type:'tool',    test:a=>(a['data-patterns']||[]).includes('timeseries'), text:'Time-series: Never store metrics in a standard Postgres table — it\'s the wrong data model. Use TimescaleDB (Postgres extension, zero migration pain) or InfluxDB for pure time-series workloads.' },
+    { id:'largefiles',      type:'warning', test:a=>(a['data-patterns']||[]).includes('largefiles'), text:'Large files in DB = disaster. Storing blobs in Postgres bloats your DB, destroys backup times, and cripples performance. Always: S3 / Cloudflare R2 for files, store only the URL in your DB.' },
+    { id:'multitenant',     type:'warning', test:a=>(a['data-patterns']||[]).includes('multitenant'), text:'Multi-tenancy data isolation: The #1 B2B SaaS data leak vector. Use Postgres Row-Level Security (RLS) or a tenant_id column on every table with query-level enforcement. Test tenant isolation before launch.' },
+    { id:'payments-stripe', type:'tip',     test:a=>(a['data-patterns']||[]).includes('payments'), text:'Payments: Use Stripe — webhooks, retries, reconciliation, and fraud detection are solved. Add idempotency keys to every payment API call. Test your webhook handler with Stripe CLI before going live.' },
+    // Infra
+    { id:'serverless-pool', type:'warning', test:a=>a['infra']==='serverless', text:'Serverless + Postgres: Each function invocation opens a new DB connection. At 100 concurrent users, you\'ll exhaust Postgres\'s connection limit (~100). Use Neon, PlanetScale, or PgBouncer — this kills serverless apps silently.' },
+    { id:'edge-limits',     type:'warning', test:a=>a['infra']==='edge',       text:'Edge functions: No long-running processes, no native Node.js APIs, no binary modules. You can\'t run a traditional ORM at the edge. Use D1 (SQLite), KV, or a remote Postgres with connection pooling.' },
+    { id:'onprem-k8s',      type:'tip',     test:a=>a['infra']==='on-prem',    text:'On-prem: Kubernetes is operationally expensive — budget a dedicated DevOps engineer. For smaller teams, Docker Compose + a single powerful VM is much simpler and handles most workloads up to 50K users.' },
+    // Scale
+    { id:'solo-speed',      type:'tip',     test:a=>a['team']==='solo-fast',   text:'Solo founder: Pick the stack you already know. Two weeks is not enough time to learn a new framework. Ship with boring technology — Postgres, Express/FastAPI, React. Optimize after you have users.' },
+    { id:'large-cqrs',      type:'pattern', test:a=>a['scale']==='large',      text:'500K+ users: CQRS (separate read/write paths), read replicas, and a CDN are non-negotiable. Separate your analytics queries from your OLTP queries or they\'ll starve each other.' },
+    { id:'microservices-warn',type:'warning',test:a=>['medium','large'].includes(a['scale'])&&(a['team']||'').includes('solo'), text:'Microservices with a small team: Amazon started as a monolith. Airbnb did too. Microservices add latency, distributed tracing complexity, and deployment overhead. Ship a modular monolith until you have 20+ engineers.' },
+    // Project type
+    { id:'ai-rag',          type:'tip',     test:a=>a['project-type']==='ai-product', text:'AI Product: RAG (Retrieval-Augmented Generation) is table stakes — LLMs hallucinate without context. Build your embedding + retrieval pipeline in week 1. Use streaming responses (SSE) or users will think it\'s broken.' },
+    { id:'marketplace-trust',type:'warning',test:a=>a['project-type']==='marketplace', text:'Marketplace pitfall: Trust and fraud are harder than the tech. Add identity verification (Stripe Identity), reviews, and dispute resolution before you onboard sellers. Airbnb spent more on trust than engineering in year 1.' },
+    { id:'mobile-offline',  type:'tip',     test:a=>a['project-type']==='mobile', text:'Mobile: Assume intermittent connectivity from day 1 — it\'s much harder to retrofit offline support. Instagram\'s early growth was driven by offline-capable photo uploads. Use SQLite locally + background sync.' },
+    { id:'data-separate',   type:'warning', test:a=>a['project-type']==='data-platform', text:'Data platform: Mixing OLTP (user actions) and OLAP (analytics) in one Postgres instance is the most common data platform failure. Your analytics queries will block your transactional queries. Separate them from day 1.' },
+    // Python team
+    { id:'python-fastapi',  type:'tip',     test:a=>(a['team-skills']||[]).includes('python')&&!(a['team-skills']||[]).includes('js-ts'), text:'Python team: FastAPI over Django REST for new APIs — async, auto-generated OpenAPI docs, Pydantic validation. Django is still excellent for admin-heavy products and rapid CRUD apps.' },
+    { id:'no-devops',       type:'tip',     test:a=>!(a['team-skills']||[]).includes('devops')&&['medium','large'].includes(a['scale']), text:'No DevOps experience: Use Railway, Render, or Fly.io — managed deploys, no Kubernetes. Add monitoring (Sentry + UptimeRobot) from day 1. You\'ll need it.' },
+    { id:'no-monitoring',   type:'warning', test:a=>['medium','large'].includes(a['scale']), text:'No monitoring = flying blind: Add Sentry (errors), structured logging, and an uptime check before launch. Most startups find out about their first outage from angry users on Twitter.' },
+  ];
+
+  function getArchRecommendation(answers, insights) {
+    const type       = answers['project-type'];
+    const scale      = answers['scale'];
+    const team       = answers['team'] || 'small-3mo';
+    const workflow   = answers['core-workflow'];
+    const skills     = answers['team-skills'] || [];
+    const compliance = answers['compliance'] || [];
+    const patterns   = answers['data-patterns'] || [];
+    const infra      = answers['infra'] || 'any-cloud';
+    const auth       = answers['auth-needs'] || 'basic';
+
+    // ── Base stack by project type ──────────────────────────────
+    const baseStacks = {
+      'saas':          ['react','node-express','postgresql','docker'],
+      'marketplace':   ['react','node-express','postgresql','stripe','docker'],
+      'internal-tool': ['react','node-express','postgresql'],
+      'ai-product':    ['react','python-fastapi','postgresql','pgvector'],
+      'api-service':   ['node-express','postgresql','docker'],
+      'mobile':        ['react-native','node-express','postgresql'],
+      'data-platform': ['python-fastapi','postgresql','elasticsearch','docker'],
+    };
+    const chips = new Set(baseStacks[type] || ['react','node-express','postgresql']);
+
+    // ── Team skill overlays ────────────────────────────────────
+    if (skills.includes('python') && !skills.includes('js-ts')) {
+      chips.delete('node-express'); chips.add('python-fastapi');
+    }
+    if (skills.includes('go-rust') && !skills.includes('js-ts') && !skills.includes('python')) {
+      chips.delete('node-express'); chips.add('go-fiber');
+    }
+    if (skills.includes('react')) chips.add('react');
+
+    // ── Infra overlays ─────────────────────────────────────────
+    if (infra === 'serverless') chips.add('supabase');
+    if (infra === 'edge') { chips.add('cloudflare-workers'); chips.delete('docker'); }
+    if (infra === 'containers' || infra === 'on-prem') chips.add('docker');
+
+    // ── Data pattern overlays ──────────────────────────────────
+    if (patterns.includes('realtime'))    chips.add('supabase');
+    if (patterns.includes('read-heavy') && ['medium','large'].includes(scale)) chips.add('redis');
+    if (patterns.includes('write-heavy')) chips.add('redis');
+    if (patterns.includes('fulltext'))    chips.add('elasticsearch');
+    if (patterns.includes('vector'))      chips.add('pgvector');
+    if (patterns.includes('offline'))     chips.add('sqlite');
+    if (patterns.includes('payments'))    chips.add('stripe');
+    if (patterns.includes('largefiles'))  { /* note: no chip but mentioned in output */ }
+
+    // ── Compliance overrides ───────────────────────────────────
+    if (compliance.includes('airgapped')) { chips.delete('supabase'); chips.delete('firebase'); }
+
+    // ── Scale overlays ─────────────────────────────────────────
+    if (scale === 'large') { chips.add('redis'); chips.add('docker'); }
+
+    // ── Solo/fast team: push toward managed stack ──────────────
+    if (team === 'solo-fast') {
+      chips.add('supabase');
+      chips.delete('docker');
+    }
+
+    // ── Per-tech reasoning ─────────────────────────────────────
+    const chipReasons = {
+      'react':          'React: Battle-tested for complex UIs. The largest talent pool and ecosystem. Figma, Notion, and Linear are all React.',
+      'node-express':   'Node.js + Express/NestJS: Same language front-to-back reduces context switching. Excellent for I/O-heavy APIs. Scales to billions of requests/day (Netflix, LinkedIn).',
+      'python-fastapi': 'FastAPI: Python\'s modern async API framework. 2–3x faster than Django for API workloads. Built-in OpenAPI docs, Pydantic validation, async support. Instagram used Python at 1B users.',
+      'go-fiber':       'Go + Fiber: ~10x faster than Node.js for CPU-bound work. Compiled, statically typed, tiny memory footprint. Ideal for high-throughput APIs and CLI tools.',
+      'postgresql':     'PostgreSQL: The right default database for 95% of products. ACID compliant, supports JSON, full-text search, arrays, and extensions (pgvector, TimescaleDB). Runs Shopify, GitHub, Instagram.',
+      'redis':          'Redis: Cache hot database queries, manage sessions, rate-limit APIs, and power job queues. A single Redis instance handles 100K ops/sec and will cut your p95 latency by 10x for read-heavy paths.',
+      'docker':         'Docker: Reproducible environments from dev to prod. Eliminates "works on my machine" bugs. Essential for any team > 2 people or any CI/CD pipeline.',
+      'supabase':       'Supabase: Postgres + Auth + Storage + Realtime in one managed platform. The fastest path from idea to production. Used by thousands of funded startups.',
+      'sqlite':         'SQLite: The world\'s most deployed database. Perfect for local-first apps, edge deployments, and offline-capable mobile apps.',
+      'elasticsearch':  'Elasticsearch: Full-text search with faceting, fuzzy matching, and analytics at scale. Powers search at GitHub, Stack Overflow, and Wikipedia.',
+      'pgvector':       'pgvector: Vector similarity search inside Postgres — no separate vector DB needed for most use cases. Powers RAG pipelines at companies like Supabase and Tembo.',
+      'stripe':         'Stripe: The only payment provider worth considering for a new product. Handles PCI compliance, fraud detection, subscriptions, and split payments (Stripe Connect for marketplaces).',
+      'react-native':   'React Native: One codebase for iOS + Android. Used by Meta, Shopify, and Microsoft. 80% code sharing between platforms is realistic.',
+      'cloudflare-workers': 'Cloudflare Workers: Edge compute in 300+ locations globally. Sub-1ms cold starts, built-in KV/D1/R2 storage. Eliminates CDN + serverless infra complexity.',
+    };
+
+    // ── Architecture patterns ──────────────────────────────────
+    const recPatterns = [];
+    if (patterns.includes('offline'))     recPatterns.push({ name:'Local-First', detail:'SQLite (OPFS) + PowerSync/ElectricSQL for sync. Define conflict resolution strategy first.' });
+    if (patterns.includes('realtime'))    recPatterns.push({ name:'Event-Driven Real-time', detail:'WebSocket server (Supabase Realtime, Ably) + optimistic UI updates. Don\'t build raw WebSocket servers.' });
+    if (patterns.includes('write-heavy')) recPatterns.push({ name:'Async Job Queue', detail:'BullMQ (Redis-backed) or pg-boss. Every non-user-facing operation should be async.' });
+    if (patterns.includes('vector'))      recPatterns.push({ name:'RAG Pipeline', detail:'Embed → Store in pgvector → Retrieve top-k → Inject into LLM context. Add a reranker for quality.' });
+    if (scale === 'large')               recPatterns.push({ name:'CQRS', detail:'Separate read models (replicas, Redis) from write models (primary DB). Event sourcing optional but powerful.' });
+    if (infra === 'edge')                recPatterns.push({ name:'Edge-First', detail:'Cloudflare Workers + D1 (SQLite) or KV. Keep hot data at the edge, cold data in origin Postgres.' });
+    if (type === 'ai-product')           recPatterns.push({ name:'Streaming LLM Responses', detail:'Server-Sent Events (SSE) for token streaming. Users perceive streaming as faster even at same total latency.' });
+    if (patterns.includes('multitenant'))recPatterns.push({ name:'Multi-Tenant Isolation', detail:'Postgres Row-Level Security (RLS) per tenant. Never filter by tenant_id only in application code.' });
+
+    // ── Startup traps specific to this combination ─────────────
+    const traps = [];
+    if (['crud','collab','transactions'].includes(workflow))
+      traps.push(FAILURE_PATTERNS['n1-queries']);
+    if (['medium','large'].includes(scale))
+      traps.push(FAILURE_PATTERNS['no-index-warn'] || FAILURE_PATTERNS['no-monitoring']);
+    if (infra === 'serverless')
+      traps.push(FAILURE_PATTERNS['no-connection-pool']);
+    if (!patterns.includes('offline') && type === 'mobile')
+      traps.push(FAILURE_PATTERNS['mobile-offline'] || '⚠ Offline support: Add SQLite + background sync before your app goes to production.');
+    if (patterns.includes('largefiles'))
+      traps.push(FAILURE_PATTERNS['blob-in-db']);
+    if (type === 'saas' && !patterns.includes('multitenant') && scale !== 'tiny')
+      traps.push(FAILURE_PATTERNS['no-rls']);
+    if (['medium','large'].includes(scale) && team === 'solo-fast')
+      traps.push(FAILURE_PATTERNS['microservices-early']);
+    if (traps.length === 0)
+      traps.push(FAILURE_PATTERNS['no-monitoring']);
+
+    // ── Scaling roadmap ────────────────────────────────────────
+    const scalingRoadmap = {
+      'tiny': [
+        'Month 1–2: Ship on a single server (Railway, Render, or Fly.io). One Postgres instance. No Redis yet.',
+        'Month 3+: Add error monitoring (Sentry), basic uptime checks (Better Uptime). Profile slow queries.',
+        'When you hit 1K users: Add Redis for sessions + rate limiting. Review your indexes.',
+      ],
+      'small': [
+        'Month 1–3: Managed Postgres (Supabase / Neon), deploy on Railway or Render. Add Redis early.',
+        'Month 4–6: CDN for static assets (Cloudflare). Add read replica when p99 DB latency > 200ms.',
+        'Month 6–12: Add job queue for async work. Load test before major launches.',
+      ],
+      'medium': [
+        'Launch: Separate app servers from DB. Postgres primary + 1 read replica. Redis for cache + queues.',
+        'Month 3: Add APM (Datadog or Grafana Cloud). Identify and cache top 10 slowest queries.',
+        'Month 6: CDN for everything. Auto-scaling for app servers. DB connection pooling (PgBouncer).',
+        'Month 12: Evaluate whether to split the monolith. Usually the answer is still no at 100K users.',
+      ],
+      'large': [
+        'Day 1: Multi-AZ Postgres with automated failover. Redis cluster. CDN everywhere.',
+        'Month 1: Observability stack (distributed tracing, structured logs, custom dashboards).',
+        'Month 3: CQRS — separate read replicas for analytics. Async everything via event bus.',
+        'Month 6: Consider splitting read-heavy services. Hire a dedicated DBA and SRE.',
+      ],
+    }[scale] || [];
+
+    // ── Alternative approaches ─────────────────────────────────
+    const alternatives = [];
+    if (team === 'solo-fast' || team === 'small-3mo') {
+      alternatives.push({
+        name: 'Supabase BaaS (fastest launch)',
+        when: 'Best if you want to ship in < 4 weeks',
+        tradeoff: 'Auth + Postgres + Storage + Realtime + Edge Functions in one platform. Zero DevOps. Vendor lock-in risk at large scale, but you won\'t hit that problem for a long time.',
+      });
+    }
+    if (!skills.includes('python') && type !== 'mobile') {
+      alternatives.push({
+        name: 'T3 Stack (Next.js + tRPC + Prisma + Tailwind)',
+        when: 'Best for TypeScript-first fullstack teams',
+        tradeoff: 'End-to-end type safety from DB to UI. Excellent DX. Server components reduce client bundle size. Vercel hosting makes deployment trivial.',
+      });
+    }
+    if (type === 'ai-product') {
+      alternatives.push({
+        name: 'LangChain + FastAPI + Vercel AI SDK',
+        when: 'Best for AI-heavy products with complex chains',
+        tradeoff: 'LangChain handles RAG, agents, and LLM routing. Vercel AI SDK provides streaming React hooks. More complexity than direct API calls — only add when you need agent workflows.',
+      });
+    }
+
+    const warnings = [...insights.values()].filter(i=>i.type==='warning').map(i=>i.text);
+    const similar = SIMILAR_PRODUCTS[type] || { ex: '', note: '' };
+    const selected = [...chips];
+
+    return {
+      chips: selected,
+      chipReasons,
+      patterns: recPatterns,
+      traps,
+      warnings,
+      scalingRoadmap,
+      alternatives,
+      similar,
+      type, scale, team, workflow, skills, infra, auth, compliance, patterns: recPatterns,
+      // keep data patterns accessible
+      dataPatterns: patterns,
+    };
+  }
+
+  function renderArchProgress() {
+    const done = archHistory.length;
+    document.getElementById('arch-progress').innerHTML = ARCH_STEPS.map((_,i)=>
+      `<div class="qa-dot ${i<done?'done':i===done?'active':''}"></div>`
+    ).join('');
+  }
+
+  function renderArchStep(stepId) {
+    archCurrentStepId = stepId;
+    renderArchProgress();
+    document.getElementById('arch-result').innerHTML = '';
+    const step = ARCH_STEPS.find(s=>s.id===stepId);
+    if (!step) return;
+    const cur = archAnswers[stepId];
+    const isMulti = step.multi;
+    const isLast = archHistory.length >= ARCH_STEPS.length - 1;
+    document.getElementById('arch-step-container').innerHTML = `
+      <div class="qa-card">
+        <div class="qa-question">${step.question}</div>
+        <div class="qa-hint">${step.hint}</div>
+        <div class="qa-options">
+          ${step.options.map(o=>{
+            const sel = isMulti ? (Array.isArray(cur)&&cur.includes(o.value)) : cur===o.value;
+            return `<div class="qa-option${sel?(isMulti?' multi-selected':' selected'):''}"
+              onclick="selectArchOption('${stepId}','${o.value}',${isMulti})">${o.label}</div>`;
+          }).join('')}
+        </div>
+        <div class="qa-nav">
+          ${archHistory.length>0?`<button class="qa-back" onclick="archBack()">← Back</button>`:'<span></span>'}
+          <span class="qa-step-label">${archHistory.length+1} of ${ARCH_STEPS.length}</span>
+          <button class="qa-next${cur?' enabled':''}" onclick="archNext()">
+            ${isLast?'Show Architecture →':'Next →'}
+          </button>
+        </div>
+      </div>`;
+  }
+
+  function selectArchOption(stepId, value, isMulti) {
+    if (isMulti) {
+      if (!archAnswers[stepId]) archAnswers[stepId] = [];
+      const idx = archAnswers[stepId].indexOf(value);
+      if (idx>=0) archAnswers[stepId].splice(idx,1); else archAnswers[stepId].push(value);
+      if (!archAnswers[stepId].length) delete archAnswers[stepId];
+    } else {
+      archAnswers[stepId] = value;
+    }
+    evaluateInsights();
+    renderArchStep(stepId);
+  }
+
+  function archNext() {
+    if (!archAnswers[archCurrentStepId]) return;
+    const idx = ARCH_STEPS.findIndex(s=>s.id===archCurrentStepId);
+    if (idx < ARCH_STEPS.length-1) {
+      archHistory.push(archCurrentStepId);
+      renderArchStep(ARCH_STEPS[idx+1].id);
+    } else {
+      showArchResult();
+    }
+  }
+
+  function archBack() {
+    const prev = archHistory.pop();
+    if (prev) renderArchStep(prev);
+  }
+
+  function evaluateInsights() {
+    INSIGHT_RULES.forEach(rule => {
+      if (rule.test(archAnswers)) accumulatedInsights.set(rule.id, rule);
+      else accumulatedInsights.delete(rule.id);
+    });
+    renderInsightsPanel();
+  }
+
+  function renderInsightsPanel() {
+    const list = document.getElementById('arch-insights-list');
+    const count = document.getElementById('arch-insights-count');
+    const items = [...accumulatedInsights.values()];
+    count.textContent = items.length ? `(${items.length})` : '';
+    if (!items.length) {
+      list.innerHTML = '<div class="arch-no-insights">Answer questions to see real-time architecture insights</div>';
+      return;
+    }
+    list.innerHTML = items.map(ins=>`
+      <div class="arch-insight arch-insight-${ins.type}">
+        <div class="arch-insight-type">${ins.type}</div>
+        ${ins.text}
+      </div>`).join('');
+  }
+
+  function showArchResult() {
+    const rec = getArchRecommendation(archAnswers, accumulatedInsights);
+    rec.chips.forEach(id => selectedIds.add(id));
+    renderChips();
+    document.getElementById('arch-step-container').innerHTML = '';
+    document.getElementById('arch-progress').innerHTML = '';
+
+    const similar = rec.similar || {};
+
+    document.getElementById('arch-result').innerHTML = `
+      <div class="qa-result visible" style="display:block;text-align:left">
+
+        <!-- Header -->
+        <div style="margin-bottom:1.25rem">
+          <div style="font-size:1.2rem;font-weight:800;color:#a78bfa;margin-bottom:0.3rem">🏛 Your Architecture Blueprint</div>
+          ${similar.ex ? `<div style="font-size:0.78rem;color:#6b7280">Similar to: <span style="color:#9ca3af">${similar.ex}</span></div>` : ''}
+          ${similar.note ? `<div style="font-size:0.75rem;color:#4b5563;margin-top:0.2rem;font-style:italic">${similar.note}</div>` : ''}
+        </div>
+
+        <div class="arch-rec-sections">
+
+          <!-- 1. Core Stack with per-tech reasoning -->
+          <div class="arch-rec-section">
+            <div class="arch-rec-section-title stack">Core Stack — and why</div>
+            <div class="arch-rec-chips" style="margin-bottom:0.75rem">
+              ${rec.chips.map(id=>{const t=TECH.find(x=>x.id===id);return t?`<span class="sp-chip active" style="cursor:default">${t.label}</span>`:''}).join('')}
+            </div>
+            ${rec.chips.filter(id=>rec.chipReasons[id]).map(id=>`
+              <div style="margin-bottom:0.45rem;font-size:0.76rem;color:#9ca3af;line-height:1.5">
+                <strong style="color:#c4b5fd">${TECH.find(x=>x.id===id)?.label||id}:</strong>
+                ${rec.chipReasons[id].split(':').slice(1).join(':').trim()}
+              </div>`).join('')}
+          </div>
+
+          <!-- 2. Architecture Patterns -->
+          ${rec.patterns.length ? `
+          <div class="arch-rec-section">
+            <div class="arch-rec-section-title patterns">Architecture Patterns</div>
+            ${rec.patterns.map(p=>`
+              <div style="margin-bottom:0.55rem">
+                <div style="font-size:0.8rem;font-weight:600;color:#c084fc">▸ ${p.name}</div>
+                <div style="font-size:0.75rem;color:#9ca3af;line-height:1.5;margin-left:0.75rem">${p.detail}</div>
+              </div>`).join('')}
+          </div>` : ''}
+
+          <!-- 3. Startup Traps — the most important section -->
+          <div class="arch-rec-section" style="border-color:#78350f20">
+            <div class="arch-rec-section-title warnings">⚠ Startup Traps for This Stack</div>
+            <div style="font-size:0.72rem;color:#6b7280;margin-bottom:0.5rem">These are the reasons startups building what you're building fail. Not hypothetical — each is a real post-mortem.</div>
+            ${rec.traps.slice(0,4).map(t=>`<div style="font-size:0.76rem;color:#fbbf24;margin-bottom:0.5rem;line-height:1.5;padding:0.4rem 0.6rem;background:rgba(245,158,11,0.06);border-radius:6px">${t}</div>`).join('')}
+          </div>
+
+          <!-- 4. Compliance warnings -->
+          ${rec.warnings.length ? `
+          <div class="arch-rec-section">
+            <div class="arch-rec-section-title warnings">🔒 Compliance & Security</div>
+            ${rec.warnings.map(w=>`<div style="font-size:0.76rem;color:#fbbf24;margin-bottom:0.45rem;line-height:1.5">• ${w}</div>`).join('')}
+          </div>` : ''}
+
+          <!-- 5. Scaling Roadmap -->
+          ${rec.scalingRoadmap.length ? `
+          <div class="arch-rec-section">
+            <div class="arch-rec-section-title scaling">📈 Scaling Roadmap</div>
+            ${rec.scalingRoadmap.map((s,i)=>`<div style="font-size:0.76rem;color:#9ca3af;margin-bottom:0.45rem;line-height:1.5;padding-left:0.5rem;border-left:2px solid #10b98133">${s}</div>`).join('')}
+          </div>` : ''}
+
+          <!-- 6. Alternative Approaches -->
+          ${rec.alternatives.length ? `
+          <div class="arch-rec-section">
+            <div class="arch-rec-section-title alt">🔀 Alternative Approaches</div>
+            ${rec.alternatives.map(a=>`
+              <div style="margin-bottom:0.75rem">
+                <div style="font-size:0.8rem;font-weight:600;color:#e0e0e0">${a.name}</div>
+                <div style="font-size:0.7rem;color:#6366f1;margin-bottom:0.2rem">Best when: ${a.when}</div>
+                <div style="font-size:0.74rem;color:#9ca3af;line-height:1.5">${a.tradeoff}</div>
+              </div>`).join('')}
+          </div>` : ''}
+
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #1e1e1e">
+          <button class="sp-cta" onclick="switchMode('picker')" style="font-size:0.82rem;padding:0.55rem 1.1rem">See build matrix →</button>
+          <button class="sp-cta" onclick="switchBMTab('config',document.querySelector('[data-panel=config]'));switchMode('picker')" style="font-size:0.82rem;padding:0.55rem 1.1rem;background:rgba(99,102,241,0.15)">Get Cortex config</button>
+          <button class="qa-back" onclick="resetArch()" style="align-self:center">↺ Start over</button>
+        </div>
+      </div>`;
+  }
+
+  function resetArch() {
+    archAnswers = {};
+    archCurrentStepId = null;
+    archHistory = [];
+    accumulatedInsights = new Map();
+    renderInsightsPanel();
+    renderArchStep(ARCH_STEPS[0].id);
+  }
+
+  // ═══════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════
+  renderChips();
+  switchMode('picker');
+  </script>
 </body>
 </html>
