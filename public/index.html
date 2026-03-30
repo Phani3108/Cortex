@@ -288,7 +288,17 @@
       opacity: 0; transition: opacity 0.15s ease; z-index: 9999;
       box-shadow: 0 8px 32px rgba(0,0,0,0.6);
     }
-    #sp-tooltip.visible { opacity: 1; }
+    #sp-tooltip.visible { opacity: 1; pointer-events: auto; }
+    .tt-close {
+      position: absolute; top: 0.5rem; right: 0.6rem;
+      background: none; border: none; color: #6b7280; font-size: 1.2rem;
+      cursor: pointer; padding: 0.2rem 0.4rem; line-height: 1;
+      display: none; z-index: 1;
+    }
+    .tt-close:hover { color: #e0e0e0; }
+    @media (pointer: coarse) {
+      .tt-close { display: block; }
+    }
     .tt-name { font-size: 0.9rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.6rem; }
     .tt-section-label {
       font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
@@ -340,6 +350,20 @@
     .arch-insight-tool    { background: rgba(16,185,129,0.08); border-color: #10b981; color: #34d399; }
     .arch-insight-type { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.15rem; }
     .arch-no-insights { text-align: center; color: #4b5563; font-size: 0.78rem; padding: 1.5rem 0.5rem; line-height: 1.5; }
+
+    /* PROGRESSIVE ANSWERED CARDS */
+    .qa-answered, .arch-answered {
+      background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 12px;
+      padding: 0.75rem 1rem; margin-bottom: 0.5rem;
+      animation: fadeSlide 0.2s ease;
+    }
+    .qa-answered-q, .arch-answered-q { font-size: 0.78rem; font-weight: 600; color: #6b7280; }
+    .qa-answered-a, .arch-answered-a { font-size: 0.85rem; color: #a78bfa; margin-top: 0.15rem; font-weight: 500; }
+    .arch-answered-insights { margin-top: 0.45rem; }
+    .arch-answered-insight {
+      font-size: 0.72rem; padding: 0.35rem 0.6rem; border-radius: 6px;
+      margin-top: 0.3rem; border-left: 2px solid; line-height: 1.45;
+    }
 
     /* Multi-select option */
     .qa-option.multi-selected { border-color: #a855f7; background: rgba(168,85,247,0.15); color: #c084fc; font-weight: 600; }
@@ -497,6 +521,7 @@
         <div class="arch-layout">
           <div>
             <div id="arch-step-container"></div>
+            <div id="arch-answered-stack"></div>
             <div id="arch-result"></div>
           </div>
           <div class="arch-insights-panel" id="arch-insights-panel">
@@ -512,6 +537,7 @@
       <div id="mode-guided" style="display:none">
         <div class="qa-progress" id="qa-progress"></div>
         <div id="qa-step-container"></div>
+        <div id="qa-answered-stack"></div>
         <div id="qa-result"></div>
       </div>
 
@@ -555,6 +581,7 @@
 
   <!-- Global tooltip -->
   <div id="sp-tooltip">
+    <button class="tt-close" onclick="hideTooltip()" aria-label="Close">&times;</button>
     <div class="tt-name" id="tt-name"></div>
     <div class="tt-section-label">Best for</div>
     <ul class="tt-bullets" id="tt-bullets"></ul>
@@ -1049,6 +1076,11 @@
     picker.style.display   = mode === 'picker'   ? 'block' : 'none';
     guided.style.display   = mode === 'guided'   ? 'block' : 'none';
     architect.style.display = mode === 'architect' ? 'block' : 'none';
+    // Hide build matrix when leaving picker mode
+    if (mode !== 'picker') {
+      document.getElementById('build-matrix').classList.remove('visible');
+      matrixVisible = false;
+    }
     if (mode === 'guided') {
       const hasResult = document.getElementById('qa-result').classList.contains('visible');
       if (!hasResult) renderQAStep(0);
@@ -1067,7 +1099,31 @@
     ).join('');
   }
 
-  function renderQAStep(step) {
+  function stackQAAnswer(stepIndex) {
+    const s = QA_STEPS[stepIndex];
+    const answer = qaAnswers[s.id];
+    if (!answer) return;
+    const option = s.options.find(o => o.value === answer);
+    if (!option) return;
+    const div = document.createElement('div');
+    div.className = 'qa-answered';
+    div.dataset.stepIndex = stepIndex;
+    div.innerHTML = `
+      <div class="qa-answered-q">${s.question}</div>
+      <div class="qa-answered-a">${option.label}</div>`;
+    document.getElementById('qa-answered-stack').appendChild(div);
+  }
+
+  function renderQAStep(step, goingBack) {
+    // Stack previous answer when going forward
+    if (!goingBack && step > qaStep && qaStep >= 0 && qaAnswers[QA_STEPS[qaStep].id]) {
+      stackQAAnswer(qaStep);
+    }
+    // Remove last stacked card when going back
+    if (goingBack) {
+      const stack = document.getElementById('qa-answered-stack');
+      if (stack.lastChild) stack.removeChild(stack.lastChild);
+    }
     qaStep = step;
     renderQAProgress();
     document.getElementById('qa-result').classList.remove('visible');
@@ -1087,7 +1143,7 @@
         </div>
         <div class="qa-nav">
           ${step > 0
-            ? `<button class="qa-back" onclick="renderQAStep(${step-1})">← Back</button>`
+            ? `<button class="qa-back" onclick="renderQAStep(${step-1},true)">← Back</button>`
             : '<span></span>'}
           <span class="qa-step-label">${step+1} of ${QA_STEPS.length}</span>
           <button class="qa-next ${hasAnswer ? 'enabled' : ''}" id="qa-next-btn"
@@ -1107,6 +1163,8 @@
   }
 
   function showQAResult() {
+    // Stack the final answered question
+    stackQAAnswer(qaStep);
     const preset = PRESETS[getPresetKey(qaAnswers)];
     selectedIds.clear();
     preset.chips.forEach(id => selectedIds.add(id));
@@ -1161,6 +1219,7 @@
     Object.keys(qaAnswers).forEach(k => delete qaAnswers[k]);
     document.getElementById('qa-result').classList.remove('visible');
     document.getElementById('qa-result').style.display = 'none';
+    document.getElementById('qa-answered-stack').innerHTML = '';
     document.getElementById('build-matrix').classList.remove('visible');
     matrixVisible = false;
     renderQAStep(0);
@@ -1350,7 +1409,12 @@
     tt.classList.add('visible');
   }
 
-  function scheduleHide() { hideTimer = setTimeout(() => document.getElementById('sp-tooltip').classList.remove('visible'), 120); }
+  function scheduleHide() { hideTimer = setTimeout(() => document.getElementById('sp-tooltip').classList.remove('visible'), 300); }
+
+  function hideTooltip() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    document.getElementById('sp-tooltip').classList.remove('visible');
+  }
 
   function positionTooltip(rect, tt) {
     const TW = tt.offsetWidth || 292, TH = tt.offsetHeight || 220, GAP = 10, vw = window.innerWidth;
@@ -1481,8 +1545,9 @@
   // ═══════════════════════════════════════
   let archAnswers = {};
   let archCurrentStepId = null;
-  let archHistory = [];
+  let archHistory = [];  // stores { stepId, insightSnapshot }
   let accumulatedInsights = new Map();
+  let previousInsightIds = new Set();
 
   // Real-world examples per project type
   const SIMILAR_PRODUCTS = {
@@ -1913,11 +1978,45 @@
     renderArchStep(stepId);
   }
 
+  function stackArchAnswer(stepId) {
+    const step = ARCH_STEPS.find(s=>s.id===stepId);
+    const answer = archAnswers[stepId];
+    if (!step || !answer) return;
+
+    let answerLabel;
+    if (step.multi && Array.isArray(answer)) {
+      answerLabel = answer.map(v => { const o = step.options.find(x=>x.value===v); return o ? o.label : v; }).join(', ');
+    } else {
+      const o = step.options.find(x=>x.value===answer);
+      answerLabel = o ? o.label : answer;
+    }
+
+    // Find insights that are new since last step
+    const currentIds = new Set(accumulatedInsights.keys());
+    const newInsights = [...accumulatedInsights.values()].filter(ins => !previousInsightIds.has(ins.id));
+    previousInsightIds = new Set(currentIds);
+
+    const div = document.createElement('div');
+    div.className = 'arch-answered';
+    div.dataset.stepId = stepId;
+    let insHtml = '';
+    if (newInsights.length) {
+      insHtml = `<div class="arch-answered-insights">${newInsights.map(ins =>
+        `<div class="arch-answered-insight arch-insight-${ins.type}">
+          <span class="arch-insight-type">${ins.type}</span> ${ins.text}
+        </div>`).join('')}</div>`;
+    }
+    div.innerHTML = `<div class="arch-answered-q">${step.question}</div>
+      <div class="arch-answered-a">${answerLabel}</div>${insHtml}`;
+    document.getElementById('arch-answered-stack').appendChild(div);
+  }
+
   function archNext() {
     if (!archAnswers[archCurrentStepId]) return;
+    stackArchAnswer(archCurrentStepId);
     const idx = ARCH_STEPS.findIndex(s=>s.id===archCurrentStepId);
     if (idx < ARCH_STEPS.length-1) {
-      archHistory.push(archCurrentStepId);
+      archHistory.push({ stepId: archCurrentStepId, insightSnapshot: new Set(previousInsightIds) });
       renderArchStep(ARCH_STEPS[idx+1].id);
     } else {
       showArchResult();
@@ -1925,8 +2024,13 @@
   }
 
   function archBack() {
-    const prev = archHistory.pop();
-    if (prev) renderArchStep(prev);
+    const entry = archHistory.pop();
+    if (entry) {
+      const stack = document.getElementById('arch-answered-stack');
+      if (stack.lastChild) stack.removeChild(stack.lastChild);
+      previousInsightIds = entry.insightSnapshot;
+      renderArchStep(entry.stepId);
+    }
   }
 
   function evaluateInsights() {
@@ -1954,6 +2058,7 @@
   }
 
   function showArchResult() {
+    stackArchAnswer(archCurrentStepId);
     const rec = getArchRecommendation(archAnswers, accumulatedInsights);
     rec.chips.forEach(id => selectedIds.add(id));
     renderChips();
@@ -2046,7 +2151,9 @@
     archAnswers = {};
     archCurrentStepId = null;
     archHistory = [];
+    previousInsightIds = new Set();
     accumulatedInsights = new Map();
+    document.getElementById('arch-answered-stack').innerHTML = '';
     renderInsightsPanel();
     renderArchStep(ARCH_STEPS[0].id);
   }
@@ -2054,6 +2161,20 @@
   // ═══════════════════════════════════════
   // INIT
   // ═══════════════════════════════════════
+
+  // Tooltip: hovering over the tooltip itself keeps it open
+  const ttEl = document.getElementById('sp-tooltip');
+  ttEl.addEventListener('mouseenter', () => { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } });
+  ttEl.addEventListener('mouseleave', scheduleHide);
+
+  // Tooltip: tap anywhere outside to dismiss (mobile)
+  document.addEventListener('touchstart', (e) => {
+    const tt = document.getElementById('sp-tooltip');
+    if (tt.classList.contains('visible') && !tt.contains(e.target) && !e.target.closest('.sp-chip')) {
+      hideTooltip();
+    }
+  }, { passive: true });
+
   renderChips();
   switchMode('picker');
   </script>
