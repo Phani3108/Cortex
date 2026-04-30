@@ -284,6 +284,14 @@
     }
 
     /* ACADEMY PANEL */
+    .academy-header { text-align: center; margin-bottom: 1.5rem; }
+    .academy-header h2 {
+      font-size: 1.5rem; font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
+    }
+    .academy-header p { font-size: 0.85rem; color: #9ca3af; }
     .academy-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem; }
     .academy-card {
       background: #111; border: 1px solid #1e1e1e; border-radius: 10px;
@@ -613,6 +621,16 @@
           <div id="academy-content"></div>
         </div>
       </div>
+    </section>
+
+    <!-- CORTEX ACADEMY (always visible) -->
+    <hr class="sp-divider">
+    <section id="academy-section">
+      <div class="academy-header">
+        <h2>Cortex Academy</h2>
+        <p>Step-by-step guided tracks to build AI Agents, MCPs, and API contracts</p>
+      </div>
+      <div id="academy-standalone"></div>
     </section>
 
   </div>
@@ -1622,10 +1640,12 @@
       </div>
     `).join('');
 
-    document.getElementById('academy-content').innerHTML = `
+    const html = `
       <div class="academy-grid">${cards}</div>
       <div class="academy-videos">${videos}</div>
     `;
+    document.getElementById('academy-content').innerHTML = html;
+    document.getElementById('academy-standalone').innerHTML = html;
   }
 
   // ═══════════════════════════════════════
@@ -2276,6 +2296,7 @@
   }, { passive: true });
 
   renderChips();
+  renderAcademy();
   switchMode('picker');
   </script>
 </body>
