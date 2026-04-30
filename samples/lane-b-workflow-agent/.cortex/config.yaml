@@ -1,0 +1,30 @@
+version: 1
+project:
+  name: lane-b-workflow-agent
+  language: typescript
+  framework: fastify
+providers:
+  claude: true
+  cursor: true
+  copilot: true
+  gemini: false
+  openai: false
+  windsurf: false
+  antigravity: false
+  codex: false
+  kiro: false
+rules:
+  sources:
+    - local
+skills:
+  sources:
+    - local
+context:
+  include:
+    - src/
+    - contracts/
+    - openapi.yaml
+  exclude:
+    - node_modules/
+    - dist/
+  max_tokens: 100000

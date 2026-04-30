@@ -1,0 +1,23 @@
+openapi: 3.1.0
+info:
+  title: Lane B Workflow Agent API
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Healthy
+  /workflow/run:
+    post:
+      summary: Execute workflow agent pipeline
+      requestBody:
+        required: true
+      responses:
+        '200':
+          description: Structured workflow response
+        '400':
+          description: Invalid request
+        '500':
+          description: Tool execution error

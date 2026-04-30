@@ -43,6 +43,8 @@
     "bin/",
     "src/",
     "templates/",
+    "samples/",
+    "content/",
     "providers/",
     "README.md",
     "LICENSE"

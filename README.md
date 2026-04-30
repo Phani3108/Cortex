@@ -62,6 +62,30 @@ Three interactive modes to help you pick the right tech stack:
   - 33 live insight rules that fire in real-time as you answer — covering N+1 query traps, connection pooling pitfalls, multi-tenant data isolation, compliance constraints, and more
   - Output includes: **Core Stack with per-tech reasoning** (why each technology, what real companies use it), **Architecture Patterns** with implementation detail, **Startup Traps** (real post-mortem failure patterns specific to your choices), **Compliance & Security** warnings, **Month-by-month Scaling Roadmap**, and **Alternative Approaches** with "best when" guidance
 
+### 🧭 Cortex Academy (Tutorial-First Build Tracks)
+
+Build AI systems in phases, not guesswork.
+
+- **Stepwise by design** — each phase includes goal, implementation step, validation checks, pitfalls, and expansion paths
+- **Choice-driven foundations** — pick stack, LLM strategy, DB, and deployment before writing production code
+- **Builder tracks** — follow dedicated tracks for:
+  - AI Agents (single-task to production-ready)
+  - MCP servers and tool contracts
+  - API contract design and safe evolution
+
+Start here: `content/cortex-academy-playbook.md`
+
+Enable tutorial skills in your project:
+
+```bash
+cortex add skill stack-selection
+cortex add skill agent-foundations
+cortex add skill mcp-builder
+cortex add skill api-contract-engineering
+cortex add skill tutorial-coach
+cortex compile
+```
+
 ---
 
 ## 🛠️ Installation
@@ -92,7 +116,13 @@ cortex init
 # 3. Compile — generates native config for every enabled tool
 cortex compile
 
-# 4. Done. Your AI tools now share the same intelligence.
+# 4. Start the Academy guide (lanes, phases, scaffolds)
+cortex tutorial start
+
+# 5. Scaffold a lane sample and run it
+cortex tutorial scaffold lane-a ./my-agent-app
+
+# 6. Done. Your AI tools now share the same intelligence.
 ```
 
 ---
@@ -106,6 +136,7 @@ cortex compile
 | `cortex learn` | Capture signals and evolve your rules |
 | `cortex watch` | Auto-recompile and auto-learn as you work |
 | `cortex assist` | Guided conversational setup |
+| `cortex tutorial` | Guided Cortex Academy lanes, phases, and sample scaffolding |
 | `cortex import` | Import existing CLAUDE.md, .cursorrules, etc. |
 | `cortex diff` | See what changed since last compile |
 | `cortex cost` | Token cost analysis across providers |

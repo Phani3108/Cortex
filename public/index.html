@@ -19,6 +19,7 @@
     h1 {
       font-size: 3rem; font-weight: 800;
       background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+      background-clip: text;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
     }
@@ -77,6 +78,7 @@
     .explorer-header h2 {
       font-size: 1.5rem; font-weight: 700;
       background: linear-gradient(135deg, #6366f1, #a855f7);
+      background-clip: text;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 0.4rem;
     }
@@ -281,6 +283,37 @@
       max-height: 400px; overflow-y: auto;
     }
 
+    /* ACADEMY PANEL */
+    .academy-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem; }
+    .academy-card {
+      background: #111; border: 1px solid #1e1e1e; border-radius: 10px;
+      padding: 0.9rem 1rem; text-align: left;
+    }
+    .academy-card-title {
+      font-size: 0.8rem; color: #a78bfa; font-weight: 700; margin-bottom: 0.45rem;
+      letter-spacing: 0.02em;
+    }
+    .academy-card ul { list-style: none; }
+    .academy-card li { font-size: 0.76rem; color: #9ca3af; margin-bottom: 0.35rem; line-height: 1.45; }
+    .academy-card li strong { color: #c4c4c4; font-weight: 600; }
+    .academy-videos {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.7rem;
+    }
+    .academy-video-card {
+      background: #0f0f1c; border: 1px solid #26263d; border-radius: 10px; padding: 0.7rem;
+    }
+    .academy-video-title { font-size: 0.74rem; color: #c084fc; font-weight: 600; margin-bottom: 0.45rem; }
+    .academy-video-wrap {
+      position: relative; width: 100%; padding-bottom: 56.25%;
+      border-radius: 8px; overflow: hidden; border: 1px solid #2a2a3a; background: #0a0a12;
+    }
+    .academy-video-wrap iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+    }
+
     /* TOOLTIP */
     #sp-tooltip {
       position: fixed; width: 292px; background: #12122a; border: 1px solid #3b3b5c;
@@ -398,6 +431,7 @@
       .cli-cmd { min-width: 180px; }
       .arch-layout { grid-template-columns: 1fr; }
       .arch-insights-panel { max-height: 250px; position: static; }
+      .academy-videos { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -547,6 +581,7 @@
           <button class="bm-tab active" data-panel="matrix" onclick="switchBMTab('matrix',this)">Build Matrix</button>
           <button class="bm-tab" data-panel="tips" onclick="switchBMTab('tips',this)">Stack Tips</button>
           <button class="bm-tab" data-panel="config" onclick="switchBMTab('config',this)">Cortex Config</button>
+          <button class="bm-tab" data-panel="academy" onclick="switchBMTab('academy',this)">Academy</button>
         </div>
         <div class="bm-panel active" id="bm-panel-matrix">
           <table class="bm-table">
@@ -573,6 +608,9 @@
             </div>
             <pre class="cortex-config-pre" id="cortex-config-content"></pre>
           </div>
+        </div>
+        <div class="bm-panel" id="bm-panel-academy">
+          <div id="academy-content"></div>
         </div>
       </div>
     </section>
@@ -1492,6 +1530,40 @@
     },
   ];
 
+  const ACADEMY_PHASES = [
+    {
+      title: 'Phase 0 — Pick Lane + Constraints',
+      goal: 'Choose lane and lock budget, latency, team, and compliance boundaries.',
+      pitfall: 'Choosing model/framework before constraints usually leads to costly rewrites.',
+      expand: 'Create a fallback stack and model plan before coding.',
+    },
+    {
+      title: 'Phase 1 — Contracts First',
+      goal: 'Define OpenAPI and tool schemas before implementation.',
+      pitfall: 'Changing required fields without versioning breaks clients quickly.',
+      expand: 'Add contract tests in CI to block breaking changes.',
+    },
+    {
+      title: 'Phase 2 — Safe Core Build',
+      goal: 'Ship one complete path with validation, timeout, retry, and structured errors.',
+      pitfall: 'Skipping safe mode causes risky tool actions in early agent versions.',
+      expand: 'Add planner/executor split and approval checkpoints.',
+    },
+    {
+      title: 'Phase 3 — MCP + API Evolution',
+      goal: 'Expose tools through strict contracts and compatibility policies.',
+      pitfall: 'Unvalidated tool calls and internal error leaks create unstable clients.',
+      expand: 'Add tenant-aware policies and versioned capability discovery.',
+    },
+  ];
+
+  const ACADEMY_VIDEO_MODULES = [
+    { title: 'Episode 1: Stack + Model + DB', url: 'https://www.youtube.com/embed/VIDEO_ID_1' },
+    { title: 'Episode 2: Contract-First APIs', url: 'https://www.youtube.com/embed/VIDEO_ID_2' },
+    { title: 'Episode 3: First Safe Agent', url: 'https://www.youtube.com/embed/VIDEO_ID_3' },
+    { title: 'Episode 4: MCP Tools', url: 'https://www.youtube.com/embed/VIDEO_ID_4' },
+  ];
+
   function renderTips() {
     const sel = selectedIds;
     const cats = new Set(TECH.filter(t => sel.has(t.id)).map(t => t.category));
@@ -1529,6 +1601,33 @@
     document.getElementById('bm-tips-content').innerHTML = personalHtml + guideHtml;
   }
 
+  function renderAcademy() {
+    const cards = ACADEMY_PHASES.map(phase => `
+      <div class="academy-card">
+        <div class="academy-card-title">${phase.title}</div>
+        <ul>
+          <li><strong>Goal:</strong> ${phase.goal}</li>
+          <li><strong>Pitfall:</strong> ${phase.pitfall}</li>
+          <li><strong>Expand:</strong> ${phase.expand}</li>
+        </ul>
+      </div>
+    `).join('');
+
+    const videos = ACADEMY_VIDEO_MODULES.map(video => `
+      <div class="academy-video-card">
+        <div class="academy-video-title">${video.title}</div>
+        <div class="academy-video-wrap">
+          <iframe src="${video.url}" title="${video.title}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('academy-content').innerHTML = `
+      <div class="academy-grid">${cards}</div>
+      <div class="academy-videos">${videos}</div>
+    `;
+  }
+
   // ═══════════════════════════════════════
   // TAB SWITCH
   // ═══════════════════════════════════════
@@ -1538,6 +1637,7 @@
     btn.classList.add('active');
     document.getElementById('bm-panel-' + id).classList.add('active');
     if (id === 'config') renderCortexConfig();
+    if (id === 'academy') renderAcademy();
   }
 
   // ═══════════════════════════════════════

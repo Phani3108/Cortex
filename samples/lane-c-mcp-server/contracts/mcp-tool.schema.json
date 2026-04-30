@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MCP Tool Call",
+  "type": "object",
+  "required": ["name", "input"],
+  "properties": {
+    "name": { "type": "string" },
+    "input": { "type": "object" }
+  }
+}

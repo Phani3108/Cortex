@@ -268,7 +268,17 @@ async function executeSetLanguage(projectRoot, session) {
 }
 
 async function executeAddSkills(projectRoot, session) {
-  const availableSkills = ['code-review', 'security-audit', 'debugging', 'tdd'];
+  const availableSkills = [
+    'code-review',
+    'security-audit',
+    'debugging',
+    'tdd',
+    'stack-selection',
+    'agent-foundations',
+    'mcp-builder',
+    'api-contract-engineering',
+    'tutorial-coach',
+  ];
 
   info('Available skill templates:');
   availableSkills.forEach((s, i) => {

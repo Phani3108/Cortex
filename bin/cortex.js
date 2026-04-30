@@ -49,6 +49,7 @@ const COMMANDS = {
   optimize: 'Score rules by impact, compress to fit tight token budgets',
   verify:   'Validate compiled output against provider specs, generate tips',
   suggest:  'Intelligent rule suggestions based on project stack analysis',
+  tutorial: 'Stepwise Cortex Academy guide for lanes, phases, and sample scaffolds',
   status:   'Show current cortex configuration status + provider health',
   profile:  'View or edit your personal AI profile (~/.cortex/profile.yaml)',
   add:      'Add a new skill, rule, or source (e.g., cortex add skill <name>)',
@@ -141,7 +142,16 @@ ${Object.entries(COMMANDS).map(([k, v]) => `    ${k.padEnd(12)} ${v}`).join('\n'
     cortex suggest                 Get rule suggestions for your project
     cortex suggest packs           List available rule packs
     cortex suggest apply tdd       Apply a rule pack
+    cortex tutorial lanes          Show Academy build lanes
+    cortex tutorial phases         Show phased roadmap
+    cortex tutorial start          Start guided lane + phase walkthrough
+    cortex tutorial scaffold lane-a ./my-agent-app   Scaffold a lane sample
     cortex add skill tdd           Add the TDD skill to current project
+    cortex add skill stack-selection       Add guided stack/LLM/DB selection skill
+    cortex add skill agent-foundations     Add phased AI agent build skill
+    cortex add skill mcp-builder           Add MCP server/tool contract skill
+    cortex add skill api-contract-engineering  Add API contract design/review skill
+    cortex add skill tutorial-coach        Add tutorial-first coaching skill
     cortex status                  Show current configuration
 
   LEARN MORE

@@ -125,6 +125,11 @@ function printAddHelp() {
 
   EXAMPLES
     cortex add skill code-review
+    cortex add skill stack-selection
+    cortex add skill agent-foundations
+    cortex add skill mcp-builder
+    cortex add skill api-contract-engineering
+    cortex add skill tutorial-coach
     cortex add rule security --global
     cortex add skill testing --dry
 `);

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workflow Tool Contract",
+  "type": "object",
+  "required": ["name", "input", "output"],
+  "properties": {
+    "name": { "type": "string" },
+    "input": { "type": "string" },
+    "output": { "type": "string" }
+  }
+}
