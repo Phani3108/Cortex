@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--@include head title="Model registry — Cortex" description="Pricing and context windows for 200+ models used by AI coding tools — Claude, GPT, Gemini, Grok, DeepSeek, Qwen and more — refreshed daily. Estimate what your always-on instructions cost."-->
+<script type="module" src="/assets/js/models.js?v={{build}}"></script>
+</head>
+<body data-page="models">
+<!--@include header-->
+<main id="main">
+  <section class="page-head">
+    <div class="container">
+      <div class="eyebrow">Model registry</div>
+      <h1 class="h2">Every model your coding agents can run — priced today.</h1>
+      <p class="lead">Refreshed every day from the <a href="https://openrouter.ai/models" rel="noopener">OpenRouter catalog</a> by a <a href="https://github.com/Phani3108/Cortex/blob/main/.github/workflows/refresh-registry.yml" rel="noopener">GitHub Action</a>. The CLI ships the same data (<code>cortex update</code> pulls the latest).</p>
+      <div class="row" style="margin-top:18px">
+        <p class="fresh" data-freshness><span class="dot"></span><span>Loading…</span></p>
+        <a class="small" href="/data/registry.json">Raw JSON</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="grid grid-4" id="stats">
+        <div class="card stat"><div class="stat-value">—</div><div class="stat-label">Models tracked</div></div>
+        <div class="card stat"><div class="stat-value">—</div><div class="stat-label">Vendors</div></div>
+        <div class="card stat"><div class="stat-value">—</div><div class="stat-label">Released in the last 30 days</div></div>
+        <div class="card stat"><div class="stat-value">—</div><div class="stat-label">Data last changed</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" id="calculator" style="padding-top:0">
+    <div class="container">
+      <div class="panel" style="padding:24px">
+        <div class="row" style="align-items:flex-start;gap:24px">
+          <div style="flex:1 1 320px;min-width:0">
+            <div class="eyebrow">Context cost calculator</div>
+            <h2 class="h3" style="font-size:1.35rem">What do your always-on instructions cost?</h2>
+            <p class="text-2 small" style="margin-top:6px">CLAUDE.md, AGENTS.md and rule files are re-sent as input on every request. This is the monthly bill for that alone, per model. Run <code>cortex cost</code> for your real numbers.</p>
+            <div class="grid grid-2" style="margin-top:18px;gap:14px">
+              <label class="field">Instruction tokens
+                <input class="input" type="number" id="c-tokens" min="100" step="100" value="3000"></label>
+              <label class="field">Requests per day (whole team)
+                <input class="input" type="number" id="c-requests" min="1" step="10" value="400"></label>
+              <label class="field">Working days / month
+                <input class="input" type="number" id="c-days" min="1" max="31" value="22"></label>
+              <label class="field">Compare
+                <select class="select" id="c-set">
+                  <option value="flagships">Current flagships</option>
+                  <option value="budget">Fast &amp; cheap tiers</option>
+                  <option value="all-active">All active models (top 12 cheapest)</option>
+                </select></label>
+            </div>
+            <label class="check" style="margin-top:14px"><input type="checkbox" id="c-cache" checked> Use prompt-cache read price where the vendor offers one</label>
+          </div>
+          <div style="flex:1.3 1 380px;min-width:0">
+            <div class="row" style="margin-bottom:8px"><strong class="small">Monthly cost of instructions</strong><span class="spacer"></span><span class="tiny muted" id="c-note"></span></div>
+            <div id="c-chart" role="img" aria-label="Bar chart of monthly instruction cost per model"></div>
+            <details style="margin-top:10px"><summary class="small muted" style="cursor:pointer">Show as table</summary><div class="table-wrap" style="margin-top:8px"><table class="table" id="c-table"></table></div></details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" style="padding-top:0">
+    <div class="container">
+      <div class="row" style="margin-bottom:14px;gap:10px">
+        <label class="visually-hidden" for="f-q">Search models</label>
+        <input class="input" id="f-q" type="search" placeholder="Search models, e.g. sonnet, gpt-6, gemini flash" style="flex:1 1 260px;width:auto">
+        <label class="visually-hidden" for="f-vendor">Vendor</label>
+        <select class="select" id="f-vendor" style="width:auto"><option value="">All vendors</option></select>
+        <label class="check"><input type="checkbox" id="f-active" checked> Hide previews &amp; deprecated</label>
+        <span class="tiny muted" id="f-count" aria-live="polite"></span>
+      </div>
+      <div class="table-wrap" style="max-height:640px">
+        <table class="table" id="models-table">
+          <thead><tr>
+            <th><button type="button" data-sort="name">Model</button></th>
+            <th><button type="button" data-sort="vendor">Vendor</button></th>
+            <th><button type="button" data-sort="tier">Tier</button></th>
+            <th class="num"><button type="button" data-sort="input">Input $/1M</button></th>
+            <th class="num"><button type="button" data-sort="output">Output $/1M</button></th>
+            <th class="num"><button type="button" data-sort="context">Context</button></th>
+            <th><button type="button" data-sort="released">Released ↓</button></th>
+          </tr></thead>
+          <tbody><tr><td colspan="7" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="tiny muted" style="margin-top:10px">Prices are vendor list prices per million tokens as published through OpenRouter; your contract, batch or regional pricing may differ. Subscription tools (Cursor, Copilot, Windsurf) bill per seat.</p>
+    </div>
+  </section>
+</main>
+<!--@include footer-->
+</body>
+</html>

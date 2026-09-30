@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--@include head title="Docs — Cortex" description="Install Cortex, write rules and skills in .cortex/, compile to every AI coding tool, and keep them in sync with a CI check. Full CLI reference."-->
+<script type="module" src="/assets/js/docs.js?v={{build}}"></script>
+</head>
+<body data-page="docs">
+<!--@include header-->
+<main id="main" class="container">
+  <div class="docs">
+    <nav class="docs-nav" aria-label="Documentation">
+      <div class="group">Start</div>
+      <a href="#install">Install</a>
+      <a href="#quickstart">Quick start</a>
+      <a href="#layout">The .cortex/ folder</a>
+      <div class="group">Authoring</div>
+      <a href="#rules">Rules</a>
+      <a href="#scoped">Path-scoped rules</a>
+      <a href="#skills">Skills</a>
+      <a href="#config">config.yaml</a>
+      <div class="group">Output</div>
+      <a href="#targets">Tools &amp; files</a>
+      <a href="#agents-md">AGENTS.md sharing</a>
+      <a href="#safety">Ownership &amp; safety</a>
+      <a href="#ci">CI drift check</a>
+      <div class="group">Reference</div>
+      <a href="#commands">CLI commands</a>
+      <a href="#models">Model data</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <article class="prose">
+      <h2 id="install">Install</h2>
+      <p>Cortex is a single, dependency-free Node.js CLI (Node 18.17+).</p>
+      <div class="code"><div class="code-head"><span>shell</span><span class="spacer"></span><button class="copy-btn" data-copy-target="#c-install"><span class="copy-label">Copy</span></button></div><pre id="c-install">npm install -g github:Phani3108/Cortex
+cortex --version</pre></div>
+      <p>Or run it once without installing: <code>npx github:Phani3108/Cortex init</code>. From a clone: <code>npm install -g .</code></p>
+
+      <h2 id="quickstart">Quick start</h2>
+      <div class="code"><div class="code-head"><span>shell</span><span class="spacer"></span><button class="copy-btn" data-copy-target="#c-quick"><span class="copy-label">Copy</span></button></div><pre id="c-quick">cd your-repo
+cortex init              # detects stack + tools, imports existing CLAUDE.md / AGENTS.md / …
+$EDITOR .cortex/rules/project.md
+cortex compile           # writes native files for every enabled tool
+git add .cortex CLAUDE.md AGENTS.md .cursor .github && git commit -m "Add Cortex"</pre></div>
+      <p>If <code>init</code> imported hand-written files, run <code>cortex compile --force</code> once so the generated versions replace the originals (your content now lives in <code>.cortex/rules/imported-*.md</code>).</p>
+
+      <h2 id="layout">The <code>.cortex/</code> folder</h2>
+      <div class="code"><pre>.cortex/
+  config.yaml          which tools to compile for, per-tool model, output options
+  rules/
+    project.md         always-on rules (## headings become categories)
+    react.md           rules with scope: frontmatter apply only to matching paths
+  skills/
+    code-review.md     or code-review/SKILL.md — compiled to Agent Skills</pre></div>
+      <p>Personal rules in <code>~/.cortex/rules/</code> and <code>~/.cortex/profile.yaml</code> are merged into every project you compile.</p>
+
+      <h2 id="rules">Rules</h2>
+      <p>Plain markdown. Every bullet under a <code>##</code> heading is one rule; the heading is its category. Nested bullets and indented continuation lines stay with their parent rule, and a paragraph under a heading counts as one rule.</p>
+      <div class="code"><div class="code-head"><span>.cortex/rules/project.md</span></div><pre>## Architecture
+- Business logic lives in `src/services/`; route handlers stay thin
+- Don't add a dependency without a one-line justification
+
+## Safety
+- ! Never commit secrets or `.env` files
+- ! Validate external input at the boundary</pre></div>
+      <p>A leading <code>!</code> marks a rule <strong>critical</strong>: it is emphasised in every output and is the last thing dropped when a tool has a hard size limit. Duplicate rules across files are merged automatically.</p>
+
+      <h2 id="scoped">Path-scoped rules</h2>
+      <p>Add <code>scope:</code> frontmatter and the whole file applies only to matching paths. Cortex translates it into each tool’s native mechanism.</p>
+      <div class="code"><div class="code-head"><span>.cortex/rules/react.md</span></div><pre>---
+scope: ["src/**/*.tsx"]
+description: React component conventions
+---
+## Components
+- Keep components under 150 lines; extract hooks for state</pre></div>
+      <div class="table-wrap"><table class="table">
+        <thead><tr><th>Tool</th><th>Becomes</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>.claude/rules/cortex-react.md</code> with <code>paths:</code></td></tr>
+          <tr><td>Cursor</td><td><code>.cursor/rules/cortex-react.mdc</code> with <code>globs:</code>, <code>alwaysApply: false</code></td></tr>
+          <tr><td>GitHub Copilot</td><td><code>.github/instructions/cortex-react.instructions.md</code> with <code>applyTo:</code></td></tr>
+          <tr><td>Windsurf / Antigravity</td><td>rule file with <code>trigger: glob</code> + <code>globs:</code></td></tr>
+          <tr><td>Kiro</td><td><code>.kiro/steering/cortex-react.md</code> with <code>inclusion: fileMatch</code></td></tr>
+          <tr><td>AGENTS.md, GEMINI.md</td><td>a “When working on <code>src/**/*.tsx</code>” section</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="skills">Skills</h2>
+      <p>Skills are on-demand playbooks (code review, release, incident triage). Write them as <code>.cortex/skills/&lt;name&gt;.md</code> or <code>.cortex/skills/&lt;name&gt;/SKILL.md</code>. Cortex emits the open <a href="https://agentskills.io/specification" rel="noopener">Agent Skills</a> format — only loaded when relevant, so they don’t cost tokens on every request.</p>
+      <div class="code"><div class="code-head"><span>.cortex/skills/code-review.md</span></div><pre>---
+name: code-review
+description: Review a diff for correctness, security and maintainability before merge.
+---
+# Code review
+1. Read the diff; list behaviour changes.
+2. Check error handling, input validation and secrets.</pre></div>
+      <p>Output locations: <code>.claude/skills/</code> (Claude Code), <code>.agents/skills/</code> (Codex, Cursor, Copilot, Gemini CLI, Antigravity, Windsurf/Devin Desktop), <code>.kiro/skills/</code> (Kiro). <code>cortex add skill tdd</code> installs a bundled template.</p>
+
+      <h2 id="config">config.yaml</h2>
+      <div class="code"><div class="code-head"><span>.cortex/config.yaml</span></div><pre>version: 2
+project:
+  name: storefront
+  language: TypeScript
+  framework: Next.js
+providers:
+  claude: true
+  codex: true                  # AGENTS.md
+  cursor:
+    enabled: true
+    model: gpt-6.1-sol         # format for this model family
+  copilot: true
+  gemini: false
+  windsurf: false
+  kiro: false
+  antigravity: false
+  gemini-review: false         # .gemini/styleguide.md for PR reviews
+  openai: false                # chatgpt-instructions.md export
+output:
+  agentsMd: shared             # shared | duplicate
+  skills: true</pre></div>
+      <p>Setting <code>model:</code> for a tool changes the formatting style: Claude models get XML sections, GPT models numbered lists, reasoning models compact constraints, Gemini context-first markdown, open-weights models explicit instructions.</p>
+
+      <h2 id="targets">Tools &amp; files</h2>
+      <p>Generated from the same table the CLI uses (<code>src/engine/targets.js</code>).</p>
+      <div class="table-wrap"><table class="table" id="targets-table"><tbody><tr><td class="muted">Loading…</td></tr></tbody></table></div>
+
+      <h2 id="agents-md">AGENTS.md sharing</h2>
+      <p>Cursor, Copilot, Windsurf, Kiro and Antigravity all read <code>AGENTS.md</code> natively. Writing the same rules into their own files as well means every request carries them twice. With <code>output.agentsMd: shared</code> (the default, when AGENTS.md is enabled) those tools get their always-on rules from AGENTS.md, and Cortex only writes their path-scoped rules and skills. Claude Code and Gemini CLI always get their own file because they don’t read AGENTS.md when their own file exists. Set <code>duplicate</code> if a tool in your team has AGENTS.md reading turned off.</p>
+
+      <h2 id="safety">Ownership &amp; safety</h2>
+      <ul>
+        <li>Every generated file starts with a “Generated by Cortex” marker.</li>
+        <li>A file without the marker (hand-written) is <strong>never</strong> overwritten without <code>--force</code> — compile skips it and exits 1 with instructions.</li>
+        <li>A generated file someone edited since the last compile is also skipped (detected by content hash), so edits are never lost silently. Move the edit into <code>.cortex/</code> or use <code>--force</code>.</li>
+        <li>Files Cortex generated before but no longer produces (renamed skills, disabled tools, v1 legacy paths) are removed only if untouched.</li>
+        <li>After an import, compile warns about original files that now duplicate your sources.</li>
+      </ul>
+
+      <h2 id="ci">CI drift check</h2>
+      <p>Commit <code>.cortex/</code> <em>and</em> the generated files — cloud agents (Copilot coding agent, Codex, Claude Code on the web) read them straight from the repository. Then block drift:</p>
+      <div class="code"><div class="code-head"><span>.github/workflows/cortex.yml</span><span class="spacer"></span><button class="copy-btn" data-copy-target="#c-ci"><span class="copy-label">Copy</span></button></div><pre id="c-ci">name: cortex
+on: [pull_request]
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npx --yes github:Phani3108/Cortex compile --check</pre></div>
+      <p>Locally, <code>cortex hooks install</code> adds a pre-commit hook that runs the same check when <code>.cortex/</code> changes.</p>
+
+      <h2 id="commands">CLI commands</h2>
+      <div id="commands-list"><p class="muted">Loading…</p></div>
+      <h3>Options</h3>
+      <div id="options-list"></div>
+
+      <h2 id="models">Model data</h2>
+      <p><code>registry/latest.json</code> holds pricing and context windows for 200+ models. A GitHub Action rebuilds it from the OpenRouter catalog every day and commits only real changes; the website redeploys with it. <code>cortex update</code> pulls the latest copy (or <code>--source openrouter</code> to build it locally). Models released after your last update are still priced — Cortex uses the newest model of the same family and tier and labels it as an estimate.</p>
+
+      <h2 id="faq">FAQ</h2>
+      <details class="faq"><summary>Should I commit the generated files?</summary><p>Yes. Cloud and CI agents read instruction files from the repository and won’t run Cortex first. Commit both, and use <code>cortex compile --check</code> in CI so they can’t drift.</p></details>
+      <details class="faq"><summary>I already have a CLAUDE.md. Will Cortex overwrite it?</summary><p>No. <code>cortex init</code> imports it into <code>.cortex/rules/imported-claude.md</code>, and <code>cortex compile</code> refuses to replace a hand-written file until you pass <code>--force</code>.</p></details>
+      <details class="faq"><summary>How are token counts computed?</summary><p>Estimated from character counts using each model family’s average characters per token. Hard limits (Windsurf 12,000 chars, Antigravity 24,000 bytes, AGENTS.md 32 KiB, ChatGPT 5,000 chars) are measured in their native unit exactly.</p></details>
+      <details class="faq"><summary>What happens when a tool has a size limit?</summary><p>Cortex keeps whole rules in order of impact — critical rules, then safety, context and architecture before style and docs — and lists what it left out in the compile report. Nothing is ever cut mid-rule.</p></details>
+      <details class="faq"><summary>Does anything leave my machine?</summary><p>No. Compiling is local. Only <code>cortex update</code> (model data) and <code>cortex sync</code> (https sources you list) make network requests.</p></details>
+    </article>
+  </div>
+</main>
+<!--@include footer-->
+</body>
+</html>

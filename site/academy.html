@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--@include head title="Academy — build AI agents and MCP servers in phases — Cortex" description="Cortex Academy: three runnable build lanes (assistant app, workflow agent, MCP server) and six phases from constraints to scale, with validation checklists and pitfalls."-->
+</head>
+<body data-page="academy">
+<!--@include header-->
+<main id="main">
+  <section class="page-head">
+    <div class="container">
+      <div class="eyebrow">Cortex Academy</div>
+      <h1 class="h2">Build AI systems in phases, not guesswork.</h1>
+      <p class="lead">Pick a lane, scaffold a runnable sample, and move through six phases — each with a goal, a validation checklist and the pitfalls that sink real projects. The skills that coach you through it compile into every AI tool you use.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">1 · Choose a lane</div>
+        <h2 class="h2">Three runnable starting points.</h2>
+        <p class="lead" style="margin-top:10px">Each lane is a small TypeScript + Fastify project with contracts, safe defaults and a preconfigured <code>.cortex/</code>.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <span class="badge badge-brand">Lane A</span>
+          <h3 class="h3" style="margin-top:12px">Assistant app + API</h3>
+          <p style="margin-top:6px">A single assistant behind a typed API (<code>POST /assist</code>) with an OpenAPI contract, input validation and safe defaults.</p>
+          <div class="code" style="margin-top:14px"><pre>cortex tutorial scaffold lane-a ./my-assistant</pre></div>
+        </div>
+        <div class="card">
+          <span class="badge badge-brand">Lane B</span>
+          <h3 class="h3" style="margin-top:12px">Workflow agent</h3>
+          <p style="margin-top:6px">Planner + executor with a fixed tool whitelist. <code>safe</code> mode plans only; <code>execute</code> runs approved tools.</p>
+          <div class="code" style="margin-top:14px"><pre>cortex tutorial scaffold lane-b ./my-agent</pre></div>
+        </div>
+        <div class="card">
+          <span class="badge badge-brand">Lane C</span>
+          <h3 class="h3" style="margin-top:12px">MCP server</h3>
+          <p style="margin-top:6px">Contract-first tools with JSON-schema validation, typed errors and an audit-safe path for mutating tools.</p>
+          <div class="code" style="margin-top:14px"><pre>cortex tutorial scaffold lane-c ./my-mcp</pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">2 · Load the coaching skills</div>
+        <h2 class="h2">Your agent becomes the tutor.</h2>
+        <p class="lead" style="margin-top:10px">These skills compile to Agent Skills for Claude Code, Codex, Cursor, Copilot, Gemini CLI and the rest — so whichever tool you open knows which phase you are in.</p>
+      </div>
+      <div class="code"><div class="code-head"><span>shell</span><span class="spacer"></span><button class="copy-btn" data-copy-target="#c-skills"><span class="copy-label">Copy</span></button></div><pre id="c-skills">cortex add skill stack-selection
+cortex add skill tutorial-coach
+cortex add skill agent-foundations
+cortex add skill mcp-builder
+cortex add skill api-contract-engineering
+cortex compile</pre></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">3 · Work the phases</div>
+        <h2 class="h2">Six phases. Don’t skip ahead.</h2>
+        <p class="lead" style="margin-top:10px">Finish a phase’s checklist before expanding. <code>cortex tutorial phases</code> shows the same roadmap in your terminal.</p>
+      </div>
+      <div class="stack">
+        <details class="card" open>
+          <summary class="row" style="cursor:pointer;list-style:none"><span class="step-n" style="margin:0">0</span><h3 class="h3">Pick your lane and constraints</h3></summary>
+          <div class="grid grid-3" style="margin-top:16px">
+            <div><div class="eyebrow">Do</div><p class="small text-2">Write down target users, monthly budget ceiling, latency target, team size and stack familiarity, and your compliance boundary. Choose a primary and a fallback stack.</p></div>
+            <div><div class="eyebrow">Done when</div><p class="small text-2">Constraints are approved · primary + fallback stack chosen · you know what success means in 30 days.</p></div>
+            <div><div class="eyebrow">Pitfalls</div><p class="small text-2">Picking a model or framework before defining latency and budget; microservices for a team under five; no fallback model.</p></div>
+          </div>
+          <p class="small muted" style="margin-top:12px">Try the <a href="/stack.html">Stack Lab</a> to turn constraints into a stack and a ready <code>.cortex/</code> config.</p>
+        </details>
+        <details class="card">
+          <summary class="row" style="cursor:pointer;list-style:none"><span class="step-n" style="margin:0">1</span><h3 class="h3">Define contracts before code</h3></summary>
+          <div class="grid grid-3" style="margin-top:16px">
+            <div><div class="eyebrow">Do</div><p class="small text-2">Agent input/output/error schema, JSON schema for every tool, and OpenAPI contracts with a written versioning policy.</p></div>
+            <div><div class="eyebrow">Done when</div><p class="small text-2">Every tool has a schema · every endpoint has success and error examples · the versioning policy is written.</p></div>
+            <div><div class="eyebrow">Pitfalls</div><p class="small text-2">Changing required fields without a version bump; ambiguous error payloads; no idempotency on writes.</p></div>
+          </div>
+        </details>
+        <details class="card">
+          <summary class="row" style="cursor:pointer;list-style:none"><span class="step-n" style="margin:0">2</span><h3 class="h3">Build a basic agent safely</h3></summary>
+          <div class="grid grid-3" style="margin-top:16px">
+            <div><div class="eyebrow">Do</div><p class="small text-2">Validate input → bounded prompt context → model call with max tokens and a timeout → at most one approved tool → structured output.</p></div>
+            <div><div class="eyebrow">Done when</div><p class="small text-2">Token budget, timeout and retry limits exist · tool whitelist exists · a suggest-only safe mode exists.</p></div>
+            <div><div class="eyebrow">Pitfalls</div><p class="small text-2">Letting the model invent tool arguments; no fallback for tool failures; prompt injection mixed with system policy.</p></div>
+          </div>
+        </details>
+        <details class="card">
+          <summary class="row" style="cursor:pointer;list-style:none"><span class="step-n" style="margin:0">3</span><h3 class="h3">Add MCP capability</h3></summary>
+          <div class="grid grid-3" style="margin-top:16px">
+            <div><div class="eyebrow">Do</div><p class="small text-2">One read-only tool → strict validation and error mapping → one mutating tool with an audit log → capability discovery and version tags.</p></div>
+            <div><div class="eyebrow">Done when</div><p class="small text-2">Schemas validated server-side · mutating tools enforce authorization · every call is auditable · compatibility policy documented.</p></div>
+            <div><div class="eyebrow">Pitfalls</div><p class="small text-2">Mutating tools without auth checks; internal exceptions leaking into responses; silent schema changes breaking clients.</p></div>
+          </div>
+        </details>
+        <details class="card">
+          <summary class="row" style="cursor:pointer;list-style:none"><span class="step-n" style="margin:0">4</span><h3 class="h3">Evolve contracts and quality</h3></summary>
+          <div class="grid grid-3" style="margin-top:16px">
+            <div><div class="eyebrow">Do</div><p class="small text-2">Contract tests on every PR, golden prompt cases, evals for core journeys, and dashboards for latency, cost and failures.</p></div>
+            <div><div class="eyebrow">Done when</div><p class="small text-2">≥ 10 golden eval cases · contract tests block breaking changes · dashboards show token cost and failure reasons.</p></div>
+            <div><div class="eyebrow">Pitfalls</div><p class="small text-2">Tuning prompts without regression tests; contract changes without migration notes; no incident path for model outages.</p></div>
+          </div>
+        </details>
+        <details class="card">
+          <summary class="row" style="cursor:pointer;list-style:none"><span class="step-n" style="margin:0">5</span><h3 class="h3">Scale deliberately</h3></summary>
+          <div class="grid grid-3" style="margin-top:16px">
+            <div><div class="eyebrow">Do</div><p class="small text-2">In order: caching and retrieval quality → queue-based async execution → model routing and fallback → multi-tenant isolation and governance.</p></div>
+            <div><div class="eyebrow">Done when</div><p class="small text-2">You can name your top 3 cost drivers · fail over between models · trace one request across every system.</p></div>
+            <div><div class="eyebrow">Pitfalls</div><p class="small text-2">Premature multi-agent orchestration; no governance on tool use and spend; no owner for contracts and model policy.</p></div>
+          </div>
+          <p class="small muted" style="margin-top:12px">Compare current model prices and context windows on the <a href="/models.html">model registry</a> before choosing a routing policy.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="callout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>Video walkthroughs of each phase are in production. Until then, the full written playbook lives in <a href="https://github.com/Phani3108/Cortex/blob/main/content/cortex-academy-playbook.md" rel="noopener">content/cortex-academy-playbook.md</a>.</div></div>
+    </div>
+  </section>
+</main>
+<!--@include footer-->
+</body>
+</html>
