@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0 — 2026-09-30
+
+The Lab is the product: the homepage is now the planning gate before any AI build.
+- Four entry doors for different developers: Just exploring, Point me in a direction, I'm serious (intent-first Architect), I have an existing product.
+- Intent questions (problem, users, edge, 90-day metric; feature + must-not-break for existing products).
+- Every path ends in a build pack: clarity score with named gaps, architecture lanes, repository skeleton, infra + live AI cost, learning path, phased prompts (locked until the plan is clear), AI rules and PLAN.md download.
+- Academy is a learning library: official docs + verified YouTube channels for every technology, AI tool and integration, plus build-alongs.
+- Compiler/playground moved to /compiler.html; /stack.html redirects to the Lab.
+
 ## 2.0.0 — 2026-09-30
 
 A ground-up correction of the compiler, the data, and the website.

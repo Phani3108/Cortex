@@ -8,8 +8,14 @@ import {
   ARCH_STEPS, toggleMulti, evaluateInsights, INSIGHT_TYPE_LABEL, getArchRecommendation,
   buildCatalog, validateCatalogRefs, fillModels, buildCortexFiles, targetsFromSelection,
 } from './stack-data.js';
+import { GUIDE_INTENT, ARCH_INTENT, intentRules } from './buildpack.js';
+import { renderPack } from './pack-view.js';
 
-const MODES = ['pick', 'guide', 'architect'];
+const GUIDE_FLOW = [...GUIDE_INTENT, ...QA_STEPS];
+const ARCH_FLOW = [...ARCH_INTENT, ...ARCH_STEPS];
+
+const MODES = ['pick', 'guide', 'architect', 'extend'];
+const panelFor = mode => (mode === 'extend' ? 'pick' : mode);
 const IS_DEV = ['localhost', '127.0.0.1', '0.0.0.0', ''].includes(location.hostname);
 const narrow = matchMedia('(max-width: 959px)');
 const COMPLIANCE_INSIGHTS = new Set(['hipaa-llm', 'hipaa-storage', 'gdpr-residency', 'airgapped', 'soc2-logging', 'pci-scope', 'auth-diy', 'auth-enterprise', 'multitenant']);
@@ -26,6 +32,7 @@ const state = {
   guide: { step: 0, answers: {}, done: false },
   arch: { step: 0, answers: {}, done: false, seen: new Set() },
   cfg: {}, // per panel: { name, targets:Set|null, file, input }
+  intent: {}, // free-text answers shared by explore/extend (guide & architect keep theirs in answers)
 };
 
 // ── Catalog ────────────────────────────────────────────────────────────────
@@ -61,14 +68,19 @@ function modeFromHash() {
 function setMode(mode, { focus = false } = {}) {
   state.mode = mode;
   for (const b of $$('#sl-mode [data-mode]')) b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
-  for (const p of $$('[data-mode-panel]')) p.hidden = p.dataset.modePanel !== mode;
-  if (mode === 'pick') renderPick();
+  for (const p of $$('[data-mode-panel]')) p.hidden = p.dataset.modePanel !== panelFor(mode);
+  for (const el of $$('[data-persona-only]')) el.hidden = el.dataset.personaOnly !== mode;
+  $('#sl-lab')?.removeAttribute('hidden');
+  const labels = { pick: 'Exploring — pick technologies and see what you could build.', guide: 'Guided — a few questions, then a proven starter stack.', architect: 'Serious build — intent first, then the full blueprint.', extend: 'Existing product — scope the feature and map your current stack.' };
+  const pl = $('#sl-persona-label'); if (pl) pl.textContent = labels[mode] || '';
+  if (mode === 'pick' || mode === 'extend') renderPick();
   if (mode === 'guide') renderGuide();
   if (mode === 'architect') renderArch();
   if (focus) $(`#sl-mode [data-mode="${mode}"]`)?.focus();
 }
 
-function goMode(mode) {
+function goMode(mode, { scroll = false } = {}) {
+  if (scroll) requestAnimationFrame(() => $('#sl-lab')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   if (location.hash !== `#${mode}`) location.hash = mode; // hashchange → setMode
   else setMode(mode);
 }
@@ -77,7 +89,7 @@ function initModes() {
   const seg = $('#sl-mode');
   seg.addEventListener('click', e => {
     const b = e.target.closest('[data-mode]');
-    if (b) goMode(b.dataset.mode);
+    if (b) goMode(b.dataset.mode, { scroll: true });
   });
   seg.addEventListener('keydown', e => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
@@ -187,7 +199,7 @@ function renderPickResults() {
   for (const p of $$('#sl-pick-results .sl-tabpanel')) p.hidden = p.id !== `sl-panel-${state.pick.tab}`;
   if (state.pick.tab === 'matrix') renderMatrix();
   if (state.pick.tab === 'tips') renderTips();
-  if (state.pick.tab === 'config') renderConfig('pick', { selected: [...sel], extraRules: [], title: 'Custom stack' });
+  if (state.pick.tab === 'config') renderConfig('pick', { selected: [...sel], extraRules: intentRules(state.intent), title: state.mode === 'extend' ? 'Existing product' : 'Custom stack', persona: state.mode, answers: {}, intent: state.intent });
 }
 
 function renderMatrix() {
@@ -292,12 +304,13 @@ function tabKeys(e, activate) {
 
 // ══ Shared wizard pieces ════════════════════════════════════════════════════
 function answerLabel(step, value) {
+  if (step.type === 'text') return value.length > 48 ? `${value.slice(0, 46)}…` : value;
   if (Array.isArray(value)) return value.map(v => step.options.find(o => o.value === v)?.label || v).join(', ');
   return step.options.find(o => o.value === value)?.label || value;
 }
 
 function answersHTML(steps, answers, current, kind) {
-  const done = steps.map((s, i) => [s, i]).filter(([s]) => answers[s.id] !== undefined && (!Array.isArray(answers[s.id]) || answers[s.id].length));
+  const done = steps.map((s, i) => [s, i]).filter(([s]) => answers[s.id] !== undefined && answers[s.id] !== '' && (!Array.isArray(answers[s.id]) || answers[s.id].length));
   if (!done.length) return '';
   return `<div class="sl-answers" aria-label="Your answers">
     <span class="tiny muted">Your answers <span class="sl-hint">(select one to change it)</span></span>
@@ -310,7 +323,7 @@ function wizardHTML({ steps, index, answers, kind, finishLabel, allDone }) {
   const step = steps[index];
   const cur = answers[step.id];
   const multi = !!step.multi;
-  const has = multi ? Array.isArray(cur) && cur.length > 0 : cur !== undefined;
+  const has = stepAnswered(step, cur);
   const pct = Math.round(((index + 1) / steps.length) * 100);
   const last = index === steps.length - 1;
   return `<div class="card sl-wizard">
@@ -320,6 +333,9 @@ function wizardHTML({ steps, index, answers, kind, finishLabel, allDone }) {
     </div>
     <h3 class="sl-q" id="sl-${kind}-q" tabindex="-1">${esc(step.question)}</h3>
     <p class="muted small sl-qhint">${esc(step.hint)}</p>
+    ${step.type === 'text' ? `<label class="visually-hidden" for="sl-${kind}-text">${esc(step.question)}</label>
+      <textarea class="textarea sl-text" id="sl-${kind}-text" data-${kind}-text rows="3" placeholder="${esc(step.placeholder || '')}">${esc(cur || '')}</textarea>
+      <p class="tiny muted sl-text-meta">${step.optional ? 'Optional, but it sharpens everything that follows.' : `Needed for a clear plan${step.minLength ? ` · at least ${step.minLength} characters` : ''}.`}</p>` : `
     <div class="sl-options${multi ? ' is-multi' : ''}" role="group" aria-labelledby="sl-${kind}-q">
       ${step.options.map(o => {
         const on = multi ? Array.isArray(cur) && cur.includes(o.value) : cur === o.value;
@@ -327,7 +343,7 @@ function wizardHTML({ steps, index, answers, kind, finishLabel, allDone }) {
           <span class="sl-mark" aria-hidden="true"></span>
           <span class="sl-opt-text"><span class="sl-opt-label">${esc(o.label)}</span>${o.sub ? `<span class="sl-opt-sub">${esc(o.sub)}</span>` : ''}</span></button>`;
       }).join('')}
-    </div>
+    </div>`}
     <div class="sl-nav">
       <button type="button" class="btn btn-ghost" data-${kind}-back ${index === 0 ? 'disabled' : ''}>Back</button>
       <span class="spacer"></span>
@@ -337,7 +353,11 @@ function wizardHTML({ steps, index, answers, kind, finishLabel, allDone }) {
   </div>`;
 }
 
-const complete = (steps, answers) => steps.every(s => s.multi ? Array.isArray(answers[s.id]) && answers[s.id].length : answers[s.id] !== undefined);
+function stepAnswered(step, cur) {
+  if (step.type === 'text') return step.optional || (typeof cur === 'string' && cur.trim().length >= (step.minLength || 1));
+  return step.multi ? Array.isArray(cur) && cur.length > 0 : cur !== undefined;
+}
+const complete = (steps, answers) => steps.every(s => stepAnswered(s, answers[s.id]));
 
 function focusQuestion(kind) {
   requestAnimationFrame(() => $(`#sl-${kind}-q`)?.focus({ preventScroll: false }));
@@ -348,17 +368,17 @@ function renderGuide({ focus = false } = {}) {
   const g = state.guide;
   const body = $('#sl-guide-body');
   if (g.done) { body.innerHTML = guideResultHTML(); renderConfig('guide', guideCfgInput()); if (focus) focusQuestion('guide-result'); return; }
-  body.innerHTML = answersHTML(QA_STEPS, g.answers, g.step, 'guide')
-    + wizardHTML({ steps: QA_STEPS, index: g.step, answers: g.answers, kind: 'guide', finishLabel: 'Show my stack', allDone: complete(QA_STEPS, g.answers) });
+  body.innerHTML = answersHTML(GUIDE_FLOW, g.answers, g.step, 'guide')
+    + wizardHTML({ steps: GUIDE_FLOW, index: g.step, answers: g.answers, kind: 'guide', finishLabel: 'Show my stack', allDone: complete(GUIDE_FLOW, g.answers) });
   if (focus) focusQuestion('guide');
 }
 
 function guidePreset() { return PRESETS[getPresetKey(state.guide.answers)]; }
-function guideCfgInput() { const p = guidePreset(); return { selected: p.chips, extraRules: p.rules, title: p.name }; }
+function guideCfgInput() { const p = guidePreset(); const a = state.guide.answers; return { selected: p.chips, extraRules: [...intentRules({ idea: a.idea }), ...p.rules], title: p.name, persona: 'guide', answers: a, intent: { idea: a.idea } }; }
 
 function guideResultHTML() {
   const p = guidePreset();
-  return answersHTML(QA_STEPS, state.guide.answers, -1, 'guide') + `
+  return answersHTML(GUIDE_FLOW, state.guide.answers, -1, 'guide') + `
   <div class="card sl-result-head">
     <p class="eyebrow">Recommended stack</p>
     <h3 class="h2" id="sl-guide-result-q" tabindex="-1">${esc(p.name)}</h3>
@@ -376,10 +396,11 @@ function guideResultHTML() {
 }
 
 function initGuide() {
+  bindTextSteps($('#sl-guide'), 'guide', () => state.guide, GUIDE_FLOW);
   const root = $('#sl-guide');
   root.addEventListener('click', e => {
     const g = state.guide;
-    const step = QA_STEPS[g.step];
+    const step = GUIDE_FLOW[g.step];
     const opt = e.target.closest('[data-guide-opt]');
     if (opt) {
       g.answers[step.id] = opt.dataset.guideOpt;
@@ -388,7 +409,7 @@ function initGuide() {
       return;
     }
     if (e.target.closest('[data-guide-next]')) {
-      if (g.step < QA_STEPS.length - 1) g.step++; else g.done = true;
+      if (g.step < GUIDE_FLOW.length - 1) g.step++; else g.done = true;
       return renderGuide({ focus: true });
     }
     if (e.target.closest('[data-guide-finish]')) { g.done = true; return renderGuide({ focus: true }); }
@@ -429,8 +450,8 @@ function renderArch({ focus = false } = {}) {
     if (focus) focusQuestion('arch-result');
     return;
   }
-  body.innerHTML = answersHTML(ARCH_STEPS, a.answers, a.step, 'arch')
-    + wizardHTML({ steps: ARCH_STEPS, index: a.step, answers: a.answers, kind: 'arch', finishLabel: 'Build my blueprint', allDone: complete(ARCH_STEPS, a.answers) });
+  body.innerHTML = answersHTML(ARCH_FLOW, a.answers, a.step, 'arch')
+    + wizardHTML({ steps: ARCH_FLOW, index: a.step, answers: a.answers, kind: 'arch', finishLabel: 'Build my blueprint', allDone: complete(ARCH_FLOW, a.answers) });
   renderInsights();
   if (focus) focusQuestion('arch');
 }
@@ -441,7 +462,7 @@ function archTitle() {
   return label ? `Blueprint: ${label}` : 'Your blueprint';
 }
 function archRec() { return getArchRecommendation(state.arch.answers); }
-function archCfgInput() { const r = archRec(); return { selected: r.chips, extraRules: r.rules, title: 'Architecture blueprint' }; }
+function archCfgInput() { const r = archRec(); const a = state.arch.answers; const intent = { idea: a.idea, users: a.users, moat: a.moat, success: a.success }; return { selected: r.chips, extraRules: [...intentRules(intent), ...r.rules], title: 'Architecture blueprint', persona: 'architect', answers: a, intent, rec: r }; }
 
 function archResultHTML() {
   const r = archRec();
@@ -454,14 +475,14 @@ function archResultHTML() {
     return `<li><div class="row sl-why-head"><strong>${esc(label)}</strong><span class="badge">${esc(t.category === 'ai' ? 'AI model' : catLabel(t.category))}</span>${meta}</div><p>${esc(fm(t.why || t.bestFor?.[0] || ''))}</p></li>`;
   }).join('')}</ul>`;
 
-  return answersHTML(ARCH_STEPS, state.arch.answers, -1, 'arch') + `
+  return answersHTML(ARCH_FLOW, state.arch.answers, -1, 'arch') + `
   <div class="card sl-result-head">
     <p class="eyebrow">Architecture blueprint</p>
     <h3 class="h2" id="sl-arch-result-q" tabindex="-1">${esc(archTitle())}</h3>
     ${r.similar ? `<p class="text-2">Similar to <strong>${esc(r.similar.ex)}</strong>. ${esc(r.similar.note)}</p>` : ''}
     <div class="row sl-actions">
       <button type="button" class="btn btn-primary" data-arch-customize>Customize in Pick mode ${ARROW}</button>
-      <button type="button" class="btn btn-ghost" data-arch-goto="${ARCH_STEPS.length - 1}">Edit answers</button>
+      <button type="button" class="btn btn-ghost" data-arch-goto="${ARCH_FLOW.length - 1}">Edit answers</button>
       <button type="button" class="btn btn-ghost" data-arch-reset>Start over</button>
     </div>
   </div>
@@ -482,11 +503,25 @@ function archResultHTML() {
   <div data-cfg-slot="arch"></div>`;
 }
 
+/** Free-text wizard steps update answers live without re-rendering (keeps the caret). */
+function bindTextSteps(root, kind, getState, flow) {
+  root.addEventListener('input', e => {
+    const box = e.target.closest(`[data-${kind}-text]`);
+    if (!box) return;
+    const st = getState();
+    const step = flow[st.step];
+    st.answers[step.id] = box.value;
+    const nb = $(`[data-${kind}-next]`, root);
+    if (nb) nb.disabled = !stepAnswered(step, box.value);
+  });
+}
+
 function initArch() {
   const root = $('#sl-architect');
+  bindTextSteps(root, 'arch', () => state.arch, ARCH_FLOW);
   root.addEventListener('click', e => {
     const a = state.arch;
-    const step = ARCH_STEPS[a.step];
+    const step = ARCH_FLOW[a.step];
     const opt = e.target.closest('[data-arch-opt]');
     if (opt) {
       const v = opt.dataset.archOpt;
@@ -505,7 +540,7 @@ function initArch() {
     }
     if (e.target.closest('[data-arch-next]')) {
       snapshotSeen();
-      if (a.step < ARCH_STEPS.length - 1) a.step++; else a.done = true;
+      if (a.step < ARCH_FLOW.length - 1) a.step++; else a.done = true;
       return renderArch({ focus: true });
     }
     if (e.target.closest('[data-arch-finish]')) { snapshotSeen(); a.done = true; return renderArch({ focus: true }); }
@@ -539,17 +574,24 @@ function setupScript(files) {
 }
 
 function renderConfig(key, input) {
-  const slot = $(`[data-cfg-slot="${key}"]`);
-  if (!slot) return;
+  const outer = $(`[data-cfg-slot="${key}"]`);
+  if (!outer) return;
   const c = cfgState(key);
   c.input = input;
+  const active0 = document.activeElement;
+  const restore0 = active0 && outer.contains(active0) ? active0.dataset.cfgFocus : null;
+  renderPack(outer, key, {
+    persona: input.persona || state.mode, selected: input.selected, catalog: state.byId, registry: state.registry,
+    answers: input.answers || {}, intent: input.intent || {}, rec: input.rec || null, title: input.title, name: c.name,
+  });
+  const slot = outer.querySelector(`[data-cfg-inner="${key}"]`);
+  if (!slot) return;
   const res = cfgResult(key);
   if (!res.files[c.file]) c.file = '.cortex/rules/project.md';
   const paths = Object.keys(res.files);
   const enabled = new Set(res.targets);
   const pre = `sl-cfg-${key}`;
-  const active = document.activeElement;
-  const restore = active && slot.contains(active) ? active.dataset.cfgFocus : null;
+  const restore = restore0;
   slot.innerHTML = `<section class="card sl-config" aria-labelledby="${pre}-h">
     <div class="sl-config-head">
       <div>
@@ -612,7 +654,7 @@ function initConfig() {
       const res = cfgResult(key);
       const files = Object.fromEntries(Object.entries(res.files).filter(([p]) => p !== '.cortex/config.yaml'));
       handoff('playground', { files, config: res.config, targets: res.targets });
-      location.href = '/#playground';
+      location.href = '/compiler.html#playground';
     }
   });
   document.addEventListener('input', e => {
@@ -643,9 +685,21 @@ function initConfig() {
 
 // ══ Boot ═══════════════════════════════════════════════════════════════════
 function rerender() {
-  if (state.mode === 'pick') renderPick();
+  if (state.mode === 'pick' || state.mode === 'extend') renderPick();
   if (state.mode === 'guide') renderGuide();
   if (state.mode === 'architect') renderArch();
+}
+
+/** Free-text intent for the explore / extend doors. */
+function initIntent() {
+  let t;
+  $('#sl-lab').addEventListener('input', e => {
+    const f = e.target.closest('[data-intent]');
+    if (!f) return;
+    state.intent[f.dataset.intent] = f.value;
+    clearTimeout(t);
+    t = setTimeout(() => { if (state.pick.tab === 'config') renderPickResults(); }, 250);
+  });
 }
 
 function boot() {
@@ -655,7 +709,9 @@ function boot() {
   initGuide();
   initArch();
   initConfig();
-  setMode(modeFromHash() || 'pick');
+  const initial = modeFromHash();
+  if (initial) setMode(initial);
+  initIntent();
   loadRegistry().then(reg => {
     state.registry = reg;
     setCatalog();

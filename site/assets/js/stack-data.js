@@ -437,8 +437,9 @@ export function getPresetKey(a) {
   if (a.type === 'data') return 'data-pipeline';
   if (a.ai === 'self') return 'self-hosted-ai';
   if (a.type === 'api') return 'api-microservice';
-  if (a.team === 'enterprise') return 'enterprise';
-  if (a.type === 'ai' || a.ai === 'core') return a.speed === 'months' ? 'ai-production' : 'ai-mvp';
+  // What you build outranks who builds it: an AI-core product stays an AI stack even for large teams.
+  if (a.type === 'ai' || a.ai === 'core') return a.speed === 'months' || a.team === 'enterprise' ? 'ai-production' : 'ai-mvp';
+  if (a.team === 'enterprise') return a.ai === 'light' ? 'web-with-ai' : 'enterprise';
   if (a.ai === 'light') return 'web-with-ai';
   return 'lean-mvp';
 }
