@@ -1,220 +1,139 @@
-# 🧠 Cortex
+# Cortex
 
-**One config. Every AI coding tool. Zero drift.**
+**One source of rules for every AI coding agent.**
 
-🌐 **[cortex1.vercel.app](https://cortex1.vercel.app/)** · 📦 [GitHub](https://github.com/Phani3108/Cortex)
+Write your team's AI rules once in `.cortex/`. Cortex compiles them into the native instruction files of Claude Code, Codex (AGENTS.md), Cursor, GitHub Copilot, Gemini CLI, Windsurf / Devin Desktop, Kiro and Antigravity — formatted for each model family, fitted to each tool's limits, and checked for drift in CI.
 
-Cortex is a universal context engine that compiles a single `.cortex/` source into native config files for 9 AI coding tools — so every tool gets the same rules, skills, and style, always in sync.
+🌐 **[cortex1.vercel.app](https://cortex1.vercel.app/)** — try the compiler in your browser · 📚 [Docs](https://cortex1.vercel.app/docs.html) · 💸 [Live model registry](https://cortex1.vercel.app/models.html)
 
----
+[![CI](https://github.com/Phani3108/Cortex/actions/workflows/ci.yml/badge.svg)](https://github.com/Phani3108/Cortex/actions/workflows/ci.yml)
+[![Model data](https://github.com/Phani3108/Cortex/actions/workflows/refresh-registry.yml/badge.svg)](https://github.com/Phani3108/Cortex/actions/workflows/refresh-registry.yml)
 
-## ⚡ The Problem
+```
+.cortex/rules/*.md ─┐                        ┌─▶ CLAUDE.md, .claude/rules/, .claude/skills/
+.cortex/skills/*.md ├─▶  cortex compile  ────┼─▶ AGENTS.md  (Codex, Cursor, Copilot, Jules, Zed, Amp…)
+.cortex/config.yaml ┘   (budgets, scoping,   ├─▶ .cursor/rules/*.mdc   .github/copilot-instructions.md
+                          model formatting)  ├─▶ GEMINI.md   .windsurf/rules/   .kiro/steering/
+                                             └─▶ .agents/skills/<name>/SKILL.md (Agent Skills)
+```
 
-You use Claude Code, Cursor, Copilot, Gemini, and others — but each has its own config format. You end up:
+## Why
 
-- ✍️ Writing the same rules in 4 different files
-- 🔀 Configs drifting out of sync across tools
-- 🧑‍🤝‍🧑 Team members getting inconsistent AI behavior
-- 🕐 Spending 15+ min per tool on manual setup
+- Every tool reads a different file, in a different format, with different limits — and the copies drift.
+- Windsurf cuts rule files at 12,000 characters, Antigravity at 24 KB, Codex reads 32 KiB of AGENTS.md. Nobody tells you what got cut.
+- Tools that read AGENTS.md *and* their own rules file load your rules twice.
 
-**Cortex fixes this in one command.**
+Cortex treats AI context like source code: one source, compiled to targets, verified in CI.
 
----
-
-## 🚀 Features
-
-### 🔧 Engineering
-
-- **🔁 One Source → 9 Outputs** — Write rules once in `.cortex/`, compile to Claude, Cursor, Copilot, Windsurf, Gemini, Codex, Kiro, Antigravity, and OpenAI
-- **🧬 Model-Aware Formatting** — Automatically adapts output format per model family (XML tags for Claude, numbered lists for Copilot, minimal scaffolding for reasoning models)
-- **📡 Signal Detection** — Scans git diffs, linter output, and AI chat logs to detect patterns in your workflow
-- **🔄 Learning Loop** — `cortex learn` captures signals → evolves rules → recompile propagates to all tools
-- **🪝 Git Hooks** — Auto-learn on commit, auto-recompile when `.cortex/` changes
-- **📦 Import Existing Config** — Already have a `CLAUDE.md` or `.cursorrules`? Import them into `.cortex/` in one command
-- **👀 Watch Mode** — Auto-recompile and auto-learn as you edit, in real time
-
-### 📊 Product
-
-- **🤖 Guided Assistant** — `cortex assist` walks you through setup with questions, not docs
-- **📈 Impact Metrics** — Tracks time saved, consistency score, and learning velocity across your project
-- **🧠 Session Memory** — Remembers your goals, decisions, and progress between runs
-- **💰 Token Cost Analysis** — See exactly how much context you're sending to each provider
-- **📤 Diff & Export** — See what changed since last compile; export your entire context for sharing
-
-### 🏢 GTM / Team Value
-
-- **⏱️ Setup in 60 seconds** — `cortex init` + `cortex compile` and you're done
-- **👥 Team Consistency** — Commit `.cortex/` to git; every teammate runs `cortex compile` and gets identical AI behavior
-- **🔌 9 Providers, 1 Workflow** — Switch tools freely without rewriting config
-- **📚 Shareable Skills** — Package reusable expertise (TDD, security audits, debugging) as portable skill files
-- **🔄 Sync from Upstream** — Pull community rules and skills from remote registries
-
-### 🏛️ Stack Intelligence (Interactive — [Live Site](https://cortex1.vercel.app/))
-
-Three interactive modes to help you pick the right tech stack:
-
-- **Pick My Stack** — Browse 40+ technologies across Frontend, Backend, Database, Deployment, Tooling, and Architecture Patterns. Select what you use and see a scored build matrix of what you can build, with stack tips and a ready-to-use Cortex config.
-
-- **Guide Me** — A 4-step wizard that asks what you're building, what matters most, your team size, and your budget — then recommends a proven stack combination with real-world examples.
-
-- **Architect My Project** — A deep 9-step architecture advisor powered by real startup intelligence:
-  - 9 adaptive questions: project type (with "similar to" real products), core user workflow, scale, team size & timeline, data requirements (10 options), authentication needs, infrastructure, team skills, and compliance
-  - 33 live insight rules that fire in real-time as you answer — covering N+1 query traps, connection pooling pitfalls, multi-tenant data isolation, compliance constraints, and more
-  - Output includes: **Core Stack with per-tech reasoning** (why each technology, what real companies use it), **Architecture Patterns** with implementation detail, **Startup Traps** (real post-mortem failure patterns specific to your choices), **Compliance & Security** warnings, **Month-by-month Scaling Roadmap**, and **Alternative Approaches** with "best when" guidance
-
-### 🧭 Cortex Academy (Tutorial-First Build Tracks)
-
-Build AI systems in phases, not guesswork.
-
-- **Stepwise by design** — each phase includes goal, implementation step, validation checks, pitfalls, and expansion paths
-- **Choice-driven foundations** — pick stack, LLM strategy, DB, and deployment before writing production code
-- **Builder tracks** — follow dedicated tracks for:
-  - AI Agents (single-task to production-ready)
-  - MCP servers and tool contracts
-  - API contract design and safe evolution
-
-Start here: `content/cortex-academy-playbook.md`
-
-Enable tutorial skills in your project:
+## Install
 
 ```bash
-cortex add skill stack-selection
-cortex add skill agent-foundations
-cortex add skill mcp-builder
-cortex add skill api-contract-engineering
-cortex add skill tutorial-coach
-cortex compile
+npm install -g github:Phani3108/Cortex   # Node 20+
+cortex --version
 ```
 
----
+No dependencies. Everything runs locally; only `cortex update` (model data) and `cortex sync` (sources you list) touch the network.
 
-## 🛠️ Installation
+## Quick start
 
 ```bash
-# Clone the repo
-git clone https://github.com/Phani3108/Cortex.git
-cd Cortex
-
-# Install globally (makes `cortex` available everywhere)
-npm install -g .
-
-# Or run directly without installing
-node bin/cortex.js
+cd your-repo
+cortex init              # detects your stack + the AI tools you use, imports existing CLAUDE.md / AGENTS.md / .cursor/rules …
+$EDITOR .cortex/rules/project.md
+cortex compile           # writes native files for every enabled tool
+cortex compile --check   # in CI: exit 1 if generated files are stale
 ```
 
----
+If `init` imported hand-written files, run `cortex compile --force` once so generated files replace them — your content now lives in `.cortex/rules/imported-*.md`.
 
-## 🏁 Quick Start
+**Commit `.cortex/` and the generated files.** Cloud agents (Copilot coding agent, Codex, Claude Code on the web) read instruction files straight from the repository.
+
+## Writing rules
+
+```markdown
+## Architecture
+- Business logic lives in `src/services/`; route handlers stay thin
+
+## Safety
+- ! Never commit secrets or `.env` files      ← "!" = critical: emphasised, never dropped first
+```
+
+Path-scoped rules use frontmatter and compile to each tool's native scoping (Cursor `globs`, Copilot `applyTo`, Claude `paths`, Kiro `fileMatch`, Windsurf/Antigravity `trigger: glob`):
+
+```markdown
+---
+scope: ["src/**/*.tsx"]
+---
+## Components
+- Keep components under 150 lines
+```
+
+Skills in `.cortex/skills/` compile to the open [Agent Skills](https://agentskills.io/specification) format (`SKILL.md`) in `.claude/skills/`, `.agents/skills/` and `.kiro/skills/` — loaded on demand instead of bloating every prompt.
+
+## Supported tools
+
+| Target id | Tool | Always-on file | Scoped rules | Skills | Limit |
+|---|---|---|---|---|---|
+| `claude` | Claude Code | `CLAUDE.md` | `.claude/rules/*.md` | `.claude/skills/` | ~200 lines guidance |
+| `codex` | AGENTS.md (Codex + 20 tools) | `AGENTS.md` | sections | `.agents/skills/` | 32 KiB |
+| `cursor` | Cursor | `.cursor/rules/cortex.mdc` | `.cursor/rules/*.mdc` | `.agents/skills/` | ~500 lines guidance |
+| `copilot` | GitHub Copilot | `.github/copilot-instructions.md` | `.github/instructions/*.instructions.md` | `.agents/skills/` | — |
+| `gemini` | Gemini CLI | `GEMINI.md` | sections | `.agents/skills/` | — |
+| `windsurf` | Windsurf / Devin Desktop | `.windsurf/rules/cortex.md` | `.windsurf/rules/*.md` | `.agents/skills/` | 12,000 chars |
+| `kiro` | Kiro | `.kiro/steering/cortex.md` | `.kiro/steering/*.md` | `.kiro/skills/` | — |
+| `antigravity` | Antigravity | `.agents/rules/cortex.md` | `.agents/rules/*.md` | `.agents/skills/` | 24,000 bytes |
+| `gemini-review` | Gemini Code Assist (PR review) | `.gemini/styleguide.md` | sections | — | — |
+| `openai` | ChatGPT (export) | `chatgpt-instructions.md` | sections | — | 5,000 chars |
+
+Verified against vendor documentation on 2026-09-30. The table lives in [`src/engine/targets.js`](src/engine/targets.js) — the CLI, docs and website all render from it.
+
+When AGENTS.md is enabled, tools that read it natively (Cursor, Copilot, Windsurf, Kiro, Antigravity) get their always-on rules from it instead of a duplicate copy (`output.agentsMd: shared`, the default).
+
+## Safety model
+
+- Generated files carry a `Generated by Cortex` marker. Files without it are **never** overwritten without `--force`.
+- Generated files edited by hand since the last compile are skipped (content-hash check), not clobbered.
+- Files Cortex no longer generates are removed only if untouched.
+
+## Commands
+
+| | |
+|---|---|
+| **Set up** | `init` · `import` · `assist` · `profile` |
+| **Compile & verify** | `compile [--check] [--dry] [-p <id>] [--force] [--json]` · `verify [--strict]` · `diff` · `status` · `watch` |
+| **Analyze** | `cost` · `budget [-m <model>]` · `optimize [-p <id>]` · `switch <modelA> <modelB>` · `migrate <toolA> <toolB>` · `update` |
+| **Learn & automate** | `learn` · `hooks install` · `sync` |
+| **Content** | `add skill <name>` · `add rule <name> --glob "<pattern>"` · `suggest` · `export` |
+| **Academy** | `tutorial lanes | phases | scaffold <lane> <dir>` |
+
+Run `cortex help <command>` for examples, or see the [CLI reference](https://cortex1.vercel.app/docs.html#commands).
+
+## Model data that stays current
+
+[`registry/latest.json`](registry/latest.json) tracks pricing and context windows for 200+ models (Anthropic, OpenAI, Google, xAI, DeepSeek, Qwen, Mistral, Meta, Moonshot, Z.ai, MiniMax). The [`refresh-registry`](.github/workflows/refresh-registry.yml) workflow rebuilds it from the OpenRouter catalog every day and commits only real changes; the website redeploys with it. `cortex update` pulls the latest copy; models newer than your copy are priced from the newest model of the same family and tier.
+
+## Stack Lab & Academy
+
+The website also hosts **Stack Lab** (pick a stack, get guided, or run the 9-step architecture advisor — each ends in a ready `.cortex/` config) and the **Academy**: three runnable lanes (assistant app, workflow agent, MCP server) and six build phases. `cortex tutorial scaffold lane-a ./my-app` gets you started.
+
+## Development
 
 ```bash
-# 1. Initialize Cortex in your project
-cortex init
-
-# 2. Enable the tools you use (edit .cortex/config.yaml)
-#    providers: claude, cursor, copilot, gemini, windsurf, codex, kiro, antigravity, openai
-
-# 3. Compile — generates native config for every enabled tool
-cortex compile
-
-# 4. Start the Academy guide (lanes, phases, scaffolds)
-cortex tutorial start
-
-# 5. Scaffold a lane sample and run it
-cortex tutorial scaffold lane-a ./my-agent-app
-
-# 6. Done. Your AI tools now share the same intelligence.
+npm test              # node:test, no dependencies
+npm run build         # build the website: site/ → public/
+npm run dev           # build + serve on http://localhost:4173
+npm run refresh:registry
+node bin/cortex.js compile --check   # this repo dogfoods Cortex
 ```
 
----
-
-## 📋 Commands
-
-| Command | What it does |
-|---------|-------------|
-| `cortex init` | Initialize `.cortex/` in your project |
-| `cortex compile` | Generate provider-specific config files |
-| `cortex learn` | Capture signals and evolve your rules |
-| `cortex watch` | Auto-recompile and auto-learn as you work |
-| `cortex assist` | Guided conversational setup |
-| `cortex tutorial` | Guided Cortex Academy lanes, phases, and sample scaffolding |
-| `cortex import` | Import existing CLAUDE.md, .cursorrules, etc. |
-| `cortex diff` | See what changed since last compile |
-| `cortex cost` | Token cost analysis across providers |
-| `cortex hooks install` | Install git hooks for auto-learning |
-| `cortex add skill <name>` | Add a skill template (tdd, security-audit, debugging) |
-| `cortex sync` | Pull rules/skills from remote sources |
-| `cortex status` | Show current configuration |
-| `cortex export` | Export context for sharing or backup |
-| `cortex profile` | Manage your personal AI style globally |
-
----
-
-## 🎯 Supported Providers
-
-| Provider | Output Files |
-|----------|-------------|
-| 🟠 **Claude Code** | `CLAUDE.md` + `.claude/commands/*.md` |
-| 🟣 **Cursor** | `.cursor/rules/project.mdc` |
-| 🔵 **GitHub Copilot** | `.github/copilot-instructions.md` |
-| 🟢 **Windsurf** | `.windsurf/rules/project.md` |
-| 🔴 **Gemini CLI** | `GEMINI.md` + `.gemini/style-guide.md` |
-| ⚫ **OpenAI Codex** | `codex.md` |
-| 🟡 **Amazon Kiro** | `.kiro/rules/*.md` |
-| 🔵 **Antigravity** | `.agent/skills/*.md` |
-| ⬜ **OpenAI ChatGPT** | `chatgpt-instructions.md` |
-
----
-
-## 📁 Project Structure
-
 ```
-.cortex/                  ← Your source of truth (commit this)
-  config.yaml             ← Providers, language, preferences
-  rules/                  ← Project rules (style, architecture, testing)
-  skills/                 ← Reusable skills (TDD, security, debugging)
-
-bin/cortex.js             ← CLI entry point
-src/
-  commands/               ← CLI command handlers
-  core/                   ← Compiler, signals, metrics, assistant
-  providers/              ← Provider-specific output generators
-  utils/                  ← File system, logging, YAML helpers
-templates/                ← Built-in rule & skill templates
+src/engine/     pure, isomorphic compiler (also shipped to the website playground)
+src/core/       Node-side: config, registry, manifest, signals, learning
+src/commands/   one file per CLI command
+site/           website sources (vanilla HTML/CSS/ES modules)
+registry/       model data (auto-refreshed) + manual overrides
 ```
 
----
+## License
 
-## 🧩 How It Works
-
-```
- .cortex/rules/    ─┐
- .cortex/skills/    ├──▶  cortex compile  ──▶  CLAUDE.md
- .cortex/config.yaml┘         │               .cursorrules
-                               │               copilot-instructions.md
-                               │               GEMINI.md
-                               │               ... (9 formats)
-                               ▼
-                        Model-aware formatting
-                        (XML, numbered lists,
-                         minimal, etc.)
-```
-
----
-
-## 📄 License
-
-MIT License — Copyright (c) 2026 [Phani Marupaka](https://linkedin.com/in/phani-marupaka)
-
----
-
-🌐 **Live:** [cortex1.vercel.app](https://cortex1.vercel.app/) · 📦 **Source:** [github.com/Phani3108/Cortex](https://github.com/Phani3108/Cortex)
-
-Created & Developed by **Phani Marupaka**. All rights reserved under applicable copyright law.
-
-Any fork, derivative work, or redistribution must visibly credit the original author and include a link to [linkedin.com/in/phani-marupaka](https://linkedin.com/in/phani-marupaka).
-
-See [LICENSE](LICENSE) for full terms.
-
----
-
-**Built for engineers who use more than one AI tool and want them all to be equally smart.**
+MIT — Copyright (c) 2026 [Phani Marupaka](https://linkedin.com/in/phani-marupaka). Any fork, derivative work, or redistribution must visibly credit the original author and link to [linkedin.com/in/phani-marupaka](https://linkedin.com/in/phani-marupaka). See [LICENSE](LICENSE).
