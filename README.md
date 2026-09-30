@@ -1,23 +1,37 @@
 # Cortex
 
-**One source of rules for every AI coding agent.**
+**Think before you prompt.**
 
-Write your team's AI rules once in `.cortex/`. Cortex compiles them into the native instruction files of Claude Code, Codex (AGENTS.md), Cursor, GitHub Copilot, Gemini CLI, Windsurf / Devin Desktop, Kiro and Antigravity — formatted for each model family, fitted to each tool's limits, and checked for drift in CI.
+Cortex is the planning lab you use *before* Claude, ChatGPT or Cursor write a line of code. It makes you clear about what you're building, who it's for, why it wins and how big it has to get. It helps you choose a stack you actually understand, then shows you the architecture, the repository skeleton, the running cost and what to learn. You leave with **phased prompts** and **AI rules** that keep every coding agent on your plan.
 
-🌐 **[cortex1.vercel.app](https://cortex1.vercel.app/)** — try the compiler in your browser · 📚 [Docs](https://cortex1.vercel.app/docs.html) · 💸 [Live model registry](https://cortex1.vercel.app/models.html)
+🌐 **[cortex1.vercel.app](https://cortex1.vercel.app/)** — open the Lab · 🎓 [Academy](https://cortex1.vercel.app/academy.html) · 💸 [Models & cost](https://cortex1.vercel.app/models.html) · ⚙️ [Compiler](https://cortex1.vercel.app/compiler.html) · 📚 [Docs](https://cortex1.vercel.app/docs.html)
 
 [![CI](https://github.com/Phani3108/Cortex/actions/workflows/ci.yml/badge.svg)](https://github.com/Phani3108/Cortex/actions/workflows/ci.yml)
 [![Model data](https://github.com/Phani3108/Cortex/actions/workflows/refresh-registry.yml/badge.svg)](https://github.com/Phani3108/Cortex/actions/workflows/refresh-registry.yml)
 
+## The Lab: four doors, one destination
+
+| You are… | Door | You answer |
+|---|---|---|
+| Just exploring | **Pick my stack** | Choose technologies; see what each is good for and what you could build |
+| Looking for direction | **Guide me** | Your idea + 4 questions → a proven starter stack with reasons |
+| Serious about the build | **Architect my project** | Problem, users, edge, 90-day target, then scale, data, auth, infra, skills, compliance |
+| Extending a product | **Existing product** | The feature, what must not break, your current stack |
+
+Every door ends in the same **build pack**:
+
 ```
-.cortex/rules/*.md ─┐                        ┌─▶ CLAUDE.md, .claude/rules/, .claude/skills/
-.cortex/skills/*.md ├─▶  cortex compile  ────┼─▶ AGENTS.md  (Codex, Cursor, Copilot, Jules, Zed, Amp…)
-.cortex/config.yaml ┘   (budgets, scoping,   ├─▶ .cursor/rules/*.mdc   .github/copilot-instructions.md
-                          model formatting)  ├─▶ GEMINI.md   .windsurf/rules/   .kiro/steering/
-                                             └─▶ .agents/skills/<name>/SKILL.md (Agent Skills)
+Clarity score (gaps named) → Stack & trade-offs → Architecture → Skeleton → Cost (infra + live AI prices)
+   → What to learn (docs + channels) → Phased prompts (locked until you're clear) → AI rules → Compiler
 ```
 
-## Why
+The prompts stay locked until the plan is clear enough, because every vague prompt makes an AI tool guess, and you pay for each guess in tokens, rework and a product with no point.
+
+## The compiler: keep every AI tool on the plan
+
+Your plan's rules (vision, stack, guardrails) live in `.cortex/`. The Cortex CLI compiles them into the native instruction files of Claude Code, Codex (AGENTS.md), Cursor, GitHub Copilot, Gemini CLI, Windsurf / Devin Desktop, Kiro and Antigravity. Each output is formatted for its model family, fitted to that tool's limits, and checked for drift in CI.
+
+## Why a compiler
 
 - Every tool reads a different file, in a different format, with different limits — and the copies drift.
 - Windsurf cuts rule files at 12,000 characters, Antigravity at 24 KB, Codex reads 32 KiB of AGENTS.md. Nobody tells you what got cut.
@@ -112,9 +126,9 @@ Run `cortex help <command>` for examples, or see the [CLI reference](https://cor
 
 [`registry/latest.json`](registry/latest.json) tracks pricing and context windows for 200+ models (Anthropic, OpenAI, Google, xAI, DeepSeek, Qwen, Mistral, Meta, Moonshot, Z.ai, MiniMax). The [`refresh-registry`](.github/workflows/refresh-registry.yml) workflow rebuilds it from the OpenRouter catalog every day and commits only real changes; the website redeploys with it. `cortex update` pulls the latest copy; models newer than your copy are priced from the newest model of the same family and tier.
 
-## Stack Lab & Academy
+## Academy
 
-The website also hosts **Stack Lab** (pick a stack, get guided, or run the 9-step architecture advisor — each ends in a ready `.cortex/` config) and the **Academy**: three runnable lanes (assistant app, workflow agent, MCP server) and six build phases. `cortex tutorial scaffold lane-a ./my-app` gets you started.
+A learning library for every technology, AI tool and integration in the Lab, with official docs and hand-picked YouTube channels. It also has build-alongs that show what your project will look like, three runnable lanes (assistant app, workflow agent, MCP server) and six build phases. `cortex tutorial scaffold lane-a ./my-app` gets you started.
 
 ## Development
 
