@@ -1,4 +1,5 @@
-version: 1
+# Cortex configuration — https://github.com/Phani3108/Cortex
+version: 2
 project:
   name: lane-b-workflow-agent
   language: typescript
@@ -11,8 +12,12 @@ providers:
   openai: false
   windsurf: false
   antigravity: false
-  codex: false
+  codex: true
   kiro: false
+  gemini-review: false
+output:
+  agentsMd: shared
+  skills: true
 rules:
   sources:
     - local

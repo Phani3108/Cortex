@@ -9,7 +9,7 @@
  */
 
 import { join, basename } from 'node:path';
-import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
 import { findProjectRoot, getCortexDir, walkDir } from '../utils/fs.js';
 import { loadConfig } from '../core/config.js';
 import { loadProfile } from '../core/profile.js';
@@ -23,7 +23,8 @@ export default async function exportCmd({ values, positionals }) {
 
   if (!existsSync(cortexDir)) {
     error('.cortex/ not found. Run `cortex init` first.');
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   heading('Exporting AI context');
@@ -66,8 +67,8 @@ export default async function exportCmd({ values, positionals }) {
     } else {
       mkdirSync(outputDir, { recursive: true });
 
-      // Copy .cortex contents
-      for (const file of walkDir(cortexDir)) {
+      // Copy .cortex contents (sources only — not machine-local state)
+      for (const file of walkDir(cortexDir).filter(f => isExportable(f.relative))) {
         const dest = join(outputDir, file.relative);
         mkdirSync(join(outputDir, file.relative, '..'), { recursive: true });
         writeFileSync(dest, readFileSync(file.path));
@@ -90,14 +91,35 @@ export default async function exportCmd({ values, positionals }) {
   dim('Share this export to replicate your AI context on another machine.');
 }
 
-function gatherFiles(dir) {
+// Machine-local state that should never leave the project
+const INTERNAL_FILES = new Set(['.compile-manifest.json', 'session.json', 'adaptations.yaml']);
+const INTERNAL_DIRS = new Set(['history', '.sync-cache']);
+
+export function isExportable(relPath) {
+  const parts = relPath.split(/[\\/]/);
+  if (parts.some(p => INTERNAL_DIRS.has(p))) return false;
+  return !INTERNAL_FILES.has(parts[parts.length - 1]);
+}
+
+/**
+ * Collect rule/skill files from a directory. Plain files are taken as-is;
+ * subdirectories count only when they hold a SKILL.md (Agent Skills layout).
+ */
+export function gatherFiles(dir) {
   if (!existsSync(dir)) return [];
 
-  return readdirSync(dir)
-    .filter(f => !f.startsWith('.'))
-    .map(f => ({
-      name: f.replace(/\.(md|txt)$/, ''),
-      file: f,
-      content: readFileSync(join(dir, f), 'utf-8'),
-    }));
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name.startsWith('.')) continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      const skillMd = join(full, 'SKILL.md');
+      if (existsSync(skillMd) && statSync(skillMd).isFile()) {
+        out.push({ name: entry.name, file: `${entry.name}/SKILL.md`, content: readFileSync(skillMd, 'utf-8') });
+      }
+    } else if (entry.isFile() && /\.(md|txt)$/.test(entry.name)) {
+      out.push({ name: entry.name.replace(/\.(md|txt)$/, ''), file: entry.name, content: readFileSync(full, 'utf-8') });
+    }
+  }
+  return out;
 }

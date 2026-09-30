@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - run: npm test
+      - name: CLI smoke test
+        run: |
+          node bin/cortex.js --version
+          node bin/cortex.js --help > /dev/null
+
+  drift:
+    name: Generated context is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Cortex dogfoods itself: CLAUDE.md, AGENTS.md etc. must match .cortex/
+      - run: node bin/cortex.js compile --check
+
+  site:
+    name: Website builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run build
+      - name: Engine modules are browser-safe
+        run: test -f public/engine/src/engine/index.js && test -f public/data/registry.json

@@ -5,87 +5,121 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * cortex diff — Show what changed since last compile.
+ * cortex diff — what changed since the last compile, in both directions:
  *
- * Compares current provider files against the compile manifest to show
- * exactly what the user (or AI) modified after cortex compiled them.
- * This is the "what did you teach it?" view.
+ *   1. Hand edits: generated files someone edited (line diff vs. what Cortex wrote).
+ *   2. Source changes: files the next `cortex compile` would create, change or remove.
  */
 
 import { existsSync, readFileSync } from 'node:fs';
-import { basename } from 'node:path';
-import { findProjectRoot, getCortexDir } from '../utils/fs.js';
-import { loadManifest } from '../core/manifest.js';
-import { heading, info, warn, success, dim, error } from '../utils/log.js';
+import { join } from 'node:path';
+import { findProjectRoot } from '../utils/fs.js';
+import { hashContent } from '../core/manifest.js';
+import { requireCortex, inspectProject } from '../core/health.js';
+import { heading, info, success, dim, error } from '../utils/log.js';
+
+const NO_COLOR = process.env.NO_COLOR !== undefined;
+const paint = (code, s) => (NO_COLOR ? s : `\x1b[${code}m${s}\x1b[0m`);
+const MAX_LINES = 40;
 
 export default async function diff({ values }) {
   const projectRoot = findProjectRoot();
-  const cortexDir = getCortexDir(projectRoot);
+  requireCortex(projectRoot);
 
-  if (!existsSync(cortexDir)) {
-    error('.cortex/ not found. Run `cortex init` first.');
+  let inspection;
+  try {
+    inspection = inspectProject(projectRoot);
+  } catch (err) {
+    error(err.message);
     process.exit(1);
   }
+  const { manifest, outputs } = inspection;
 
-  heading('Changes since last compile');
+  // 1. Hand edits to generated files
+  const edits = [];
+  for (const entry of manifest?.files || []) {
+    const abs = join(projectRoot, entry.file);
+    if (!existsSync(abs)) { edits.push({ file: entry.file, deleted: true, lines: [] }); continue; }
+    const current = readFileSync(abs, 'utf-8');
+    if (hashContent(current) === entry.hash) continue;
+    edits.push({ file: entry.file, deleted: false, lines: lineDiff(entry.compiledContent || '', current) });
+  }
 
-  const manifest = loadManifest(projectRoot);
-  if (!manifest) {
-    warn('No compile manifest found. Run `cortex compile` first.');
+  // 2. Source changes since the last compile
+  const known = new Map((manifest?.files || []).map(e => [e.file, e]));
+  const pending = [];
+  for (const o of outputs) {
+    const entry = known.get(o.path);
+    if (!entry) pending.push({ file: o.path, change: 'new' });
+    else if (entry.hash !== hashContent(o.content)) pending.push({ file: o.path, change: 'changed' });
+  }
+  for (const r of inspection.removals) pending.push({ file: r.file, change: 'removed' });
+
+  if (values.json) {
+    console.log(JSON.stringify({ compiledAt: manifest?.compiledAt || null, handEdits: edits, sourceChanges: pending }, null, 2));
     return;
   }
 
-  dim(`Last compiled: ${manifest.compiledAt}`);
+  heading('Changes since last compile');
+  if (manifest) dim(`Last compiled: ${manifest.compiledAt}`);
+  else dim('Never compiled in this checkout (no .cortex/.compile-manifest.json).');
   console.log();
 
-  let totalChanges = 0;
-  let totalAdded = 0;
-  let totalRemoved = 0;
-
-  for (const entry of manifest.files || []) {
-    if (!existsSync(entry.path)) {
-      warn(`  ${basename(entry.path)} — DELETED`);
-      totalChanges++;
-      continue;
+  if (edits.length) {
+    info(`Edited by hand (${edits.length}):`);
+    for (const e of edits) {
+      console.log(`    ${paint('1', e.file)}${e.deleted ? '  — deleted' : ''}`);
+      if (e.deleted) continue;
+      const shown = e.lines.slice(0, MAX_LINES);
+      for (const l of shown) console.log(`      ${l.op === '+' ? paint('32', `+ ${l.text}`) : paint('31', `- ${l.text}`)}`);
+      if (e.lines.length > shown.length) dim(`  … ${e.lines.length - shown.length} more changed line(s)`);
     }
-
-    const current = readFileSync(entry.path, 'utf-8');
-    if (current === entry.compiledContent) continue;
-
-    totalChanges++;
-    const fileName = basename(entry.path);
-    const provider = entry.provider || 'unknown';
-
-    console.log(`\x1b[1m${fileName}\x1b[0m \x1b[2m(${provider})\x1b[0m`);
-
-    // Line-by-line diff
-    const origLines = entry.compiledContent.split('\n');
-    const currLines = current.split('\n');
-    const origSet = new Set(origLines.map(l => l.trim()));
-    const currSet = new Set(currLines.map(l => l.trim()));
-
-    // Added lines
-    const added = currLines.filter(l => l.trim() && !origSet.has(l.trim()) && l.trim().length > 3);
-    // Removed lines
-    const removed = origLines.filter(l => l.trim() && !currSet.has(l.trim()) && l.trim().length > 3);
-
-    for (const line of added) {
-      console.log(`  \x1b[32m+ ${line.trim()}\x1b[0m`);
-      totalAdded++;
-    }
-    for (const line of removed) {
-      console.log(`  \x1b[31m- ${line.trim()}\x1b[0m`);
-      totalRemoved++;
-    }
+    dim('Keep an edit: add it to .cortex/rules (or run `cortex learn`), then `cortex compile --force`.');
     console.log();
   }
 
-  if (totalChanges === 0) {
-    success('No changes detected. Provider files match last compile.');
-  } else {
-    info(`${totalChanges} file(s) modified: +${totalAdded} lines, -${totalRemoved} lines`);
+  if (pending.length) {
+    info(`Sources changed — \`cortex compile\` would update ${pending.length} file(s):`);
+    const label = { new: '+ create', changed: '~ update', removed: '- remove' };
+    for (const p of pending) dim(`${label[p.change].padEnd(9)} ${p.file}`);
     console.log();
-    dim('Run `cortex learn` to capture these edits as rules.');
-    dim('Run `cortex compile` to overwrite with latest from .cortex/.');
   }
+
+  if (!edits.length && !pending.length) success('No changes: generated files match .cortex/ and the last compile.');
+}
+
+/**
+ * Changed lines between two texts (LCS-based), as [{ op: '+'|'-', text }].
+ * Falls back to a set difference for very large files.
+ */
+export function lineDiff(before, after) {
+  const a = before.split('\n');
+  const b = after.split('\n');
+  if (a.length * b.length > 4_000_000) {
+    const inA = new Set(a);
+    const inB = new Set(b);
+    return [
+      ...a.filter(l => l.trim() && !inB.has(l)).map(text => ({ op: '-', text })),
+      ...b.filter(l => l.trim() && !inA.has(l)).map(text => ({ op: '+', text })),
+    ];
+  }
+  const n = a.length;
+  const m = b.length;
+  const lcs = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      lcs[i][j] = a[i] === b[j] ? lcs[i + 1][j + 1] + 1 : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+    }
+  }
+  const out = [];
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) { i++; j++; }
+    else if (lcs[i + 1][j] >= lcs[i][j + 1]) out.push({ op: '-', text: a[i++] });
+    else out.push({ op: '+', text: b[j++] });
+  }
+  while (i < n) out.push({ op: '-', text: a[i++] });
+  while (j < m) out.push({ op: '+', text: b[j++] });
+  return out.filter(l => l.text.trim());
 }

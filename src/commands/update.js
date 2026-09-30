@@ -5,148 +5,82 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * cortex update — Check for updates and refresh upstream sources.
+ * cortex update — refresh model data and check for a newer Cortex.
+ *
+ *   cortex update                       registry from GitHub (daily-refreshed), OpenRouter fallback
+ *   cortex update --source openrouter   build the registry locally from the live OpenRouter catalog
  */
 
-import { existsSync, readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { execSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { findProjectRoot, getCortexDir } from '../utils/fs.js';
-import { loadConfig } from '../core/config.js';
-import { syncRegistry, isRegistryStale, getRegistryStaleness } from '../core/registry.js';
-import { heading, info, success, dim, warn, error } from '../utils/log.js';
+import { readFileSync } from 'node:fs';
+import { syncRegistry, getRegistryInfo } from '../core/registry.js';
+import { heading, info, success, dim, warn } from '../utils/log.js';
+
+const PACKAGE = 'cortex-aictx';
+const PKG_URL = new URL('../../package.json', import.meta.url);
 
 export default async function update({ values }) {
-  heading('Updating cortex');
+  const quiet = values.quiet;
+  const say = quiet ? () => {} : fn => fn();
+  const source = ['github', 'openrouter', 'auto'].includes(values.source) ? values.source : 'auto';
 
-  // Get current version from our package.json
-  const currentVersion = getCurrentVersion();
-  info(`Current version: ${currentVersion}`);
+  say(() => heading('Updating Cortex'));
 
-  // Check npm for latest version
-  info('Checking npm registry...');
-  const latest = checkNpmVersion();
-
-  if (latest) {
-    if (latest === currentVersion) {
-      success('You are running the latest version.');
-    } else if (isNewer(latest, currentVersion)) {
-      console.log();
-      warn(`Update available: ${currentVersion} → ${latest}`);
-      info('Run the following to update:');
-      dim('  npm update -g cortex');
-      console.log();
-    } else {
-      success(`You are running a newer version than published (${currentVersion} > ${latest}).`);
-    }
+  // 1. Model registry
+  const before = getRegistryInfo();
+  say(() => dim(`Model data: ${before.modelCount} models, updated ${before.lastUpdated ? before.lastUpdated.slice(0, 10) : 'never'}`));
+  const result = await syncRegistry({ source });
+  if (!result.success) {
+    warn(`Could not refresh model data: ${result.error}`);
+    say(() => dim('Using the data bundled with this install. Retry when online.'));
+    process.exitCode = 1;
   } else {
-    dim('Could not check npm registry (offline or not published yet).');
-    dim('Run `npm update -g cortex` to update manually.');
+    const counts = countChanges(result.changes);
+    say(() => {
+      success(`Model data refreshed from ${result.source.includes('openrouter') ? 'OpenRouter' : 'the Cortex registry'} — ${result.modelCount.after} models (data as of ${String(result.lastUpdated || '').slice(0, 10)})`);
+      if (counts.total) dim(`${counts.added} added · ${counts.price} repriced · ${counts.removed} removed`);
+      for (const c of result.changes.filter(c => c.type === 'added').slice(0, 8)) dim(`  + ${c.model}  ($${c.input} in / $${c.output} out per 1M)`);
+    });
   }
 
-  // If in a project, also sync upstream sources
-  const projectRoot = findProjectRoot();
-  const cortexDir = getCortexDir(projectRoot);
-
-  if (existsSync(cortexDir)) {
-    const config = loadConfig(projectRoot);
-    const ruleSources = config.rules?.sources || [];
-    const skillSources = config.skills?.sources || [];
-
-    const remoteSources = [...ruleSources, ...skillSources].filter(
-      s => s !== 'local' && (s.startsWith('http://') || s.startsWith('https://'))
-    );
-
-    if (remoteSources.length > 0) {
-      console.log();
-      info(`Found ${remoteSources.length} remote source(s). Running sync...`);
-      // Dynamically import and run sync
-      try {
-        const syncModule = await import('./sync.js');
-        await syncModule.default({ values: { dry: values.dry } });
-      } catch (err) {
-        warn(`Sync failed: ${err.message}`);
-      }
-    }
-  }
-
-  // ── Model Registry Sync ─────────────────────────────────────────────────
-  console.log();
-  info('Syncing model registry...');
-
-  try {
-    const result = await syncRegistry();
-
-    if (result.success) {
-      const added = result.changes.filter(c => c.type === 'added');
-      const priceChanges = result.changes.filter(c => c.type === 'price_change');
-      const providerUpdates = result.changes.filter(c => c.type === 'provider_model');
-
-      if (result.changes.length === 0) {
-        success('Model registry is up to date.');
-      } else {
-        for (const c of added) {
-          success(`  + Added: ${c.model} ($${c.cost}/1M, ${(c.contextWindow / 1000).toFixed(0)}K context)`);
-        }
-        for (const c of priceChanges) {
-          info(`  ↻ Updated: ${c.model} pricing $${c.from} → $${c.to}/1M`);
-        }
-        for (const c of providerUpdates) {
-          info(`  ↻ ${c.provider} now supports: ${c.model}`);
-        }
-
-        const summary = [];
-        if (added.length > 0) summary.push(`${added.length} new model(s)`);
-        if (priceChanges.length > 0) summary.push(`${priceChanges.length} price update(s)`);
-        if (providerUpdates.length > 0) summary.push(`${providerUpdates.length} provider update(s)`);
-        success(`Registry updated: ${summary.join(', ')}`);
-      }
+  // 2. New version? (npm first; the GitHub install path is reported as-is)
+  const current = JSON.parse(readFileSync(PKG_URL, 'utf-8')).version;
+  const latest = await latestVersion();
+  say(() => {
+    if (!latest) {
+      dim(`Cortex ${current}. Update with: npm install -g github:Phani3108/Cortex`);
+    } else if (compareVersions(latest, current) > 0) {
+      info(`Cortex ${latest} is available (you have ${current}). Update: npm install -g ${PACKAGE}@latest`);
     } else {
-      dim(`Could not sync registry: ${result.error}`);
-      dim('Using bundled model data. Run `cortex update` when online.');
+      success(`Cortex ${current} is up to date.`);
     }
-  } catch (err) {
-    dim(`Registry sync skipped: ${err.message}`);
-  }
-
-  console.log();
-  success('Update check complete');
+  });
 }
 
-function getCurrentVersion() {
+async function latestVersion() {
   try {
-    const pkgPath = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'package.json');
-    const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-    return pkg.version || '0.0.0';
-  } catch {
-    return '0.0.0';
-  }
-}
-
-function checkNpmVersion() {
-  try {
-    const result = execSync('npm view cortex version 2>/dev/null', {
-      encoding: 'utf-8',
-      timeout: 10000,
-    }).trim();
-    // Validate it looks like a semver
-    if (/^\d+\.\d+\.\d+/.test(result)) return result;
-    return null;
+    const res = await fetch(`https://registry.npmjs.org/${PACKAGE}/latest`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return null;
+    const body = await res.json();
+    // Guard against a same-named package that isn't Cortex.
+    if (!String(body.repository?.url || '').includes('Phani3108/Cortex')) return null;
+    return body.version || null;
   } catch {
     return null;
   }
 }
 
-/**
- * Compare semver strings: is `a` newer than `b`?
- */
-function isNewer(a, b) {
-  const pa = a.split('.').map(Number);
-  const pb = b.split('.').map(Number);
-  for (let i = 0; i < 3; i++) {
-    if ((pa[i] || 0) > (pb[i] || 0)) return true;
-    if ((pa[i] || 0) < (pb[i] || 0)) return false;
-  }
-  return false;
+function compareVersions(a, b) {
+  const pa = String(a).split('.').map(Number);
+  const pb = String(b).split('.').map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) - (pb[i] || 0);
+  return 0;
+}
+
+function countChanges(changes) {
+  return {
+    total: changes.length,
+    added: changes.filter(c => c.type === 'added').length,
+    price: changes.filter(c => c.type === 'price_change').length,
+    removed: changes.filter(c => c.type === 'removed').length,
+  };
 }

@@ -1,0 +1,33 @@
+name: Release
+
+# Publishes cortex-aictx to npm when a GitHub release is published.
+# Requires an NPM_TOKEN repository secret (npm automation token).
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write   # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm test
+      - name: Tag matches package.json
+        run: |
+          PKG="v$(node -p "require('./package.json').version")"
+          [ "$PKG" = "${{ github.event.release.tag_name }}" ] || { echo "Release tag ${{ github.event.release.tag_name }} != $PKG"; exit 1; }
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then echo "::error::Add an NPM_TOKEN repository secret to publish."; exit 1; fi
+          npm publish --provenance --access public

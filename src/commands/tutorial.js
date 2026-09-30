@@ -9,9 +9,9 @@
  */
 
 import { existsSync, cpSync, mkdirSync, readdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline';
-import { findProjectRoot } from '../utils/fs.js';
 import { heading, info, success, warn, error, dim, table } from '../utils/log.js';
 
 const LANES = {
@@ -135,9 +135,9 @@ async function startFlow() {
   dim('3) cd <project> && npm install && npm run dev');
 }
 
-function getSamplesRoot() {
-  const projectRoot = findProjectRoot();
-  return join(projectRoot, 'samples');
+/** Samples ship with the package — resolve them from the install dir, not cwd. */
+export function getSamplesRoot() {
+  return join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'samples');
 }
 
 function ensureLane(laneKey) {

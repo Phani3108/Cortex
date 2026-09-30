@@ -17,6 +17,8 @@
  * correctly without any code changes.
  */
 
+import { classify } from './registry-build.js';
+
 // ── Family Definitions ──────────────────────────────────────────────────────
 
 export const MODEL_FAMILIES = {
@@ -24,8 +26,8 @@ export const MODEL_FAMILIES = {
   anthropic: {
     id: 'anthropic',
     name: 'Anthropic Claude',
-    // Matches: claude-sonnet-4, claude-opus-4.6, claude-haiku-5, sonnet-4, opus, etc.
-    pattern: /claude|anthropic|sonnet|opus|haiku/i,
+    // Matches: claude-sonnet-5.5, claude-opus-5-5, claude-fable-5.1, haiku, etc.
+    pattern: /claude|anthropic|sonnet|opus|haiku|fable|mythos/i,
     tokenizer: 'claude-bpe',
     charsPerToken: 3.8,
     formatting: {
@@ -43,21 +45,22 @@ export const MODEL_FAMILIES = {
       chainOfThought: true,
       avoidAmbiguity: true,
     },
+    // Fallback typicals only — live prices come from registry/latest.json.
     tiers: {
-      opus:   { role: 'flagship', costTrend: 'premium', typical: { costPer1M: 15.00, contextWindow: 200000 } },
-      sonnet: { role: 'balanced', costTrend: 'mid',     typical: { costPer1M: 3.00,  contextWindow: 200000 } },
-      haiku:  { role: 'fast',     costTrend: 'budget',  typical: { costPer1M: 0.80,  contextWindow: 200000 } },
+      fable:  { role: 'frontier', costTrend: 'premium', typical: { costPer1M: 10.00, contextWindow: 1000000 } },
+      opus:   { role: 'flagship', costTrend: 'premium', typical: { costPer1M: 4.00,  contextWindow: 1000000 } },
+      sonnet: { role: 'balanced', costTrend: 'mid',     typical: { costPer1M: 2.00,  contextWindow: 1000000 } },
+      haiku:  { role: 'fast',     costTrend: 'budget',  typical: { costPer1M: 1.00,  contextWindow: 200000 } },
     },
     defaultTier: 'sonnet',
     // Version pattern: claude-{tier}-{version} or claude-{version}-{tier}
-    versionExtractor: /(?:claude-)?(?:(opus|sonnet|haiku)-?([\d.]+)|([\d.]+)-?(opus|sonnet|haiku))/i,
   },
 
   'openai-gpt': {
     id: 'openai-gpt',
     name: 'OpenAI GPT',
-    // Matches: gpt-4o, gpt-4.1, gpt-5.1-mini, gpt-7-nano, chatgpt, etc.
-    pattern: /gpt-?\d|chatgpt/i,
+    // Matches: gpt-4o, gpt-5.5, gpt-6.1-sol, gpt-6-luna, gpt-chat-latest, chatgpt, etc.
+    pattern: /gpt-|gpt\d|chatgpt|codex/i,
     tokenizer: 'o200k_base',
     charsPerToken: 4.0,
     formatting: {
@@ -75,12 +78,15 @@ export const MODEL_FAMILIES = {
       jsonMode: true,
     },
     tiers: {
-      '':     { role: 'flagship', costTrend: 'mid',    typical: { costPer1M: 2.50, contextWindow: 128000 } },
-      'mini': { role: 'fast',     costTrend: 'budget', typical: { costPer1M: 0.40, contextWindow: 128000 } },
-      'nano': { role: 'edge',     costTrend: 'cheap',  typical: { costPer1M: 0.10, contextWindow: 128000 } },
+      '':      { role: 'flagship', costTrend: 'mid',     typical: { costPer1M: 2.00,  contextWindow: 1050000 } },
+      'astra': { role: 'frontier', costTrend: 'premium', typical: { costPer1M: 10.00, contextWindow: 1050000 } },
+      'sol':   { role: 'flagship', costTrend: 'mid',     typical: { costPer1M: 2.00,  contextWindow: 1050000 } },
+      'terra': { role: 'balanced', costTrend: 'mid',     typical: { costPer1M: 2.00,  contextWindow: 1050000 } },
+      'luna':  { role: 'fast',     costTrend: 'cheap',   typical: { costPer1M: 0.10,  contextWindow: 1050000 } },
+      'mini':  { role: 'fast',     costTrend: 'budget',  typical: { costPer1M: 0.75,  contextWindow: 400000 } },
+      'nano':  { role: 'edge',     costTrend: 'cheap',   typical: { costPer1M: 0.20,  contextWindow: 400000 } },
     },
     defaultTier: '',
-    versionExtractor: /gpt-?([\d.]+[a-z]?)(?:-(mini|nano))?/i,
   },
 
   'openai-reasoning': {
@@ -110,7 +116,6 @@ export const MODEL_FAMILIES = {
       'pro':  { role: 'premium',  costTrend: 'premium',typical: { costPer1M: 15.00,contextWindow: 200000 } },
     },
     defaultTier: '',
-    versionExtractor: /^o(\d+)(?:-(mini|pro))?$/i,
   },
 
   gemini: {
@@ -137,12 +142,12 @@ export const MODEL_FAMILIES = {
       consistentFormatting: true,
     },
     tiers: {
-      'pro':   { role: 'flagship', costTrend: 'mid',     typical: { costPer1M: 1.25,  contextWindow: 1000000 } },
-      'flash': { role: 'fast',     costTrend: 'budget',  typical: { costPer1M: 0.075, contextWindow: 1000000 } },
-      'ultra': { role: 'premium',  costTrend: 'premium', typical: { costPer1M: 7.00,  contextWindow: 2000000 } },
+      'pro':        { role: 'flagship', costTrend: 'mid',     typical: { costPer1M: 2.00, contextWindow: 1048576 } },
+      'flash':      { role: 'fast',     costTrend: 'budget',  typical: { costPer1M: 0.75, contextWindow: 1048576 } },
+      'flash-lite': { role: 'edge',     costTrend: 'cheap',   typical: { costPer1M: 0.30, contextWindow: 1048576 } },
+      'ultra':      { role: 'premium',  costTrend: 'premium', typical: { costPer1M: 7.00, contextWindow: 2000000 } },
     },
     defaultTier: 'pro',
-    versionExtractor: /gemini-?([\d.]+)(?:-(pro|flash|ultra))?/i,
   },
 
   deepseek: {
@@ -170,7 +175,6 @@ export const MODEL_FAMILIES = {
       'chat':   { role: 'chat',     costTrend: 'cheap',  typical: { costPer1M: 0.14, contextWindow: 128000 } },
     },
     defaultTier: '',
-    versionExtractor: /deepseek-?(?:v?([\d.]+))?(?:-(coder|chat))?/i,
   },
 
   'meta-llama': {
@@ -198,7 +202,6 @@ export const MODEL_FAMILIES = {
       'scout': { role: 'fast',     costTrend: 'cheap',  typical: { costPer1M: 0.10, contextWindow: 128000 } },
     },
     defaultTier: '',
-    versionExtractor: /llama-?([\d.]+)?/i,
   },
 
   mistral: {
@@ -226,7 +229,6 @@ export const MODEL_FAMILIES = {
       'small':  { role: 'fast',     costTrend: 'cheap',  typical: { costPer1M: 0.10, contextWindow: 32000  } },
     },
     defaultTier: '',
-    versionExtractor: /(?:mistral|codestral|mixtral)-?([\d.]+)?(?:-(large|small))?/i,
   },
 
   qwen: {
@@ -254,7 +256,6 @@ export const MODEL_FAMILIES = {
       'max':    { role: 'premium',  costTrend: 'mid',    typical: { costPer1M: 1.00, contextWindow: 1000000 } },
     },
     defaultTier: '',
-    versionExtractor: /qwen-?([\d.]+)?(?:-(coder|max))?/i,
   },
 
   cohere: {
@@ -281,7 +282,6 @@ export const MODEL_FAMILIES = {
       'plus': { role: 'premium',  costTrend: 'premium', typical: { costPer1M: 5.00, contextWindow: 128000 } },
     },
     defaultTier: '',
-    versionExtractor: /command-?r?-?(?:plus)?-?([\d.]+)?/i,
   },
 
   xai: {
@@ -307,9 +307,27 @@ export const MODEL_FAMILIES = {
       'mini': { role: 'fast',     costTrend: 'budget', typical: { costPer1M: 0.30, contextWindow: 128000 } },
     },
     defaultTier: '',
-    versionExtractor: /grok-?([\d.]+)?(?:-(mini))?/i,
   },
+
+  // Open-weights challengers — same explicit-markdown prompting as other open models.
+  moonshot: openFamily('moonshot', 'Moonshot Kimi', /kimi|moonshot/i, { '': 0.65, code: 0.67, thinking: 0.6 }, 262144),
+  zhipu:    openFamily('zhipu', 'Z.ai GLM', /glm|zhipu|z-ai/i, { '': 1.4, flash: 0.15, flashx: 0.37, prime: 2.8, air: 0.13 }, 1048576),
+  minimax:  openFamily('minimax', 'MiniMax', /minimax/i, { '': 0.3 }, 1048576),
 };
+
+function openFamily(id, name, pattern, tierCosts, contextWindow) {
+  return {
+    id, name, pattern,
+    tokenizer: `${id}-bpe`,
+    charsPerToken: 3.5,
+    formatting: { useXmlTags: false, sectionMarkers: 'markdown', listStyle: 'dash', emphasisStyle: 'bold', instructionTone: 'explicit' },
+    strengths: ['code_generation', 'agentic_workflows', 'long_context'],
+    promptPattern: 'explicit_markdown',
+    tips: { explicitConstraints: true, repeatCritical: true },
+    tiers: Object.fromEntries(Object.entries(tierCosts).map(([t, c]) => [t, { role: t || 'flagship', costTrend: 'budget', typical: { costPer1M: c, contextWindow } }])),
+    defaultTier: '',
+  };
+}
 
 // ── Subscription Providers (no per-token cost) ──────────────────────────────
 
@@ -332,34 +350,16 @@ export const SUBSCRIPTION_PROVIDERS = new Set(['cursor', 'copilot', 'windsurf'])
 export function resolveModel(modelName) {
   if (!modelName) return { family: 'unknown', tier: '', version: null, familyDef: null };
 
-  const name = modelName.trim();
+  // Strip vendor prefixes ("anthropic/claude-…") and normalise hyphenated
+  // versions ("claude-sonnet-5-5" → "claude-sonnet-5.5").
+  const name = String(modelName).trim().toLowerCase()
+    .replace(/^[a-z0-9-]+\//, '')
+    .replace(/-(\d)-(\d)(?=$|-)/, '-$1.$2');
 
   for (const [id, fam] of Object.entries(MODEL_FAMILIES)) {
     if (!fam.pattern.test(name)) continue;
-
-    let tier = fam.defaultTier || '';
-    let version = null;
-
-    // Try structured extraction with the family-specific pattern
-    if (fam.versionExtractor) {
-      const match = name.match(fam.versionExtractor);
-      if (match) {
-        if (id === 'anthropic') {
-          // claude-{tier}-{version} or claude-{version}-{tier}
-          tier = (match[1] || match[4] || fam.defaultTier || '').toLowerCase();
-          version = match[2] || match[3] || null;
-        } else if (id === 'openai-reasoning') {
-          version = match[1] || null;
-          tier = (match[2] || '').toLowerCase();
-        } else {
-          // Standard: version in group 1, tier in group 2
-          version = match[1] || null;
-          tier = (match[2] || fam.defaultTier || '').toLowerCase();
-        }
-      }
-    }
-
-    return { family: id, tier, version, familyDef: fam };
+    const { tier, version } = classify(name, id);
+    return { family: id, tier: tier || fam.defaultTier || '', version, familyDef: fam };
   }
 
   return { family: 'unknown', tier: '', version: null, familyDef: null };
@@ -380,7 +380,10 @@ export function getFormatFamily(modelName) {
     case 'deepseek':
     case 'meta-llama':
     case 'mistral':
-    case 'qwen':              return 'open-source';
+    case 'qwen':
+    case 'moonshot':
+    case 'zhipu':
+    case 'minimax':           return 'open-source';
     case 'cohere':            return 'openai-family'; // Similar system prompt style
     case 'xai':               return 'openai-family';
     default:                  return 'openai-family'; // Safe default

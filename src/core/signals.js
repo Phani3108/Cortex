@@ -20,8 +20,9 @@
 
 import { join, basename, extname } from 'node:path';
 import { existsSync, readFileSync, statSync, readdirSync } from 'node:fs';
-import { execSync } from 'node:child_process';
-import { readFileSafe, getCortexDir } from '../utils/fs.js';
+import { execFileSync } from 'node:child_process';
+import { readFileSafe } from '../utils/fs.js';
+import { loadManifest } from './manifest.js';
 
 // ── Signal Types ────────────────────────────────────────────────────────────
 
@@ -33,6 +34,10 @@ const SIGNAL_TYPES = {
   STYLE_SIGNAL:    'style_signal',    // Code style detected from source
   CORRECTION:      'correction',      // User corrected AI output
 };
+
+const CONVENTIONAL_COMMIT = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: /;
+const TEST_WORD = /\b(tests?|testing|specs?)\b/i;
+const JS_EXTS = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs']);
 
 // ── Main Capture Functions ──────────────────────────────────────────────────
 
@@ -72,19 +77,13 @@ export function captureSignals(projectRoot) {
 
 function captureProviderEdits(projectRoot) {
   const signals = [];
-  const cortexDir = getCortexDir(projectRoot);
 
-  // Track which files we compiled (via a manifest)
-  const manifestPath = join(cortexDir, '.compile-manifest.json');
-  if (!existsSync(manifestPath)) return signals;
-
-  let manifest;
-  try {
-    manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-  } catch { return signals; }
+  // Track which files we compiled (via the compile manifest)
+  const manifest = loadManifest(projectRoot);
+  if (!manifest) return signals;
 
   for (const entry of manifest.files || []) {
-    if (!existsSync(entry.path)) continue;
+    if (!entry.path || typeof entry.compiledContent !== 'string' || !existsSync(entry.path)) continue;
 
     const current = readFileSync(entry.path, 'utf-8');
     if (current !== entry.compiledContent) {
@@ -93,7 +92,7 @@ function captureProviderEdits(projectRoot) {
       for (const added of diff.added) {
         signals.push({
           type: SIGNAL_TYPES.USER_EDIT,
-          source: entry.path,
+          source: entry.file || entry.path,
           provider: entry.provider,
           content: added,
           confidence: 0.9, // High — direct user edit
@@ -103,7 +102,7 @@ function captureProviderEdits(projectRoot) {
       for (const removed of diff.removed) {
         signals.push({
           type: SIGNAL_TYPES.CORRECTION,
-          source: entry.path,
+          source: entry.file || entry.path,
           provider: entry.provider,
           content: removed,
           confidence: 0.7,
@@ -228,19 +227,14 @@ function captureGitPatterns(projectRoot) {
   if (!existsSync(join(projectRoot, '.git'))) return signals;
 
   try {
-    // Recent commit message patterns
-    const log = execSync('git log --oneline -50 --no-merges 2>/dev/null', {
-      cwd: projectRoot,
-      encoding: 'utf-8',
-      timeout: 5000,
-    }).trim();
-
+    // Recent commit subjects
+    const log = git(projectRoot, ['log', '--format=%s', '-50', '--no-merges'], 5000);
     if (!log) return signals;
 
     const lines = log.split('\n');
 
     // Detect conventional commits
-    const conventional = lines.filter(l => /^[a-f0-9]+ (feat|fix|chore|docs|style|refactor|test|perf|ci|build)\b/i.test(l));
+    const conventional = lines.filter(l => CONVENTIONAL_COMMIT.test(l));
     if (conventional.length > lines.length * 0.5) {
       signals.push({
         type: SIGNAL_TYPES.GIT_PATTERN,
@@ -252,8 +246,8 @@ function captureGitPatterns(projectRoot) {
       });
     }
 
-    // Detect if tests are always included with features
-    const testCommits = lines.filter(l => /test|spec/i.test(l));
+    // Detect if tests are routinely mentioned in commits
+    const testCommits = lines.filter(l => TEST_WORD.test(l));
     if (testCommits.length > lines.length * 0.3) {
       signals.push({
         type: SIGNAL_TYPES.GIT_PATTERN,
@@ -272,11 +266,7 @@ function captureGitPatterns(projectRoot) {
     ];
     for (const file of providerFiles) {
       try {
-        const fileLog = execSync(`git log --oneline -5 -- "${file}" 2>/dev/null`, {
-          cwd: projectRoot,
-          encoding: 'utf-8',
-          timeout: 3000,
-        }).trim();
+        const fileLog = git(projectRoot, ['log', '--oneline', '-5', '--', file], 3000);
 
         if (fileLog) {
           const edits = fileLog.split('\n').length;
@@ -331,24 +321,29 @@ function captureStyleSignals(projectRoot) {
     try {
       const content = readFileSync(file, 'utf-8');
       const lines = content.split('\n');
+      const isJs = JS_EXTS.has(extname(file));
       totalLines += lines.length;
 
       for (const line of lines) {
         const trimmed = line.trimEnd();
         if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('*') || trimmed.startsWith('#')) continue;
 
-        // Semicolons (only count statement-like lines, not for/if/etc.)
-        if (trimmed.endsWith(';')) useSemicolons++;
-        else if (trimmed.length > 5 && !trimmed.endsWith('{') && !trimmed.endsWith('}') &&
-                 !trimmed.endsWith(',') && !trimmed.endsWith('(') && !trimmed.endsWith(':')) {
-          noSemicolons++;
+        // Semicolons (JS/TS only; statement-like lines, not for/if/etc.)
+        if (isJs) {
+          if (trimmed.endsWith(';')) useSemicolons++;
+          else if (trimmed.length > 5 && !trimmed.endsWith('{') && !trimmed.endsWith('}') &&
+                   !trimmed.endsWith(',') && !trimmed.endsWith('(') && !trimmed.endsWith(':')) {
+            noSemicolons++;
+          }
         }
 
-        // Quote style (count string delimiters, excluding template literals)
-        const singleMatches = trimmed.match(/(?<![\\])'(?:[^'\\]|\\.)*'/g);
-        const doubleMatches = trimmed.match(/(?<![\\])"(?:[^"\\]|\\.)*"/g);
-        if (singleMatches) useSingleQuotes += singleMatches.length;
-        if (doubleMatches) useDoubleQuotes += doubleMatches.length;
+        // Quote style (JS/TS only; string delimiters, excluding template literals)
+        if (isJs) {
+          const singleMatches = trimmed.match(/(?<![\\])'(?:[^'\\]|\\.)*'/g);
+          const doubleMatches = trimmed.match(/(?<![\\])"(?:[^"\\]|\\.)*"/g);
+          if (singleMatches) useSingleQuotes += singleMatches.length;
+          if (doubleMatches) useDoubleQuotes += doubleMatches.length;
+        }
 
         // Indentation detection
         if (line.length > 0 && line !== trimmed) {
@@ -372,6 +367,8 @@ function captureStyleSignals(projectRoot) {
           if (name.includes('_') && name !== name.toUpperCase()) snakeCase++;
           else if (/[a-z][A-Z]/.test(name)) camelCase++;
         }
+
+        if (!isJs) continue;
 
         // Arrow vs regular functions
         if (/=>/.test(trimmed)) arrowFunctions++;
@@ -468,7 +465,7 @@ function captureExistingRules(projectRoot) {
 
     // Check if this was generated by us (has our marker)
     const content = readFileSync(fullPath, 'utf-8');
-    if (content.includes('Auto-generated by') && content.includes('Cortex')) continue; // Skip our own output
+    if (isCortexOutput(content)) continue; // Skip our own output
 
     // This is a user-created file — it's pure gold
     const rules = extractRulesFromMarkdown(content);
@@ -489,14 +486,41 @@ function captureExistingRules(projectRoot) {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function extractMeaningfulDiff(original, current) {
-  const origLines = new Set(original.split('\n').map(l => l.trim()).filter(Boolean));
-  const currLines = current.split('\n').map(l => l.trim()).filter(Boolean);
+function isCortexOutput(content) {
+  return content.includes('Generated by Cortex') ||
+    (content.includes('Auto-generated by') && content.includes('Cortex'));
+}
 
-  const added = currLines.filter(l => !origLines.has(l) && l.length > 10 && !l.startsWith('#') && !l.startsWith('>'));
-  const removed = [...origLines].filter(l => !currLines.includes(l) && l.length > 10 && !l.startsWith('#') && !l.startsWith('>'));
+/** Strip leading list markers ("- ", "* ", "1. ", even "- - ") from a line. */
+export function stripListMarker(line) {
+  let out = String(line).trim();
+  let prev;
+  do {
+    prev = out;
+    out = out.replace(/^(?:[-*+]|\d+[.)])\s+/, '').replace(/^\[[ xX]\]\s+/, '');
+  } while (out !== prev);
+  return out;
+}
 
-  return { added, removed };
+function git(cwd, args, timeout) {
+  return execFileSync('git', args, {
+    cwd,
+    encoding: 'utf-8',
+    timeout,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  }).trim();
+}
+
+export function extractMeaningfulDiff(original, current) {
+  const origLines = new Set(String(original || '').split('\n').map(l => l.trim()).filter(Boolean));
+  const currLines = String(current || '').split('\n').map(l => l.trim()).filter(Boolean);
+
+  const keep = l => l.length > 10 && !l.startsWith('#') && !l.startsWith('>') && !l.startsWith('<!--');
+  const currSet = new Set(currLines);
+  const added = currLines.filter(l => !origLines.has(l) && keep(l)).map(stripListMarker);
+  const removed = [...origLines].filter(l => !currSet.has(l) && keep(l)).map(stripListMarker);
+
+  return { added: [...new Set(added)], removed: [...new Set(removed)] };
 }
 
 function extractRulesFromMarkdown(content) {
@@ -509,7 +533,8 @@ function extractRulesFromMarkdown(content) {
     if (trimmed.startsWith('- ') && trimmed.length > 15 && trimmed.length < 300) {
       // Filter out content that looks like headers, links, or metadata
       if (!/^\- \[|^\- http|^\- \*\*[A-Z].*:$/.test(trimmed)) {
-        rules.push(trimmed.slice(2));
+        const rule = stripListMarker(trimmed);
+        if (rule) rules.push(rule);
       }
     }
   }
@@ -557,4 +582,4 @@ function groupBy(arr, key) {
   return groups;
 }
 
-export { SIGNAL_TYPES };
+export { SIGNAL_TYPES, CONVENTIONAL_COMMIT, TEST_WORD };

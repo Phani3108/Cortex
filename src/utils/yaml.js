@@ -6,245 +6,338 @@
 // ─────────────────────────────────────────────────────────────────────────────
 /**
  * Minimal YAML parser/serializer — handles the subset cortex needs.
- * Supports: scalars, arrays, nested objects, comments, multiline strings,
- * inline arrays with quoted strings, block scalars (| and >).
+ * Supports: scalars, block and flow sequences/maps (nested), lists of objects,
+ * zero-indented lists under a key, comments, quoted strings with escapes,
+ * block scalars (|, >, with - / + chomping indicators).
  * No external dependencies.
  */
 
+// ── Parser ──────────────────────────────────────────────────────────────────
+
 export function parse(text) {
-  const lines = text.split('\n');
-  return parseLines(lines, 0, 0).value;
-}
+  const lines = String(text ?? '')
+    .replace(/^﻿/, '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map(l => (l.trim() === '---' || l.trim() === '...' ? '' : l));
 
-function parseLines(lines, start, baseIndent) {
-  const result = {};
-  let i = start;
+  const ctx = { lines, i: 0 };
+  const first = nextContent(ctx);
+  if (first === -1) return {};
 
-  while (i < lines.length) {
-    const line = lines[i];
-    const trimmed = line.trimStart();
-
-    // Skip blank lines and comments
-    if (!trimmed || trimmed.startsWith('#')) { i++; continue; }
-
-    const indent = line.length - trimmed.length;
-    if (indent < baseIndent) break;
-
-    // Find the key:value split — respect quoted keys and values with colons
-    const colonIdx = findKeyColonIndex(trimmed);
-    if (colonIdx === -1) { i++; continue; }
-
-    const key = trimmed.slice(0, colonIdx).trim();
-    const rawAfterColon = trimmed.slice(colonIdx + 1);
-    const afterColon = stripInlineComment(rawAfterColon).trim();
-
-    if (afterColon === '' || afterColon === '|' || afterColon === '>') {
-      // Check if next line is a list or nested object
-      const nextNonEmpty = findNextNonEmpty(lines, i + 1);
-      if (nextNonEmpty < lines.length) {
-        const nextTrimmed = lines[nextNonEmpty].trimStart();
-        const nextIndent = lines[nextNonEmpty].length - nextTrimmed.length;
-
-        if (nextIndent > indent && nextTrimmed.startsWith('- ')) {
-          const arr = parseArray(lines, nextNonEmpty, nextIndent);
-          result[key] = arr.value;
-          i = arr.nextIndex;
-          continue;
-        } else if (nextIndent > indent) {
-          if (afterColon === '|' || afterColon === '>') {
-            const block = parseBlockScalar(lines, i + 1, nextIndent, afterColon);
-            result[key] = block.value;
-            i = block.nextIndex;
-            continue;
-          }
-          const nested = parseLines(lines, nextNonEmpty, nextIndent);
-          result[key] = nested.value;
-          i = nested.nextIndex;
-          continue;
-        }
-      }
-      result[key] = afterColon === '' ? null : '';
-      i++;
-    } else if (afterColon.startsWith('[')) {
-      result[key] = parseInlineArray(afterColon);
-      i++;
-    } else {
-      result[key] = parseScalar(afterColon);
-      i++;
-    }
+  const firstText = lines[first].trim();
+  if (firstText.startsWith('[') || firstText.startsWith('{')) {
+    const flow = tryParseFlow(firstText);
+    if (flow.ok) return flow.value;
   }
 
-  return { value: result, nextIndex: i };
+  const value = parseNode(ctx, 0);
+  return value === null ? {} : value;
 }
 
-function parseArray(lines, start, baseIndent) {
+function indentOf(line) {
+  return line.length - line.trimStart().length;
+}
+
+function isContent(line) {
+  const t = line.trim();
+  return t !== '' && !t.startsWith('#');
+}
+
+/** Index of the next non-blank, non-comment line (advancing ctx.i), or -1. */
+function nextContent(ctx) {
+  while (ctx.i < ctx.lines.length && !isContent(ctx.lines[ctx.i])) ctx.i++;
+  return ctx.i < ctx.lines.length ? ctx.i : -1;
+}
+
+function isSeqItem(trimmed) {
+  return trimmed === '-' || trimmed.startsWith('- ');
+}
+
+/** Parse the block starting at the next content line if its indent >= minIndent. */
+function parseNode(ctx, minIndent) {
+  const idx = nextContent(ctx);
+  if (idx === -1) return null;
+  const line = ctx.lines[idx];
+  const indent = indentOf(line);
+  if (indent < minIndent) return null;
+  return isSeqItem(line.trim()) ? parseSeq(ctx, indent) : parseMap(ctx, indent);
+}
+
+function parseSeq(ctx, indent) {
   const arr = [];
-  let i = start;
 
-  while (i < lines.length) {
-    const line = lines[i];
-    const trimmed = line.trimStart();
+  while (true) {
+    const idx = nextContent(ctx);
+    if (idx === -1) break;
+    const line = ctx.lines[idx];
+    const trimmed = line.trim();
+    if (indentOf(line) !== indent || !isSeqItem(trimmed)) break;
 
-    if (!trimmed || trimmed.startsWith('#')) { i++; continue; }
-
-    const indent = line.length - trimmed.length;
-    if (indent < baseIndent) break;
-
-    if (trimmed.startsWith('- ')) {
-      const itemContent = trimmed.slice(2).trim();
-
-      // Check if it's a URL or value containing colons but not a key:value
-      const isUrl = /^https?:\/\//.test(itemContent) || /^ftp:\/\//.test(itemContent);
-      const isQuoted = itemContent.startsWith('"') || itemContent.startsWith("'");
-
-      if (!isUrl && !isQuoted && itemContent.includes(':')) {
-        const colonIdx = findKeyColonIndex(itemContent);
-        if (colonIdx > 0) {
-          const itemKey = itemContent.slice(0, colonIdx).trim();
-          const afterColon = stripInlineComment(itemContent.slice(colonIdx + 1)).trim();
-          const obj = {};
-          obj[itemKey] = afterColon === '' ? null : parseScalar(afterColon);
-
-          // Check for more keys at deeper indent
-          const nextNonEmpty = findNextNonEmpty(lines, i + 1);
-          if (nextNonEmpty < lines.length) {
-            const nextLine = lines[nextNonEmpty];
-            const nextIndent = nextLine.length - nextLine.trimStart().length;
-            if (nextIndent > indent + 2 && !nextLine.trimStart().startsWith('- ')) {
-              const nested = parseLines(lines, nextNonEmpty, nextIndent);
-              Object.assign(obj, nested.value);
-              i = nested.nextIndex;
-              arr.push(obj);
-              continue;
-            }
-          }
-          arr.push(obj);
-        } else {
-          arr.push(parseScalar(itemContent));
-        }
-      } else {
-        arr.push(parseScalar(itemContent));
-      }
-      i++;
-    } else {
-      break;
-    }
-  }
-
-  return { value: arr, nextIndex: i };
-}
-
-function parseBlockScalar(lines, start, baseIndent, style) {
-  const parts = [];
-  let i = start;
-  let detectedIndent = -1;
-
-  while (i < lines.length) {
-    const line = lines[i];
-
-    // Empty lines are preserved in block scalars
-    if (!line.trim()) {
-      parts.push('');
-      i++;
+    const content = trimmed.slice(1).trimStart();
+    if (content === '' || content.startsWith('#')) {
+      ctx.i++;
+      arr.push(parseNode(ctx, indent + 1));
       continue;
     }
 
-    const lineIndent = line.length - line.trimStart().length;
-    if (lineIndent < baseIndent) break;
+    if (!/^[[{]/.test(content) && findKeyColonIndex(stripInlineComment(content)) > 0) {
+      // "- key: value" — rewrite the dash as spaces and parse a map at that column
+      const column = indent + (trimmed.length - content.length);
+      ctx.lines[idx] = ' '.repeat(column) + content;
+      arr.push(parseMap(ctx, column));
+      continue;
+    }
 
-    // Use the first line's indent as the base for stripping
-    if (detectedIndent === -1) detectedIndent = lineIndent;
+    if (isSeqItem(content)) {
+      // "- - a" nested sequence on one line
+      const column = indent + (trimmed.length - content.length);
+      ctx.lines[idx] = ' '.repeat(column) + content;
+      arr.push(parseSeq(ctx, column));
+      continue;
+    }
 
-    // Preserve relative indentation beyond the base
-    const stripped = lineIndent >= detectedIndent ? line.slice(detectedIndent) : line.trimStart();
-    parts.push(stripped);
-    i++;
+    ctx.i++;
+    arr.push(parseValue(content));
   }
 
-  // Trim trailing empty lines
-  while (parts.length > 0 && parts[parts.length - 1] === '') parts.pop();
-
-  const joiner = style === '|' ? '\n' : ' ';
-  return { value: parts.join(joiner), nextIndex: i };
+  return arr;
 }
 
-/**
- * Parse inline arrays, respecting quoted strings that may contain commas.
- * e.g. ["comma,inside", "other", plain, 42]
- */
-function parseInlineArray(str) {
-  const closeBracket = str.lastIndexOf(']');
-  const inner = str.slice(1, closeBracket === -1 ? undefined : closeBracket).trim();
-  if (!inner) return [];
+function parseMap(ctx, indent) {
+  const obj = {};
 
-  const items = [];
-  let current = '';
-  let inQuote = null;
+  while (true) {
+    const idx = nextContent(ctx);
+    if (idx === -1) break;
+    const line = ctx.lines[idx];
+    const lineIndent = indentOf(line);
+    const trimmed = line.trim();
+    if (lineIndent < indent || isSeqItem(trimmed)) break;
 
-  for (let c = 0; c < inner.length; c++) {
-    const ch = inner[c];
+    const colonIdx = findKeyColonIndex(trimmed);
+    ctx.i++;
+    if (colonIdx === -1) continue; // not a key — ignore leniently
 
-    if (inQuote) {
-      current += ch;
-      if (ch === '\\' && c + 1 < inner.length) {
-        current += inner[++c]; // skip escaped char
-      } else if (ch === inQuote) {
-        inQuote = null;
+    const key = unquoteKey(trimmed.slice(0, colonIdx).trim());
+    const after = stripInlineComment(trimmed.slice(colonIdx + 1)).trim();
+
+    if (/^[|>][-+]?\d*$/.test(after)) {
+      obj[key] = parseBlockScalar(ctx, lineIndent, after);
+    } else if (after === '') {
+      const nextIdx = nextContent(ctx);
+      if (nextIdx === -1) { obj[key] = null; continue; }
+      const next = ctx.lines[nextIdx];
+      const nextIndent = indentOf(next);
+      if (nextIndent > lineIndent) {
+        obj[key] = parseNode(ctx, nextIndent);
+      } else if (nextIndent === lineIndent && isSeqItem(next.trim())) {
+        obj[key] = parseSeq(ctx, lineIndent); // zero-indented list under a key
+      } else {
+        obj[key] = null;
       }
-    } else if (ch === '"' || ch === "'") {
-      inQuote = ch;
-      current += ch;
-    } else if (ch === ',') {
-      items.push(parseScalar(current.trim()));
-      current = '';
     } else {
-      current += ch;
+      obj[key] = parseValue(after);
     }
   }
 
-  if (current.trim()) items.push(parseScalar(current.trim()));
-  return items;
+  return obj;
 }
 
+function parseBlockScalar(ctx, parentIndent, header) {
+  const style = header[0];
+  const chomp = header.includes('-') ? 'strip' : header.includes('+') ? 'keep' : 'clip';
+  const parts = [];
+  let base = -1;
+
+  while (ctx.i < ctx.lines.length) {
+    const line = ctx.lines[ctx.i];
+    if (!line.trim()) { parts.push(''); ctx.i++; continue; }
+    const lineIndent = indentOf(line);
+    if (lineIndent <= parentIndent) break;
+    if (base === -1) base = lineIndent;
+    parts.push(lineIndent >= base ? line.slice(base) : line.trimStart());
+    ctx.i++;
+  }
+
+  let trailing = 0;
+  while (parts.length && parts[parts.length - 1] === '') { parts.pop(); trailing++; }
+
+  let body;
+  if (style === '|') {
+    body = parts.join('\n');
+  } else {
+    // Folded: single newlines become spaces, blank lines become newlines
+    body = '';
+    for (let k = 0; k < parts.length; k++) {
+      const p = parts[k];
+      if (k === 0) body = p;
+      else if (p === '') body += '\n';
+      else body += (parts[k - 1] === '' ? '' : ' ') + p;
+    }
+  }
+
+  if (chomp === 'strip' || !body) return body;
+  if (chomp === 'keep') return body + '\n'.repeat(trailing + 1);
+  return style === '|' ? body + '\n' : body;
+}
+
+function parseValue(str) {
+  const clean = stripInlineComment(str).trim();
+  if (clean.startsWith('[') || clean.startsWith('{')) {
+    const flow = tryParseFlow(clean);
+    if (flow.ok) return flow.value;
+  }
+  return parseScalar(clean);
+}
+
+// ── Flow collections: [a, "b", {c: d}] ──────────────────────────────────────
+
+function tryParseFlow(str) {
+  try {
+    const state = { s: str, p: 0 };
+    const value = parseFlowValue(state);
+    skipWs(state);
+    if (state.p !== state.s.length && !state.s.slice(state.p).trim().startsWith('#')) {
+      return { ok: false };
+    }
+    return { ok: true, value };
+  } catch {
+    return { ok: false };
+  }
+}
+
+function skipWs(st) {
+  while (st.p < st.s.length && /\s/.test(st.s[st.p])) st.p++;
+}
+
+function parseFlowValue(st) {
+  skipWs(st);
+  const ch = st.s[st.p];
+  if (ch === '[') return parseFlowSeq(st);
+  if (ch === '{') return parseFlowMap(st);
+  if (ch === '"' || ch === "'") return readQuoted(st);
+  return parseScalar(readPlain(st, ',]}'));
+}
+
+function parseFlowSeq(st) {
+  st.p++; // [
+  const arr = [];
+  skipWs(st);
+  if (st.s[st.p] === ']') { st.p++; return arr; }
+  while (st.p < st.s.length) {
+    arr.push(parseFlowValue(st));
+    skipWs(st);
+    const ch = st.s[st.p++];
+    if (ch === ']') return arr;
+    if (ch !== ',') throw new Error('bad flow sequence');
+    skipWs(st);
+    if (st.s[st.p] === ']') { st.p++; return arr; } // trailing comma
+  }
+  throw new Error('unterminated flow sequence');
+}
+
+function parseFlowMap(st) {
+  st.p++; // {
+  const obj = {};
+  skipWs(st);
+  if (st.s[st.p] === '}') { st.p++; return obj; }
+  while (st.p < st.s.length) {
+    skipWs(st);
+    const ch = st.s[st.p];
+    const key = ch === '"' || ch === "'" ? readQuoted(st) : readPlain(st, ':,}');
+    skipWs(st);
+    if (st.s[st.p] !== ':') throw new Error('bad flow map');
+    st.p++;
+    skipWs(st);
+    obj[String(key)] = st.s[st.p] === ',' || st.s[st.p] === '}' ? null : parseFlowValue(st);
+    skipWs(st);
+    const end = st.s[st.p++];
+    if (end === '}') return obj;
+    if (end !== ',') throw new Error('bad flow map');
+    skipWs(st);
+    if (st.s[st.p] === '}') { st.p++; return obj; }
+  }
+  throw new Error('unterminated flow map');
+}
+
+function readPlain(st, stops) {
+  const start = st.p;
+  while (st.p < st.s.length && !stops.includes(st.s[st.p])) st.p++;
+  return st.s.slice(start, st.p).trim();
+}
+
+function readQuoted(st) {
+  const q = st.s[st.p];
+  let end = st.p + 1;
+  while (end < st.s.length) {
+    if (q === '"' && st.s[end] === '\\') { end += 2; continue; }
+    if (st.s[end] === q) {
+      if (q === "'" && st.s[end + 1] === "'") { end += 2; continue; }
+      break;
+    }
+    end++;
+  }
+  if (end >= st.s.length) throw new Error('unterminated string');
+  const raw = st.s.slice(st.p, end + 1);
+  st.p = end + 1;
+  return parseScalar(raw);
+}
+
+// ── Scalars ─────────────────────────────────────────────────────────────────
+
 function parseScalar(str) {
-  // Strip inline comments from bare values (but not from quoted strings)
   str = stripInlineComment(str).trim();
 
-  if (str === '' || str === 'null' || str === '~') return null;
-  if (str === 'true') return true;
-  if (str === 'false') return false;
-  if (/^-?\d+$/.test(str)) return parseInt(str, 10);
+  if (str === '' || str === 'null' || str === '~' || str === 'Null' || str === 'NULL') return null;
+  if (str === 'true' || str === 'True' || str === 'TRUE') return true;
+  if (str === 'false' || str === 'False' || str === 'FALSE') return false;
+  if (/^-?\d+$/.test(str)) {
+    const n = parseInt(str, 10);
+    return Number.isSafeInteger(n) ? n : str;
+  }
   if (/^-?\d+\.\d+$/.test(str)) return parseFloat(str);
 
-  // Strip quotes, handle escape sequences in double-quoted strings
-  if (str.startsWith('"') && str.endsWith('"') && str.length >= 2) {
-    return str.slice(1, -1)
-      .replace(/\\n/g, '\n')
-      .replace(/\\t/g, '\t')
-      .replace(/\\"/g, '"')
-      .replace(/\\\\/g, '\\');
+  if (str.length >= 2 && str.startsWith('"') && str.endsWith('"')) {
+    return unescapeDouble(str.slice(1, -1));
   }
-  if (str.startsWith("'") && str.endsWith("'") && str.length >= 2) {
+  if (str.length >= 2 && str.startsWith("'") && str.endsWith("'")) {
     return str.slice(1, -1).replace(/''/g, "'");
   }
 
   return str;
 }
 
+const ESCAPES = { n: '\n', t: '\t', r: '\r', '0': '\0', '"': '"', '\\': '\\', '/': '/', b: '\b', f: '\f', e: '\x1b', ' ': ' ' };
+
+function unescapeDouble(s) {
+  return s.replace(/\\(u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|.)/g, (m, e) => {
+    if (e[0] === 'u' || (e[0] === 'x' && e.length === 3)) return String.fromCharCode(parseInt(e.slice(1), 16));
+    return e in ESCAPES ? ESCAPES[e] : m;
+  });
+}
+
+function unquoteKey(key) {
+  if (key.length >= 2 && (key.startsWith('"') || key.startsWith("'")) && key.endsWith(key[0])) {
+    return String(parseScalar(key));
+  }
+  return key;
+}
+
 /**
  * Find the colon that separates key from value, ignoring colons inside
- * quoted strings and URLs.
+ * quoted strings and URLs (a key colon must be followed by space or EOL).
  */
 function findKeyColonIndex(str) {
   let inQuote = null;
   for (let i = 0; i < str.length; i++) {
     const ch = str[i];
     if (inQuote) {
-      if (ch === '\\') { i++; continue; }
+      if (ch === '\\' && inQuote === '"') { i++; continue; }
       if (ch === inQuote) inQuote = null;
       continue;
     }
-    if (ch === '"' || ch === "'") { inQuote = ch; continue; }
+    if ((ch === '"' || ch === "'") && i === 0) { inQuote = ch; continue; }
     if (ch === ':' && (i + 1 >= str.length || str[i + 1] === ' ' || str[i + 1] === '\t')) {
       return i;
     }
@@ -262,72 +355,133 @@ function stripInlineComment(str) {
   for (let i = 0; i < str.length; i++) {
     const ch = str[i];
     if (inQuote) {
-      if (ch === '\\') { i++; continue; }
+      if (ch === '\\' && inQuote === '"') { i++; continue; }
       if (ch === inQuote) inQuote = null;
       continue;
     }
-    if (ch === '"' || ch === "'") { inQuote = ch; continue; }
-    if (ch === '#' && i > 0 && str[i - 1] === ' ') {
-      return str.slice(0, i - 1);
+    if (ch === '"' || ch === "'") {
+      // Only treat as a quote when it opens a token
+      if (i === 0 || /[\s[{,:]/.test(str[i - 1])) inQuote = ch;
+      continue;
+    }
+    if (ch === '#' && (i === 0 || str[i - 1] === ' ' || str[i - 1] === '\t')) {
+      return str.slice(0, i).trimEnd();
     }
   }
   return str;
 }
 
-function findNextNonEmpty(lines, start) {
-  let i = start;
-  while (i < lines.length && (!lines[i].trim() || lines[i].trimStart().startsWith('#'))) i++;
-  return i;
-}
-
 // ── Serializer ──────────────────────────────────────────────────────────────
 
+/**
+ * Serialize a value to YAML. Objects produce `key: value` lines; the result has
+ * no trailing newline. `indent` is the column for top-level keys.
+ */
 export function stringify(obj, indent = 0) {
-  const lines = [];
-  const prefix = ' '.repeat(indent);
+  if (Array.isArray(obj)) {
+    return obj.length ? serializeSeq(obj, indent).join('\n') : ' '.repeat(indent) + '[]';
+  }
+  if (obj === null || typeof obj !== 'object') {
+    return ' '.repeat(indent) + serializeScalar(obj);
+  }
+  const lines = serializeMap(obj, indent);
+  return lines.length ? lines.join('\n') : ' '.repeat(indent) + '{}';
+}
 
-  for (const [key, val] of Object.entries(obj)) {
-    if (val === null || val === undefined) {
+function isPlainObject(v) {
+  return v !== null && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date);
+}
+
+function serializeMap(obj, indent) {
+  const prefix = ' '.repeat(indent);
+  const lines = [];
+  for (const [rawKey, val] of Object.entries(obj)) {
+    if (val === undefined || typeof val === 'function') continue;
+    const key = serializeKey(rawKey);
+    if (Array.isArray(val)) {
+      if (!val.length) lines.push(`${prefix}${key}: []`);
+      else lines.push(`${prefix}${key}:`, ...serializeSeq(val, indent + 2));
+    } else if (isPlainObject(val)) {
+      if (!Object.keys(val).length) lines.push(`${prefix}${key}: {}`);
+      else lines.push(`${prefix}${key}:`, ...serializeMap(val, indent + 2));
+    } else if (val === null) {
       lines.push(`${prefix}${key}:`);
-    } else if (Array.isArray(val)) {
-      lines.push(`${prefix}${key}:`);
-      for (const item of val) {
-        if (typeof item === 'object' && item !== null) {
-          const entries = Object.entries(item);
-          const [firstKey, firstVal] = entries[0];
-          lines.push(`${prefix}  - ${firstKey}: ${serializeScalar(firstVal)}`);
-          for (const [k, v] of entries.slice(1)) {
-            lines.push(`${prefix}    ${k}: ${serializeScalar(v)}`);
-          }
-        } else {
-          lines.push(`${prefix}  - ${serializeScalar(item)}`);
-        }
-      }
-    } else if (typeof val === 'object') {
-      lines.push(`${prefix}${key}:`);
-      lines.push(stringify(val, indent + 2));
-    } else if (typeof val === 'string' && val.includes('\n')) {
-      lines.push(`${prefix}${key}: |`);
-      for (const l of val.split('\n')) {
-        lines.push(`${prefix}  ${l}`);
-      }
+    } else if (typeof val === 'string' && canUseBlockLiteral(val)) {
+      lines.push(`${prefix}${key}: |-`);
+      for (const l of val.split('\n')) lines.push(l ? `${prefix}  ${l}` : '');
     } else {
       lines.push(`${prefix}${key}: ${serializeScalar(val)}`);
     }
   }
+  return lines;
+}
 
-  return lines.join('\n');
+function serializeSeq(arr, indent) {
+  const prefix = ' '.repeat(indent);
+  const lines = [];
+  for (const item of arr) {
+    if (Array.isArray(item)) {
+      if (!item.length) lines.push(`${prefix}- []`);
+      else lines.push(`${prefix}-`, ...serializeSeq(item, indent + 2));
+    } else if (isPlainObject(item)) {
+      const inner = serializeMap(item, indent + 2);
+      if (!inner.length) { lines.push(`${prefix}- {}`); continue; }
+      // Put the first key on the dash line
+      inner[0] = `${prefix}- ${inner[0].slice(indent + 2)}`;
+      lines.push(...inner);
+    } else {
+      lines.push(`${prefix}- ${serializeScalar(item)}`);
+    }
+  }
+  return lines;
+}
+
+/** Multi-line strings that round-trip cleanly through a `|-` block. */
+function canUseBlockLiteral(s) {
+  if (!s.includes('\n') || s.endsWith('\n') || /[\r\t\0]/.test(s)) return false;
+  const lines = s.split('\n');
+  if (/^\s/.test(lines[0])) return false;
+  return lines.every(l => l === '' || (l.trim() !== '' && !/\s$/.test(l)));
+}
+
+function serializeKey(key) {
+  if (/^[A-Za-z0-9_][\w.\-/ ]*$/.test(key) && !/\s$/.test(key) && parseScalar(key) === key) return key;
+  return quoteDouble(key);
+}
+
+function needsQuote(s) {
+  if (s === '') return true;
+  if (s !== s.trim()) return true;
+  if (/[\n\r\t\0\x7f-\x9f]/.test(s) || /[\x00-\x1f]/.test(s)) return true;
+  // Anything the parser would read back as a non-string (numbers, booleans, null, ~)
+  if (parseScalar(s) !== s) return true;
+  if (/^[-+]?(\d|\.\d)/.test(s) || /^[-+.]?(inf|nan)$/i.test(s)) return true;
+  if (/^(yes|no|on|off|y|n)$/i.test(s)) return true;
+  if (/^[-?:,[\]{}#&*!|>'"%@`]/.test(s)) return true;
+  if (/: |:$| #/.test(s)) return true;
+  return /[:#{}[\],&*?|>!%@`]/.test(s);
+}
+
+function quoteDouble(s) {
+  const body = String(s).replace(/[\\"\x00-\x1f\x7f]/g, ch => {
+    switch (ch) {
+      case '\\': return '\\\\';
+      case '"': return '\\"';
+      case '\n': return '\\n';
+      case '\t': return '\\t';
+      case '\r': return '\\r';
+      default: return '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+    }
+  });
+  return `"${body}"`;
 }
 
 function serializeScalar(val) {
   if (val === null || val === undefined) return 'null';
   if (typeof val === 'boolean') return val.toString();
-  if (typeof val === 'number') return val.toString();
-  if (typeof val === 'string') {
-    if (/[:#{}[\],&*?|>!%@`]/.test(val) || val === '' || val === 'true' || val === 'false' || val === 'null') {
-      return `"${val.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-    }
-    return val;
-  }
-  return String(val);
+  if (typeof val === 'number') return Number.isFinite(val) ? String(val) : quoteDouble(String(val));
+  if (val instanceof Date) return quoteDouble(val.toISOString());
+  if (typeof val === 'bigint') return String(val);
+  const s = String(val);
+  return needsQuote(s) ? quoteDouble(s) : s;
 }

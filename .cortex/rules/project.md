@@ -1,21 +1,24 @@
-# Project Rules
-# These rules are compiled into provider-specific config files.
-# Edit this file to customize AI behavior in your project.
-
-## Code Style
-- Follow the existing code style and conventions in this project
-- Use meaningful variable and function names
-- Keep functions focused and small
+# Cortex — project rules
+# Compiled into CLAUDE.md, AGENTS.md, Cursor and Copilot files by `cortex compile`.
 
 ## Architecture
-- Follow the existing project architecture patterns
-- Don't introduce new dependencies without discussion
-- Prefer composition over inheritance
+- `src/engine/` is pure and isomorphic: no `node:` imports. The website playground ships these exact files, so the build fails if one sneaks in
+- Tool conventions (paths, frontmatter, limits) live only in `src/engine/targets.js`; never hardcode a tool's file path anywhere else
+- Model prices and context windows come only from `registry/latest.json` via `src/core/registry.js`; never hardcode a model id or price
+- Commands are thin: parse flags, call core/engine functions, print. New commands must be added to `src/engine/commands.js`
+- The website in `site/` is vanilla HTML/CSS/ES modules built by `scripts/build-site.mjs`; `public/` is generated and git-ignored
+
+## Code style
+- ES modules, 2-space indent, single quotes, semicolons
+- Keep the copyright header block at the top of every source file
+- Comments explain why, not what; keep functions small and named for what they return
+
+## Safety
+- ! Zero runtime dependencies — use Node built-ins only
+- ! Never overwrite a file Cortex did not generate unless the user passed `--force`
+- ! Never pass user- or config-supplied strings to a shell; use `execFileSync` with an argument array
 
 ## Testing
-- Write tests for new features and bug fixes
-- Maintain existing test coverage
-
-## Documentation
-- Add comments only where the logic isn't self-evident
-- Update README when adding new features
+- Tests use `node:test` under `tests/unit/`; run `npm test` before calling work done
+- CLI tests run in temp git repos with `HOME` and `CORTEX_HOME` pointed at temp dirs — never touch the real `~/.cortex`
+- After changing rules or targets, run `node bin/cortex.js compile` and commit the regenerated files (CI runs `compile --check`)

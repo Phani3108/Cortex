@@ -5,260 +5,220 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * Provider Health Assessment — surfaces the state of each AI tool.
+ * Project inspection + health — shared by `verify`, `status`, `diff` and the
+ * analysis commands. Health means three things only:
  *
- * Reports on:
- * - Registry freshness (how stale is model data)
- * - Compiled file integrity (do outputs still exist, are they current)
- * - Provider feature utilization (using MCP? hooks? automations?)
- * - Model availability changes (new models available for your provider)
- * - Configuration gaps (features enabled but not configured)
+ *   1. generated files match what `cortex compile` would write now,
+ *   2. every target's size budget is respected,
+ *   3. the model registry (pricing, context windows) is fresh.
  */
 
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { PROVIDER_SPECS } from './specs.js';
-import { isRegistryStale, getRegistryStaleness, getProviderModels } from './registry.js';
-import { loadManifest } from './manifest.js';
 import { getCortexDir } from '../utils/fs.js';
+import { error as logError } from '../utils/log.js';
+import { TARGETS, measure, normalizeTargets, compile } from '../engine/index.js';
+import { compileProject, profileRules } from './sources.js';
+import { loadProfile } from './profile.js';
+import { loadManifest, manifestEntry } from './manifest.js';
+import { getRegistryInfo } from './registry.js';
+import { planWrites, planRemovals } from './outputs.js';
+
+const STALE_DAYS = 7;
+const CRITICAL_DAYS = 30;
+
+/** True when the project has a .cortex/ with a config or rules. */
+export function hasCortex(projectRoot) {
+  const dir = getCortexDir(projectRoot);
+  return existsSync(join(dir, 'config.yaml')) || existsSync(join(dir, 'rules'));
+}
+
+/** Exit with a clear message when .cortex/ is missing. */
+export function requireCortex(projectRoot) {
+  if (hasCortex(projectRoot)) return;
+  logError('.cortex/ not found. Run `cortex init` first.');
+  process.exit(1);
+}
 
 /**
- * Assess the health of all configured providers for a project.
- *
- * @param {string} projectRoot - Project root
- * @param {object} config      - Loaded config
- * @returns {object} Health report
+ * Compile in memory and compare with disk. Never writes.
+ * @returns engine result + { manifest, plan, removals, unknown, targets }
  */
-export function assessHealth(projectRoot, config) {
-  const enabledProviders = Object.entries(config.providers || {})
-    .filter(([, v]) => v)
-    .map(([k]) => k);
-
-  const registry = assessRegistryHealth();
-  const providers = {};
-
-  for (const slug of enabledProviders) {
-    providers[slug] = assessProviderHealth(projectRoot, slug, config);
-  }
-
-  const overallScore = calculateOverallScore(registry, providers);
-
-  return {
-    overall: {
-      score: overallScore,
-      label: scoreLabel(overallScore),
-    },
-    registry,
-    providers,
-    recommendations: generateHealthRecommendations(registry, providers, enabledProviders),
-  };
-}
-
-// ── Registry Health ─────────────────────────────────────────────────────────
-
-function assessRegistryHealth() {
-  const staleness = getRegistryStaleness();
-  const stale = isRegistryStale();
-
-  let status = 'healthy';
-  if (staleness === Infinity) status = 'missing';
-  else if (staleness > 30) status = 'critical';
-  else if (stale) status = 'stale';
-
-  return {
-    status,
-    staleDays: staleness === Infinity ? null : staleness,
-    message: registryMessage(status, staleness),
-  };
-}
-
-function registryMessage(status, staleness) {
-  switch (status) {
-    case 'missing':  return 'Registry never synced. Run `cortex update` to fetch latest model data.';
-    case 'critical': return `Registry is ${staleness} days old. Model pricing may be inaccurate. Run \`cortex update\`.`;
-    case 'stale':    return `Registry is ${staleness} days old. Consider running \`cortex update\`.`;
-    default:         return `Registry is current (${staleness} day${staleness !== 1 ? 's' : ''} old).`;
-  }
-}
-
-// ── Per-Provider Health ─────────────────────────────────────────────────────
-
-function assessProviderHealth(projectRoot, slug, config) {
-  const spec = PROVIDER_SPECS[slug];
-  if (!spec) return { status: 'unknown', message: `Unknown provider: ${slug}` };
-
-  const issues = [];
-  const info = [];
-
-  // 1. Check compiled files exist
-  const compiledFiles = checkCompiledFiles(projectRoot, spec);
-  if (compiledFiles.missing.length > 0) {
-    issues.push({
-      severity: 'warning',
-      message: `Missing compiled files: ${compiledFiles.missing.join(', ')}`,
-      action: `Run \`cortex compile -p ${slug}\``,
-    });
-  }
-
-  // 2. Check file staleness (compare to manifest)
+export function inspectProject(projectRoot, { only = null } = {}) {
+  const result = compileProject(projectRoot, { only });
   const manifest = loadManifest(projectRoot);
-  if (manifest) {
-    const staleFiles = checkFileStaleness(manifest, spec, slug);
-    if (staleFiles.length > 0) {
-      issues.push({
-        severity: 'info',
-        message: `${staleFiles.length} file(s) modified since last compile`,
-        action: 'User edits detected — run `cortex learn` to capture changes, then `cortex compile`',
-      });
+  const compiledTargets = Object.keys(result.report);
+  const plan = planWrites(projectRoot, result.outputs, manifest);
+  const removals = planRemovals(projectRoot, result.outputs, manifest, compiledTargets);
+  const { unknown } = normalizeTargets(result.config.providers);
+  const agentsMd = result.outputs.find(o => o.path === TARGETS.codex.mainFile) || null;
+
+  const targets = {};
+  for (const [id, entry] of Object.entries(result.report)) {
+    const target = TARGETS[id];
+    const files = plan
+      .filter(p => (p.output.targets || [p.output.target]).includes(id))
+      .map(p => ({ file: p.file, kind: p.output.kind, action: p.action, reason: p.reason || null, tokens: p.output.tokens }));
+    const own = result.outputs.find(o => o.kind === 'instructions' && (o.targets || [o.target]).includes(id));
+    const alwaysOn = own || (entry.viaAgentsMd ? agentsMd : null);
+    const { unit, soft, hard } = target.budget;
+    const size = own ? measure(own.content, unit) : null;
+
+    targets[id] = {
+      id,
+      name: target.name,
+      viaAgentsMd: entry.viaAgentsMd,
+      alwaysOn: alwaysOn?.path || null,
+      alwaysOnOutput: alwaysOn,
+      budget: { unit, soft, hard, size, overSoft: !!(soft && size > soft), overHard: !!(hard && size > hard) },
+      dropped: entry.dropped,
+      files,
+      status: fileStatus(files),
+    };
+  }
+  return { ...result, manifest, plan, removals, unknown, targets };
+}
+
+/**
+ * Compile one target on its own (even if disabled in config), from the
+ * sources an inspection already loaded. Used to analyse "what if" targets.
+ */
+export function compileTargetAlone(inspection, id) {
+  const model = inspection.config.providers?.[id]?.model;
+  return compile({
+    ruleFiles: inspection.ruleFiles,
+    skillFiles: inspection.skillFiles,
+    config: { ...inspection.config, providers: { [id]: model ? { enabled: true, model } : true } },
+    extraRules: profileRules(loadProfile()),
+  });
+}
+
+function fileStatus(files) {
+  if (files.some(f => f.action === 'conflict')) return 'conflict';
+  if (files.length && files.every(f => f.action === 'create')) return 'not_compiled';
+  if (files.some(f => f.action === 'create' || f.action === 'update')) return 'stale';
+  return 'up_to_date';
+}
+
+/** Registry freshness summary. */
+export function registryHealth() {
+  const reg = getRegistryInfo();
+  const days = reg.ageDays;
+  let status = 'fresh';
+  if (!Number.isFinite(days)) status = 'missing';
+  else if (days > CRITICAL_DAYS) status = 'critical';
+  else if (days > STALE_DAYS) status = 'stale';
+  const message = status === 'missing'
+    ? 'Model registry has no data. Run `cortex update`.'
+    : status === 'fresh'
+      ? `Model registry is ${days} day(s) old.`
+      : `Model registry is ${days} days old — pricing and context windows may be out of date. Run \`cortex update\`.`;
+  return { status, ...reg, message };
+}
+
+/**
+ * Turn an inspection into findings: { level: 'error'|'warning', code, target?, file?, message, fix? }.
+ * Errors mean the tools are not reading what .cortex/ says; warnings are advisory.
+ */
+export function collectFindings(inspection, registry = registryHealth()) {
+  const out = [];
+  const add = (level, code, message, extra = {}) => out.push({ level, code, message, ...extra });
+
+  if (!Object.keys(inspection.report).length) {
+    add('warning', 'no-targets', 'No providers enabled.', { fix: 'Enable tools under `providers:` in .cortex/config.yaml' });
+  }
+  for (const key of inspection.unknown) {
+    add('warning', 'unknown-provider', `Unknown provider "${key}" in config.yaml is ignored.`, { fix: `Remove it or use one of: ${Object.keys(TARGETS).join(', ')}` });
+  }
+  for (const w of inspection.warnings) {
+    if (!/^Unknown provider/.test(w)) add('warning', 'compile', w);
+  }
+
+  for (const p of inspection.plan) {
+    const target = p.output.targets?.[0] || p.output.target;
+    if (p.action === 'create') {
+      add('error', 'missing', `${p.file} has not been generated.`, { target, file: p.file, fix: 'cortex compile' });
+    } else if (p.action === 'update') {
+      add('error', 'stale', `${p.file} is out of date with .cortex/.`, { target, file: p.file, fix: 'cortex compile' });
+    } else if (p.action === 'conflict' && /hand-written/.test(p.reason)) {
+      add('error', 'hand-written', `${p.file} exists but was not generated by Cortex.`, { target, file: p.file, fix: 'cortex import, then cortex compile --force' });
+    } else if (p.action === 'conflict') {
+      add('error', 'hand-edited', `${p.file} was edited by hand since the last compile.`, { target, file: p.file, fix: 'cortex diff to review, move edits into .cortex/rules, then cortex compile --force' });
     }
-  } else {
-    issues.push({
-      severity: 'info',
-      message: 'No compile manifest found',
-      action: 'Run `cortex compile` to generate provider files',
-    });
+  }
+  for (const r of inspection.removals) {
+    const target = manifestEntry(inspection.manifest, r.file)?.targets?.[0];
+    if (r.action === 'delete') add('error', 'orphan', `${r.file} is ${r.reason}.`, { target, file: r.file, fix: 'cortex compile (removes it)' });
+    else add('warning', 'orphan-edited', `${r.file} is ${r.reason}.`, { target, file: r.file, fix: 'Delete it once you have moved the edits into .cortex/' });
   }
 
-  // 3. Check for new models available
-  const registryModels = getProviderModels(slug);
-  const specModels = spec.models || [];
-  const newModels = registryModels.filter(m => !specModels.includes(m));
-  if (newModels.length > 0) {
-    info.push({
-      message: `New models available: ${newModels.join(', ')}`,
-    });
-  }
-
-  // 4. Feature utilization
-  const featureReport = checkFeatureUtilization(projectRoot, spec, slug, config);
-  if (featureReport.unused.length > 0) {
-    info.push({
-      message: `Unused features: ${featureReport.unused.join(', ')}`,
-    });
-  }
-
-  // 5. Determine overall status
-  const criticalCount = issues.filter(i => i.severity === 'critical').length;
-  const warningCount = issues.filter(i => i.severity === 'warning').length;
-
-  let status = 'healthy';
-  if (criticalCount > 0) status = 'critical';
-  else if (warningCount > 0) status = 'warning';
-  else if (compiledFiles.existing.length === 0) status = 'not_compiled';
-
-  return {
-    name: spec.name,
-    status,
-    compiledFiles: compiledFiles.existing,
-    missingFiles: compiledFiles.missing,
-    models: registryModels.length > 0 ? registryModels : specModels,
-    newModels,
-    features: featureReport,
-    issues,
-    info,
-  };
-}
-
-// ── Compiled File Checks ────────────────────────────────────────────────────
-
-function checkCompiledFiles(projectRoot, spec) {
-  const existing = [];
-  const missing = [];
-
-  for (const cf of spec.contextFiles || []) {
-    if (!cf.alwaysLoaded) continue;
-    if (cf.path.includes('{') || cf.path.includes('*')) continue;
-    if (cf.location !== 'project_root') continue;
-
-    const fullPath = join(projectRoot, cf.path);
-    if (existsSync(fullPath)) {
-      existing.push(cf.path);
-    } else {
-      missing.push(cf.path);
+  for (const t of Object.values(inspection.targets)) {
+    const b = t.budget;
+    if (b.overHard) {
+      add('error', 'over-budget', `${t.alwaysOn} is ${b.size} ${b.unit}; ${t.name} reads at most ${b.hard}.`, { target: t.id, file: t.alwaysOn, fix: 'Shorten or scope rules in .cortex/rules' });
+    }
+    if (t.dropped.length) {
+      const critical = t.dropped.filter(r => r.priority === 'critical').length;
+      add(critical ? 'error' : 'warning', 'dropped-rules',
+        `${t.dropped.length} rule(s) left out of ${t.alwaysOn} to fit ${b.hard} ${b.unit}${critical ? ` (${critical} critical)` : ''}.`,
+        { target: t.id, file: t.alwaysOn, rules: t.dropped.map(r => r.text), fix: 'cortex optimize -p ' + t.id });
+    }
+    if (b.overSoft) {
+      add('warning', 'soft-budget', `${t.alwaysOn} is ${b.size} ${b.unit} (guidance for ${t.name}: ≤ ${b.soft}).`, { target: t.id, file: t.alwaysOn, fix: 'Move file-specific rules into scoped rule files' });
     }
   }
 
-  return { existing, missing };
+  if (registry.status !== 'fresh') {
+    add('warning', 'registry-stale', registry.message, { fix: 'cortex update' });
+  }
+  return out;
 }
 
-function checkFileStaleness(manifest, spec, slug) {
-  const stale = [];
-  for (const entry of manifest.files || []) {
-    if (entry.provider !== slug) continue;
-    if (!existsSync(entry.path)) continue;
-
-    const current = readFileSync(entry.path, 'utf-8');
-    if (current !== entry.compiledContent) {
-      stale.push(entry.path);
-    }
+/**
+ * Health report for a project (programmatic API; also used by `status`).
+ * `config` is accepted for backward compatibility — sources are re-read from disk.
+ */
+export function assessHealth(projectRoot, _config) {
+  const registry = registryHealth();
+  let inspection;
+  try {
+    inspection = inspectProject(projectRoot);
+  } catch (err) {
+    return {
+      overall: { score: 0, label: 'needs_attention' },
+      registry,
+      providers: {},
+      findings: [{ level: 'error', code: 'config', message: err.message }],
+      recommendations: [{ priority: 'high', message: err.message }],
+    };
   }
-  return stale;
-}
+  const findings = collectFindings(inspection, registry);
+  const errors = findings.filter(f => f.level === 'error').length;
+  const warnings = findings.length - errors;
+  const score = Math.max(0, 100 - errors * 15 - warnings * 5);
 
-// ── Feature Utilization ─────────────────────────────────────────────────────
-
-function checkFeatureUtilization(projectRoot, spec, slug, config) {
-  const used = [];
-  const unused = [];
-  const features = spec.features || {};
-
-  // Check MCP servers
-  if (features.mcpServers) {
-    const mcpConfigPaths = [
-      join(projectRoot, '.claude', 'mcp.json'),
-      join(projectRoot, '.cursor', 'mcp.json'),
-      join(projectRoot, '.vscode', 'mcp.json'),
-    ];
-    const hasMcp = mcpConfigPaths.some(p => existsSync(p));
-    (hasMcp ? used : unused).push('mcpServers');
-  }
-
-  // Check custom commands/skills
-  if (features.customSlashCommands) {
-    const cmdPaths = [
-      join(projectRoot, '.claude', 'commands'),
-      join(projectRoot, '.gemini', 'commands'),
-    ];
-    const hasCmds = cmdPaths.some(p => existsSync(p));
-    (hasCmds ? used : unused).push('customSlashCommands');
+  const providers = {};
+  for (const t of Object.values(inspection.targets)) {
+    providers[t.id] = {
+      name: t.name,
+      status: t.status,
+      alwaysOn: t.alwaysOn,
+      viaAgentsMd: t.viaAgentsMd,
+      files: t.files,
+      budget: t.budget,
+      issues: findings.filter(f => f.target === t.id),
+    };
   }
 
-  // Check hooks
-  if (features.hooks) {
-    const cortexDir = getCortexDir(projectRoot);
-    const hasHooks = existsSync(join(cortexDir, 'hooks'));
-    (hasHooks ? used : unused).push('hooks');
+  const seen = new Set();
+  const recommendations = [];
+  for (const f of findings) {
+    if (!f.fix || seen.has(f.fix)) continue;
+    seen.add(f.fix);
+    recommendations.push({ priority: f.level === 'error' ? 'high' : 'medium', message: `${f.fix} — ${f.message}` });
   }
 
-  // Check memory
-  if (features.memory) {
-    used.push('memory'); // Memory is auto-used by the provider
-  }
-
-  return { used, unused };
-}
-
-// ── Scoring ─────────────────────────────────────────────────────────────────
-
-function calculateOverallScore(registry, providers) {
-  let score = 100;
-
-  // Registry penalties
-  if (registry.status === 'missing') score -= 20;
-  else if (registry.status === 'critical') score -= 15;
-  else if (registry.status === 'stale') score -= 5;
-
-  // Provider penalties
-  const providerEntries = Object.values(providers);
-  if (providerEntries.length === 0) score -= 30;
-
-  for (const p of providerEntries) {
-    if (p.status === 'critical') score -= 15;
-    else if (p.status === 'warning') score -= 5;
-    else if (p.status === 'not_compiled') score -= 10;
-  }
-
-  return Math.max(0, Math.min(100, score));
+  return { overall: { score, label: scoreLabel(score) }, registry, providers, unknownProviders: inspection.unknown, findings, recommendations };
 }
 
 function scoreLabel(score) {
@@ -266,39 +226,4 @@ function scoreLabel(score) {
   if (score >= 70) return 'good';
   if (score >= 50) return 'fair';
   return 'needs_attention';
-}
-
-// ── Recommendations ─────────────────────────────────────────────────────────
-
-function generateHealthRecommendations(registry, providers, enabledProviders) {
-  const recs = [];
-
-  if (registry.status !== 'healthy') {
-    recs.push({
-      priority: registry.status === 'critical' ? 'high' : 'medium',
-      message: registry.message,
-    });
-  }
-
-  const notCompiled = Object.entries(providers)
-    .filter(([, p]) => p.status === 'not_compiled')
-    .map(([k]) => k);
-  if (notCompiled.length > 0) {
-    recs.push({
-      priority: 'high',
-      message: `Run \`cortex compile\` to generate files for: ${notCompiled.join(', ')}`,
-    });
-  }
-
-  // Check for providers that could be enabled
-  const allProviders = Object.keys(PROVIDER_SPECS);
-  const disabled = allProviders.filter(p => !enabledProviders.includes(p));
-  if (disabled.length > 0 && enabledProviders.length <= 2) {
-    recs.push({
-      priority: 'low',
-      message: `${disabled.length} additional provider(s) available: ${disabled.slice(0, 3).join(', ')}${disabled.length > 3 ? '...' : ''}`,
-    });
-  }
-
-  return recs;
 }

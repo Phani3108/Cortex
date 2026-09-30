@@ -1,36 +1,22 @@
-# cortex configuration
-# https://github.com/YOUR_USERNAME/cortex
+# Cortex configuration — https://github.com/Phani3108/Cortex
+# Docs: https://cortex1.vercel.app/docs.html#config
 
-version: 1
+version: 2
 project:
   name: cortex
   language: JavaScript
-  framework:
+  framework: Node.js CLI
 providers:
   claude: true
+  codex: true
   cursor: true
   copilot: true
-  windsurf: false
-  antigravity: false
-  codex: false
   gemini: false
+  windsurf: false
+  kiro: false
+  antigravity: false
+  gemini-review: false
   openai: false
-rules:
-  sources:
-    - local
-skills:
-  sources:
-    - local
-context:
-  include:
-    - src/
-    - lib/
-    - app/
-    - packages/
-  exclude:
-    - node_modules/
-    - dist/
-    - build/
-    - .git/
-    - "*.lock"
-  max_tokens: 100000
+output:
+  agentsMd: shared
+  skills: true

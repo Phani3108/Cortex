@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--@include head title="Cortex — one source of rules for every AI coding agent" description="Write your AI rules once in .cortex/. Cortex compiles them into native CLAUDE.md, AGENTS.md, Cursor, Copilot, Gemini CLI, Windsurf, Kiro and Antigravity files — budget-aware, with Agent Skills and a CI drift check."-->
+<script type="module" src="/assets/js/home.js?v={{build}}"></script>
+</head>
+<body data-page="home">
+<!--@include header-->
+<main id="main">
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-copy">
+        <a class="badge badge-brand" href="/models.html" style="margin-bottom:18px">
+          <span class="dot pulse"></span> <span data-hero-news>Model registry refreshed daily</span>
+        </a>
+        <h1 class="h1">Write your AI rules once.<br><span class="grad-text">Every coding agent follows them.</span></h1>
+        <p class="lead">Cortex compiles one <code>.cortex/</code> folder into the native instruction files of Claude Code, Codex, Cursor, Copilot, Gemini CLI, Windsurf, Kiro and Antigravity — formatted for each model, fitted to each tool’s limits, and checked for drift in CI.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#playground">Try it in the browser
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-ghost" href="/docs.html#install">Install the CLI</a>
+        </div>
+        <div class="install" aria-label="Install command">
+          <span class="prompt">$</span><code id="install-cmd">npm install -g github:Phani3108/Cortex</code>
+          <button class="copy-btn" type="button" data-copy-target="#install-cmd"><span class="copy-label">Copy</span></button>
+        </div>
+        <div class="trust">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Zero dependencies</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Runs locally</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>MIT licensed</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Never overwrites your files</span>
+        </div>
+      </div>
+
+      <div class="fanout" aria-label="Diagram: one source compiles to many tool files">
+        <div class="fanout-src">
+          <div class="code-head"><span>.cortex/rules/project.md</span><span class="spacer"></span><span class="badge">source</span></div>
+<pre>## Architecture
+- Business logic lives in <b>src/services/</b>
+- ! Never commit secrets or .env files
+
+## Testing
+- Every bug fix ships with a failing test first</pre>
+        </div>
+        <div class="fanout-arrow"><span>──</span><span class="cmd">cortex compile</span><span>──▶</span></div>
+        <div class="fanout-outs" id="fanout-outs">
+          <div class="fanout-out" style="animation-delay:.05s"><span class="tool-dot" style="background:#d97757"></span><span class="fo-name">CLAUDE.md</span><span class="fo-tool">Claude Code</span></div>
+          <div class="fanout-out" style="animation-delay:.12s"><span class="tool-dot" style="background:#10a37f"></span><span class="fo-name">AGENTS.md</span><span class="fo-tool">Codex +20</span></div>
+          <div class="fanout-out" style="animation-delay:.19s"><span class="tool-dot" style="background:#7c7c86"></span><span class="fo-name">.cursor/rules/cortex.mdc</span><span class="fo-tool">Cursor</span></div>
+          <div class="fanout-out" style="animation-delay:.26s"><span class="tool-dot" style="background:#6e40c9"></span><span class="fo-name">copilot-instructions.md</span><span class="fo-tool">Copilot</span></div>
+          <div class="fanout-out" style="animation-delay:.33s"><span class="tool-dot" style="background:#4285f4"></span><span class="fo-name">GEMINI.md</span><span class="fo-tool">Gemini CLI</span></div>
+          <div class="fanout-out" style="animation-delay:.40s"><span class="tool-dot" style="background:#09b6a2"></span><span class="fo-name">.windsurf/rules/cortex.md</span><span class="fo-tool">Windsurf</span></div>
+          <div class="fanout-out" style="animation-delay:.47s"><span class="tool-dot" style="background:#ff9900"></span><span class="fo-name">.kiro/steering/cortex.md</span><span class="fo-tool">Kiro</span></div>
+          <div class="fanout-out" style="animation-delay:.54s"><span class="tool-dot" style="background:#34a853"></span><span class="fo-name">.agents/skills/*/SKILL.md</span><span class="fo-tool">Agent Skills</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Problem / solution ──────────────────────────────────────────── -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Why Cortex</div>
+        <h2 class="h2">Your team uses four AI tools. They are following four different rulebooks.</h2>
+        <p class="lead" style="margin-top:12px">Every tool reads a different file, in a different format, with different limits — and the copies drift the week after you write them.</p>
+      </div>
+      <div class="compare">
+        <div class="card before">
+          <span class="badge badge-bad">Without Cortex</span>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>The same rules pasted into CLAUDE.md, .cursor/rules, Copilot instructions and AGENTS.md</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Windsurf silently cuts rule files past 12,000 characters; Antigravity past 24 KB</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Tools that read AGENTS.md <em>and</em> their own file load your rules twice</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Nobody notices the copies drifted until an agent does the wrong thing</li>
+          </ul>
+        </div>
+        <div class="card after">
+          <span class="badge badge-ok">With Cortex</span>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>One markdown source in <code>.cortex/</code>, reviewed like code</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Hard limits enforced by keeping your highest-impact rules, whole — and telling you what didn’t fit</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Path-scoped rules become native globs; skills become portable <code>SKILL.md</code></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><code>cortex compile --check</code> fails CI the moment anything drifts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Playground ──────────────────────────────────────────────────── -->
+  <section class="section" id="playground">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Playground · runs the real compiler</div>
+        <h2 class="h2">Edit the source. Watch every tool’s file update.</h2>
+        <p class="lead" style="margin-top:12px">This is the same engine the CLI ships, running in your browser. Nothing is uploaded. Try adding <code>scope:</code> frontmatter, a <code>!</code> critical rule, or switching tools on and off.</p>
+      </div>
+
+      <div class="panel" id="pg">
+        <div class="pg">
+          <div class="pg-left">
+            <div class="pg-toolbar">
+              <span class="label">Source</span>
+              <span class="spacer"></span>
+              <label class="visually-hidden" for="pg-preset">Example</label>
+              <select class="select" id="pg-preset" style="width:auto;padding:5px 10px;font-size:13px">
+                <option value="next">Example: Next.js app</option>
+                <option value="python">Example: Python API</option>
+                <option value="monorepo">Example: Monorepo + skills</option>
+                <option value="blank">Blank</option>
+              </select>
+            </div>
+            <div class="pg-files" id="pg-src-files" role="toolbar" aria-label="Source files"></div>
+            <div class="pg-editor">
+              <label class="visually-hidden" for="pg-editor">Source file contents</label>
+              <textarea class="textarea" id="pg-editor" spellcheck="false"></textarea>
+            </div>
+            <div class="pg-targets" id="pg-targets" aria-label="Tools to compile for"></div>
+            <div class="pg-toolbar" style="border-top:1px solid var(--border);border-bottom:0">
+              <label class="check"><input type="checkbox" id="pg-shared" checked> Share AGENTS.md with tools that read it</label>
+            </div>
+          </div>
+          <div class="pg-right">
+            <div class="tabs" id="pg-out-tabs" role="tablist" aria-label="Generated files"></div>
+            <div class="pg-meta" id="pg-meta"></div>
+            <div class="pg-out"><pre id="pg-out" tabindex="0" aria-live="polite"></pre></div>
+            <div class="pg-notes" id="pg-notes"></div>
+            <div class="pg-toolbar" style="border-top:1px solid var(--border);border-bottom:0">
+              <span class="small muted" id="pg-summary"></span>
+              <span class="spacer"></span>
+              <button class="btn btn-ghost btn-sm" type="button" id="pg-copy">Copy file</button>
+              <button class="btn btn-brand btn-sm" type="button" id="pg-download">Download .zip</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tiny muted" style="margin-top:10px">Token counts are estimates (characters ÷ the model family’s average characters-per-token). Limits come from each vendor’s documentation — see the <a href="#tools">tool matrix</a>.</p>
+    </div>
+  </section>
+
+  <!-- ── How it works ────────────────────────────────────────────────── -->
+  <section class="section" id="how">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">How it works</div>
+        <h2 class="h2">Three commands. Then it runs itself.</h2>
+      </div>
+      <div class="steps">
+        <div class="card step">
+          <div class="step-n">1</div>
+          <h3 class="h3">Init</h3>
+          <p class="text-2 small" style="margin-top:6px">Detects your stack and the AI tools you already use, and imports hand-written CLAUDE.md / AGENTS.md / Cursor / Copilot files so nothing is lost.</p>
+          <div class="code"><pre>cortex init</pre></div>
+        </div>
+        <div class="card step">
+          <div class="step-n">2</div>
+          <h3 class="h3">Compile</h3>
+          <p class="text-2 small" style="margin-top:6px">Writes each tool’s native files. Refuses to overwrite files a human wrote or edited, and cleans up files it no longer generates.</p>
+          <div class="code"><pre>cortex compile</pre></div>
+        </div>
+        <div class="card step">
+          <div class="step-n">3</div>
+          <h3 class="h3">Guard</h3>
+          <p class="text-2 small" style="margin-top:6px">Commit the sources and the outputs (cloud agents read them from the repo). CI fails when they drift; <code>cortex learn</code> turns your edits into rule suggestions.</p>
+          <div class="code"><pre>cortex compile --check</pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tool matrix ─────────────────────────────────────────────────── -->
+  <section class="section" id="tools">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Supported tools</div>
+        <h2 class="h2">Native output for every tool — verified against vendor docs.</h2>
+        <p class="lead" style="margin-top:12px">Paths, frontmatter and limits live in one table in the engine. When a vendor changes its conventions, one edit updates the CLI, the docs and this page.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="tool-matrix">
+          <thead><tr><th>Tool</th><th>Always-on rules</th><th>Path-scoped rules</th><th>Skills</th><th>Limit</th><th>Docs</th></tr></thead>
+          <tbody><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="tiny muted" style="margin-top:10px" id="tools-verified"></p>
+    </div>
+  </section>
+
+  <!-- ── Features ────────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">What’s inside</div>
+        <h2 class="h2">A build system for AI context.</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card card-hover">
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h7M4 12h10M4 17h7"/><path d="M16 5l4 3-4 3M16 13l4 3-4 3"/></svg></div>
+          <h3 class="h3">Model-aware formatting</h3>
+          <p>XML sections for Claude, numbered lists for GPT, context-first for Gemini, compact constraints for reasoning models. Set a model per tool and the output follows.</p>
+        </div>
+        <div class="card card-hover">
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+          <h3 class="h3">Budget-aware, never truncated</h3>
+          <p>Hard limits are met by keeping whole, high-impact rules — critical rules (<code>- !</code>) first — and listing exactly what was left out.</p>
+        </div>
+        <div class="card card-hover">
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h12M3 17h8"/></svg></div>
+          <h3 class="h3">Path-scoped rules</h3>
+          <p>Add <code>scope: ["src/**/*.tsx"]</code> to a rule file. Cortex emits Cursor globs, Copilot <code>applyTo</code>, Claude <code>paths</code>, Kiro <code>fileMatch</code> and Windsurf glob triggers.</p>
+        </div>
+        <div class="card card-hover">
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <h3 class="h3">Agent Skills, portable</h3>
+          <p>Skills compile to the open <code>SKILL.md</code> standard in <code>.claude/skills</code>, <code>.agents/skills</code> and <code>.kiro/skills</code> — loaded on demand, not stuffed into every prompt.</p>
+        </div>
+        <div class="card card-hover">
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></div>
+          <h3 class="h3">Safe by default</h3>
+          <p>Hand-written or hand-edited files are never overwritten without <code>--force</code>. <code>cortex init</code> imports what you already have first.</p>
+        </div>
+        <div class="card card-hover">
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+          <h3 class="h3">Live model data</h3>
+          <p>Pricing and context windows for 200+ models, refreshed daily by a GitHub Action. <code>cortex cost</code> tells you what your always-on context really costs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Model data teaser ───────────────────────────────────────────── -->
+  <section class="section" id="models-teaser">
+    <div class="container">
+      <div class="row" style="align-items:end;margin-bottom:24px">
+        <div class="section-head" style="margin:0">
+          <div class="eyebrow">Model registry</div>
+          <h2 class="h2">Current models, current prices.</h2>
+          <p class="fresh" data-freshness style="margin-top:12px"><span class="dot"></span><span>Loading…</span></p>
+        </div>
+        <span class="spacer"></span>
+        <a class="btn btn-ghost" href="/models.html">Browse all models →</a>
+      </div>
+      <div class="grid grid-4" id="latest-models"></div>
+    </div>
+  </section>
+
+  <!-- ── CTA ─────────────────────────────────────────────────────────── -->
+  <section class="section-tight">
+    <div class="container">
+      <div class="cta-band">
+        <div>
+          <h2 class="h2">Give every agent the same brain.</h2>
+          <p>Install, run <code style="background:transparent;border-color:rgba(255,255,255,.2);color:inherit">cortex init</code> in a repo, and commit the result. Two minutes.</p>
+        </div>
+        <div class="stack-sm">
+          <div class="install" style="width:100%">
+            <span class="prompt">$</span><code id="install-cmd-2">npm install -g github:Phani3108/Cortex</code>
+            <span class="spacer"></span>
+            <button class="copy-btn" type="button" data-copy-target="#install-cmd-2"><span class="copy-label">Copy</span></button>
+          </div>
+          <div class="install" style="width:100%">
+            <span class="prompt">$</span><code id="init-cmd">cortex init &amp;&amp; cortex compile</code>
+            <span class="spacer"></span>
+            <button class="copy-btn" type="button" data-copy-target="#init-cmd"><span class="copy-label">Copy</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<!--@include footer-->
+</body>
+</html>

@@ -5,15 +5,17 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * Model Registry — versioned model data with remote sync + local cache.
+ * Model Registry — pricing + context windows, kept current automatically.
  *
- * Three-layer resolution:
- * 1. Local cache (~/.cortex/registry.json) — fast, offline-capable
- * 2. Bundled registry (registry/latest.json) — ships with the package
- * 3. Family tier defaults (families.js) — always works for unknown models
+ * Resolution (highest priority first):
+ *   1. User overrides passed by the caller (profile.yaml `models:`)
+ *   2. Local cache  ~/.cortex/registry.json   (written by `cortex update`)
+ *   3. Bundled      registry/latest.json      (refreshed daily in the repo)
+ *   4. Estimates    newest registry model of the same family + tier,
+ *                   then family defaults — so `claude-sonnet-6` works on day 0.
  *
- * Remote sync updates the local cache from a published registry URL.
- * User overrides in ~/.cortex/profile.yaml take highest priority.
+ * Remote sync pulls the repo's latest.json (refreshed daily by GitHub Actions);
+ * if that fails it can rebuild directly from the OpenRouter catalog.
  */
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -21,253 +23,268 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { resolveModel, estimateTierCost, estimateContextWindow, SUBSCRIPTION_PROVIDERS } from './families.js';
+import { buildRegistryFromOpenRouter, diffRegistries, OPENROUTER_MODELS_URL } from './registry-build.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const REGISTRY_URL = 'https://raw.githubusercontent.com/nicobailon/cortex/main/registry/latest.json';
-const CACHE_PATH = join(homedir(), '.cortex', 'registry.json');
+export const REGISTRY_URL = 'https://raw.githubusercontent.com/Phani3108/Cortex/main/registry/latest.json';
 const BUNDLED_PATH = join(__dirname, '..', '..', 'registry', 'latest.json');
 const STALENESS_DAYS = 7;
 
+function cachePath() {
+  return join(process.env.CORTEX_HOME || join(homedir(), '.cortex'), 'registry.json');
+}
+
 let _cache = null;
+let _aliases = null;
 
 // ── Loading ─────────────────────────────────────────────────────────────────
 
-/**
- * Load the merged registry. Priority: local cache > bundled > empty.
- * User overrides from profile are merged at query time.
- */
+/** Load the merged registry: bundled data overlaid by a newer local cache. */
 export function loadRegistry() {
   if (_cache) return _cache;
 
-  let data = { models: {}, providerModels: {}, subscriptionProviders: {}, version: null, lastUpdated: null };
+  const bundled = readJson(BUNDLED_PATH);
+  const cached = readJson(cachePath());
 
-  // Layer 1: Bundled registry (ships with package)
-  try {
-    if (existsSync(BUNDLED_PATH)) {
-      const bundled = JSON.parse(readFileSync(BUNDLED_PATH, 'utf-8'));
-      data = mergeRegistries(data, bundled);
-    }
-  } catch {}
-
-  // Layer 2: Local cache (may be newer from remote sync)
-  try {
-    if (existsSync(CACHE_PATH)) {
-      const cached = JSON.parse(readFileSync(CACHE_PATH, 'utf-8'));
-      data = mergeRegistries(data, cached);
-    }
-  } catch {}
+  // A cache only wins if it is newer than what shipped with this install.
+  let data = bundled || emptyRegistry();
+  if (cached?.models && (!bundled || (cached.lastUpdated || '') >= (bundled.lastUpdated || ''))) {
+    data = { ...data, ...cached, models: { ...(bundled?.models || {}), ...cached.models } };
+  }
+  data.models ||= {};
+  data.providerModels ||= {};
+  data.subscriptionProviders ||= {};
+  data.highlights ||= {};
 
   _cache = data;
+  _aliases = null;
   return data;
 }
 
-/**
- * Clear the in-memory cache (for testing or after sync).
- */
+/** Clear the in-memory cache (tests, or after a sync). */
 export function clearRegistryCache() {
   _cache = null;
+  _aliases = null;
+}
+
+function emptyRegistry() {
+  return { models: {}, providerModels: {}, subscriptionProviders: {}, highlights: {}, version: null, lastUpdated: null };
+}
+
+function readJson(path) {
+  try {
+    return existsSync(path) ? JSON.parse(readFileSync(path, 'utf-8')) : null;
+  } catch {
+    return null;
+  }
+}
+
+// ── Name normalisation ──────────────────────────────────────────────────────
+
+/** "anthropic/claude-sonnet-5-5" → "claude-sonnet-5.5" style lookup key. */
+export function normalizeModelName(name) {
+  if (!name) return '';
+  let n = String(name).trim().toLowerCase();
+  n = n.replace(/^[a-z0-9-]+\//, '');            // vendor prefix
+  n = n.replace(/@.*$/, '');                     // vertex "@date" suffix
+  n = n.replace(/-(\d{8}|\d{4}-\d{2}-\d{2})$/, ''); // dated snapshots
+  return n;
+}
+
+function aliasIndex(registry) {
+  if (_aliases) return _aliases;
+  const idx = new Map();
+  for (const [key, entry] of Object.entries(registry.models)) {
+    const k = key.toLowerCase();
+    idx.set(k, key);
+    idx.set(k.replace(/\./g, '-'), key);          // claude-sonnet-5-5
+    if (entry.apiId) idx.set(entry.apiId.toLowerCase(), key);
+  }
+  _aliases = idx;
+  return idx;
+}
+
+/** Find a registry entry by any common spelling of a model id. */
+export function findModel(modelName) {
+  const registry = loadRegistry();
+  if (!modelName) return null;
+  if (registry.models[modelName]) return registry.models[modelName];
+  const idx = aliasIndex(registry);
+  const norm = normalizeModelName(modelName);
+  const key = idx.get(norm) || idx.get(norm.replace(/-(\d+)-(\d+)(?=$|-)/, '-$1.$2'));
+  return key ? registry.models[key] : null;
 }
 
 // ── Querying ────────────────────────────────────────────────────────────────
 
-/**
- * Get the cost per 1M input tokens for a model.
- * Resolution: exact registry match → family+tier estimation.
- */
-export function getModelCost(modelName, userOverrides = {}) {
-  // Check user overrides first
-  if (userOverrides[modelName]?.costPer1M) {
-    return userOverrides[modelName].costPer1M;
-  }
+function inputCost(entry) {
+  if (!entry?.costPer1M && entry?.costPer1M !== 0) return null;
+  return typeof entry.costPer1M === 'object' ? entry.costPer1M.input : entry.costPer1M;
+}
 
-  // Check subscription providers
+/** Cost per 1M input tokens. Exact match → same family+tier → family default. */
+export function getModelCost(modelName, userOverrides = {}) {
+  const override = userOverrides[modelName]?.costPer1M;
+  if (override !== undefined) return typeof override === 'object' ? override.input : override;
   if (SUBSCRIPTION_PROVIDERS.has(modelName)) return 0;
 
-  // Check registry for exact match
-  const registry = loadRegistry();
-  const entry = registry.models[modelName];
-  if (entry?.costPer1M) {
-    return typeof entry.costPer1M === 'object' ? entry.costPer1M.input : entry.costPer1M;
-  }
+  const exact = inputCost(findModel(modelName));
+  if (exact !== null) return exact;
 
-  // Fallback: estimate from family + tier
+  const sibling = newestSibling(modelName);
+  if (sibling) return inputCost(sibling);
   return estimateTierCost(modelName);
 }
 
-/**
- * Get the context window for a model.
- */
+/** Full pricing object { input, output, cacheRead? } or null when unknown. */
+export function getModelPricing(modelName) {
+  const entry = findModel(modelName) || newestSibling(modelName);
+  if (!entry?.costPer1M) return null;
+  return typeof entry.costPer1M === 'object' ? entry.costPer1M : { input: entry.costPer1M, output: null };
+}
+
+/** Context window in tokens. */
 export function getContextWindow(modelName, userOverrides = {}) {
-  if (userOverrides[modelName]?.contextWindow) {
-    return userOverrides[modelName].contextWindow;
-  }
-
-  const registry = loadRegistry();
-  const entry = registry.models[modelName];
+  if (userOverrides[modelName]?.contextWindow) return userOverrides[modelName].contextWindow;
+  const entry = findModel(modelName);
   if (entry?.contextWindow) return entry.contextWindow;
-
+  const sibling = newestSibling(modelName);
+  if (sibling?.contextWindow) return sibling.contextWindow;
   return estimateContextWindow(modelName);
 }
 
 /**
- * Get all known models from the registry.
+ * Newest registry model with the same family + tier. This is how Cortex
+ * prices a model that was announced after the last registry refresh.
  */
-export function getAllModels() {
+export function newestSibling(modelName) {
+  const { family, tier } = resolveModel(normalizeModelName(modelName));
+  if (family === 'unknown') return null;
   const registry = loadRegistry();
-  return Object.keys(registry.models);
+  let best = null;
+  for (const entry of Object.values(registry.models)) {
+    if (entry.family !== family || (entry.tier || '') !== (tier || '')) continue;
+    if (entry.status && !['active', 'preview'].includes(entry.status)) continue;
+    if (!best || (entry.released || '') > (best.released || '')) best = entry;
+  }
+  return best;
 }
 
-/**
- * Get all model costs (for the cost command and budget comparisons).
- * Returns a map of modelName → costPer1M (input).
- */
+export function getAllModels() {
+  return Object.keys(loadRegistry().models);
+}
+
+/** modelName → input cost per 1M (active models only). */
 export function getAllModelCosts() {
-  const registry = loadRegistry();
   const costs = {};
-
-  for (const [name, entry] of Object.entries(registry.models)) {
-    costs[name] = typeof entry.costPer1M === 'object' ? entry.costPer1M.input : entry.costPer1M;
+  for (const [name, entry] of Object.entries(loadRegistry().models)) {
+    if (entry.status && entry.status !== 'active') continue;
+    costs[name] = inputCost(entry);
   }
-
-  // Add subscription providers
-  for (const name of SUBSCRIPTION_PROVIDERS) {
-    costs[name] = 0;
-  }
-
   return costs;
 }
 
-/**
- * Get models available for a specific provider.
- */
 export function getProviderModels(providerSlug) {
-  const registry = loadRegistry();
-  return registry.providerModels?.[providerSlug] || [];
+  return loadRegistry().providerModels?.[providerSlug] || [];
 }
 
-/**
- * Get full model entry from registry.
- */
 export function getModelEntry(modelName) {
-  const registry = loadRegistry();
-  return registry.models[modelName] || null;
+  return findModel(modelName);
+}
+
+/** Newest active model id for a vendor tier, e.g. ('anthropic','sonnet'). */
+export function getHighlight(vendor, tier) {
+  return loadRegistry().highlights?.[vendor]?.[tier] || null;
 }
 
 // ── Staleness ───────────────────────────────────────────────────────────────
 
-/**
- * Check how many days since the registry was last updated.
- */
 export function getRegistryStaleness() {
-  const registry = loadRegistry();
-  if (!registry.lastUpdated) return Infinity;
-
-  const lastUpdate = new Date(registry.lastUpdated);
-  const now = new Date();
-  return Math.floor((now - lastUpdate) / (1000 * 60 * 60 * 24));
+  const { lastUpdated } = loadRegistry();
+  if (!lastUpdated) return Infinity;
+  return Math.floor((Date.now() - new Date(lastUpdated).getTime()) / 86_400_000);
 }
 
-/**
- * Check if the registry is stale (> STALENESS_DAYS old).
- */
 export function isRegistryStale() {
   return getRegistryStaleness() > STALENESS_DAYS;
+}
+
+export function getRegistryInfo() {
+  const r = loadRegistry();
+  return {
+    version: r.version || null,
+    lastUpdated: r.lastUpdated || null,
+    modelCount: Object.keys(r.models).length,
+    source: r.source?.name || 'bundled',
+    ageDays: getRegistryStaleness(),
+  };
 }
 
 // ── Remote Sync ─────────────────────────────────────────────────────────────
 
 /**
- * Sync registry from remote URL. Returns a diff of what changed.
+ * Refresh the local cache. Tries the repo's daily-refreshed latest.json, then
+ * falls back to building from the OpenRouter catalog directly.
+ *
+ * @param {object} [opts]
+ * @param {'auto'|'github'|'openrouter'} [opts.source='auto']
+ * @param {string} [opts.url] - custom registry URL (self-hosted mirrors)
  */
-export async function syncRegistry(url = REGISTRY_URL) {
-  const oldRegistry = loadRegistry();
-  const oldModelCount = Object.keys(oldRegistry.models).length;
+export async function syncRegistry(opts = {}) {
+  const source = typeof opts === 'string' ? 'github' : (opts.source || 'auto');
+  const url = typeof opts === 'string' ? opts : (opts.url || REGISTRY_URL);
+  const before = loadRegistry();
+  const errors = [];
 
-  let remoteData;
+  let next = null;
+  let from = null;
+  if (source === 'auto' || source === 'github') {
+    try {
+      const data = await fetchJson(url);
+      if (!data?.models || typeof data.models !== 'object') throw new Error('invalid registry format');
+      next = data;
+      from = url;
+    } catch (err) {
+      errors.push(`${url}: ${err.message}`);
+    }
+  }
+  if (!next && (source === 'auto' || source === 'openrouter')) {
+    try {
+      const catalog = await fetchJson(OPENROUTER_MODELS_URL);
+      next = buildRegistryFromOpenRouter(catalog, { previous: before }).registry;
+      from = OPENROUTER_MODELS_URL;
+    } catch (err) {
+      errors.push(`${OPENROUTER_MODELS_URL}: ${err.message}`);
+    }
+  }
+  if (!next) return { success: false, error: errors.join('; '), changes: [] };
+
+  const changes = diffRegistries(before, next);
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: { 'User-Agent': 'cortex-cli' },
-    });
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    remoteData = await response.json();
-  } catch (err) {
-    return { success: false, error: err.message, changes: [] };
-  }
-
-  // Validate structure
-  if (!remoteData.models || typeof remoteData.models !== 'object') {
-    return { success: false, error: 'Invalid registry format', changes: [] };
-  }
-
-  // Calculate diff
-  const changes = [];
-  for (const [name, entry] of Object.entries(remoteData.models)) {
-    const old = oldRegistry.models[name];
-    if (!old) {
-      const cost = typeof entry.costPer1M === 'object' ? entry.costPer1M.input : entry.costPer1M;
-      changes.push({ type: 'added', model: name, cost, contextWindow: entry.contextWindow });
-    } else {
-      const oldCost = typeof old.costPer1M === 'object' ? old.costPer1M.input : old.costPer1M;
-      const newCost = typeof entry.costPer1M === 'object' ? entry.costPer1M.input : entry.costPer1M;
-      if (oldCost !== newCost) {
-        changes.push({ type: 'price_change', model: name, from: oldCost, to: newCost });
-      }
-    }
-  }
-
-  // Provider model updates
-  if (remoteData.providerModels) {
-    for (const [provider, models] of Object.entries(remoteData.providerModels)) {
-      const oldModels = oldRegistry.providerModels?.[provider] || [];
-      const added = models.filter(m => !oldModels.includes(m));
-      for (const m of added) {
-        changes.push({ type: 'provider_model', provider, model: m });
-      }
-    }
-  }
-
-  // Save to cache
-  try {
-    const cacheDir = dirname(CACHE_PATH);
-    if (!existsSync(cacheDir)) mkdirSync(cacheDir, { recursive: true });
-
-    remoteData.lastUpdated = new Date().toISOString();
-    writeFileSync(CACHE_PATH, JSON.stringify(remoteData, null, 2));
+    const path = cachePath();
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, JSON.stringify(next, null, 2) + '\n');
   } catch (err) {
     return { success: false, error: `Cache write failed: ${err.message}`, changes };
   }
 
-  // Clear in-memory cache so next load picks up new data
   clearRegistryCache();
-
-  const newRegistry = loadRegistry();
-  const newModelCount = Object.keys(newRegistry.models).length;
-
   return {
     success: true,
+    source: from,
     changes,
-    modelCount: { before: oldModelCount, after: newModelCount },
-    version: remoteData.version,
+    modelCount: { before: Object.keys(before.models).length, after: Object.keys(loadRegistry().models).length },
+    version: next.version,
+    lastUpdated: next.lastUpdated,
   };
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function mergeRegistries(base, overlay) {
-  return {
-    version: overlay.version || base.version,
-    lastUpdated: overlay.lastUpdated || base.lastUpdated,
-    models: { ...base.models, ...overlay.models },
-    providerModels: { ...base.providerModels, ...overlay.providerModels },
-    subscriptionProviders: { ...base.subscriptionProviders, ...overlay.subscriptionProviders },
-  };
+async function fetchJson(url) {
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'cortex-cli (+https://github.com/Phani3108/Cortex)' },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }

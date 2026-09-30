@@ -29,6 +29,7 @@ import {
 } from './session.js';
 import { calculateSavings, generateSummary } from './metrics.js';
 import { existsSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { getCortexDir, findProjectRoot } from '../utils/fs.js';
 
 // ── Terminal I/O ────────────────────────────────────────────────────────────
@@ -98,24 +99,29 @@ function divider() { console.log(`  ${'─'.repeat(50)}`); }
  */
 export async function startConversation(projectRoot) {
   const session = loadSession(projectRoot);
-  const cortexDir = getCortexDir(projectRoot);
-  const isInitialized = existsSync(cortexDir);
+  const isInitialized = isProjectInitialized(projectRoot);
 
   try {
-    if (session._isNew && !isInitialized) {
-      // Brand new user, project not set up
-      return await flowFirstTime(projectRoot, session);
-    } else if (session._isNew && isInitialized) {
-      // Project exists but no session — returning or first assist run
-      return await flowReturning(projectRoot, session);
-    } else {
-      // Ongoing session — context-aware guidance
-      return await flowOngoing(projectRoot, session);
+    if (!isInitialized) {
+      // Project not set up — onboard. Nothing is written unless the user accepts:
+      // the session is handed to the caller along with the setup plan.
+      const plan = await flowFirstTime(projectRoot, session);
+      return plan ? { ...plan, session } : plan;
     }
-  } finally {
+
+    const result = session._isNew
+      ? await flowReturning(projectRoot, session)   // initialized, first assist run
+      : await flowOngoing(projectRoot, session);    // context-aware guidance
     saveSession(session);
+    return result;
+  } finally {
     closeReadline();
   }
+}
+
+/** A project counts as set up once .cortex/config.yaml exists. */
+export function isProjectInitialized(projectRoot) {
+  return existsSync(join(getCortexDir(projectRoot), 'config.yaml'));
 }
 
 // ── Flow: First Time ────────────────────────────────────────────────────────
@@ -190,10 +196,6 @@ async function flowFirstTime(projectRoot, session) {
   say(`  3. Set tone to "${tone.key}", comments to "${comments.key}"`);
   say(`  4. Generate all provider-specific files`);
 
-  // Savings preview
-  const manualMinutes = selectedTools.length * 15;
-  say('');
-  sayGreen(`  ⏱  Manual setup would take ~${manualMinutes} min. This takes ~10 sec.`);
 
   if (goal.key === 'learning') {
     say('');
@@ -345,7 +347,7 @@ async function flowOngoing(projectRoot, session) {
   const choice = await askChoice('What would you like to do?', [
     { key: 'compile',  label: 'Compile', hint: 'regenerate all provider files' },
     { key: 'learn',    label: 'Learn', hint: 'capture signals from your work' },
-    { key: 'summary',  label: 'Show summary', hint: `${savings.time.totalSavedMinutes} min saved so far` },
+    { key: 'summary',  label: 'Show summary', hint: `~${savings.time.totalSavedMinutes} min saved (estimate)` },
     { key: 'add',      label: 'Add rule or skill', hint: 'expand your AI context' },
     { key: 'explore',  label: 'What can I do next?', hint: 'show capabilities' },
     { key: 'report',   label: 'Full project report', hint: 'complete impact analysis' },

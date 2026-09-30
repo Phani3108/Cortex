@@ -19,122 +19,116 @@
  */
 
 import { existsSync } from 'node:fs';
+import { relative } from 'node:path';
 import { findProjectRoot, getCortexDir } from '../utils/fs.js';
 import { captureSignals, SIGNAL_TYPES } from '../core/signals.js';
 import { distillSignals, applyAdaptation, loadAdaptationState, saveAdaptationState } from '../core/adapt.js';
-import { loadProfile, saveProfile } from '../core/profile.js';
-import { heading, info, warn, success, error, dim, table } from '../utils/log.js';
+import { loadSession, saveSession, recordAction, updateMetrics } from '../core/session.js';
+import { heading, info, success, error, dim, table } from '../utils/log.js';
 
-export default async function learn({ values, positionals }) {
+/**
+ * Flags: --dry (preview), --auto (non-interactive, for hooks/watch),
+ * --quiet (no output except errors).
+ */
+export default async function learn({ values = {}, positionals = [] }) {
   const projectRoot = findProjectRoot();
   const cortexDir = getCortexDir(projectRoot);
-  const dry = values.dry;
-  const auto = positionals.includes('--auto');
-  const quiet = positionals.includes('--quiet');
+  const dry = Boolean(values.dry);
+  const quiet = Boolean(values.quiet) || positionals.includes('--quiet');
+  const say = fn => (...args) => { if (!quiet) fn(...args); };
+  const log = { heading: say(heading), info: say(info), success: say(success), dim: say(dim), table: say(table), blank: say(() => console.log()) };
 
-  if (!quiet) heading('Learning from project signals');
+  if (!existsSync(cortexDir)) {
+    error('.cortex/ not found. Run `cortex init` first.');
+    process.exitCode = 1;
+    return;
+  }
 
-  // Capture all signals
-  if (!quiet) info('Scanning for signals...');
+  log.heading('Learning from project signals');
+  log.info('Scanning for signals...');
   const signalReport = captureSignals(projectRoot);
 
   if (signalReport.totalSignals === 0) {
-    if (!quiet) {
-      info('No signals detected.');
-      dim('Signals come from: project configs, git history, code style, existing rules');
-      dim('Work on the project and run `cortex learn` again.');
-    }
+    log.info('No signals detected. Context is up to date.');
+    log.dim('Signals come from: project configs, git history, code style, existing rules');
     return;
   }
 
-  // Show what we found
-  if (!quiet) {
-    console.log();
-    info(`Captured ${signalReport.totalSignals} signals:`);
-    const typeRows = Object.entries(signalReport.byType).map(([type, items]) => [
-      formatSignalType(type),
-      `${items.length} signal(s)`,
-    ]);
-    table(typeRows);
-  }
+  log.blank();
+  log.info(`Captured ${signalReport.totalSignals} signals:`);
+  log.table(Object.entries(signalReport.byType).map(([type, items]) => [
+    formatSignalType(type),
+    `${items.length} signal(s)`,
+  ]));
 
-  // Distill into adaptation plan
+  // Distill, then preview against what's already in .cortex/rules/
   const plan = distillSignals(signalReport);
+  const preview = applyAdaptation(projectRoot, plan, { dry: true });
+  const rel = p => relative(projectRoot, p) || p;
 
-  const totalActions = plan.newRules.length + plan.contextUpdates.length +
-    plan.importedRules.length + plan.removedRules.length;
+  for (const e of preview.errors) error(`${e.type}: ${e.error}`);
 
-  if (totalActions === 0) {
-    if (!quiet) info('All signals already captured. Context is up to date.');
+  if (preview.applied.length === 0) {
+    log.blank();
+    log.success('Context is up to date.');
+    printSuggestedRemovals(preview.suggestedRemovals, log, rel);
     return;
   }
 
-  if (!quiet) {
-    console.log();
-    info('Adaptation plan:');
-    const planRows = [];
-    if (plan.contextUpdates.length > 0) planRows.push(['Auto-detected rules', `${plan.contextUpdates.length} from project configs`]);
-    if (plan.importedRules.length > 0) planRows.push(['Imported rules', `${plan.importedRules.length} from existing provider files`]);
-    if (plan.newRules.length > 0) planRows.push(['User corrections', `${plan.newRules.length} from edited outputs`]);
-    if (plan.removedRules.length > 0) planRows.push(['Removed rules', `${plan.removedRules.length} (user rejected)`]);
-    table(planRows);
-  }
-
-  // Apply adaptations
   if (dry) {
-    if (!quiet) {
-      console.log();
-      info('Dry run — would apply:');
-      for (const u of plan.contextUpdates) {
-        dim(`+ [${u.category}] ${u.content}`);
-      }
-      for (const r of plan.importedRules) {
-        dim(`+ [imported] ${r.content}`);
-      }
-      for (const r of plan.newRules) {
-        dim(`+ [correction] ${r.content}`);
-      }
+    log.blank();
+    log.info('Dry run — would add:');
+    for (const a of preview.applied) {
+      for (const item of a.items) log.dim(`+ [${a.type}] ${item}`);
     }
+    printSuggestedRemovals(preview.suggestedRemovals, log, rel);
     return;
   }
 
-  const results = applyAdaptation(projectRoot, plan, { dry });
+  const results = applyAdaptation(projectRoot, plan);
+  for (const e of results.errors) error(`${e.type}: ${e.error}`);
+  if (results.applied.length === 0) {
+    log.success('Context is up to date.');
+    return;
+  }
 
-  // Update adaptation state
-  const state = loadAdaptationState(projectRoot);
+  const rulesAdded = results.applied.reduce((n, a) => n + a.count, 0);
+
+  // Update adaptation state — only when something was actually applied
+  const state = loadAdaptationState(projectRoot) || {};
+  state.version = state.version || 1;
   state.lastAdapted = new Date().toISOString();
-  state.totalCycles = (state.totalCycles || 0) + 1;
+  state.totalCycles = (Number(state.totalCycles) || 0) + 1;
+  state.signalCounts = state.signalCounts && typeof state.signalCounts === 'object' ? state.signalCounts : {};
   for (const signal of signalReport.signals) {
-    state.signalCounts = state.signalCounts || {};
-    state.signalCounts[signal.type] = (state.signalCounts[signal.type] || 0) + 1;
+    state.signalCounts[signal.type] = (Number(state.signalCounts[signal.type]) || 0) + 1;
   }
   saveAdaptationState(projectRoot, state);
 
-  // Update profile patterns from high-confidence signals
-  const profile = loadProfile();
-  if (profile._exists) {
-    const highConfidence = signalReport.signals
-      .filter(s => s.confidence >= 0.9 && s.content.length < 200)
-      .map(s => s.content);
+  // Record in the project session so metrics reflect real events
+  const session = loadSession(projectRoot);
+  updateMetrics(session, { signalsCaptured: signalReport.totalSignals, rulesEvolved: rulesAdded, rulesAdded });
+  recordAction(session, 'learn', { rulesAdded });
+  saveSession(session);
 
-    const existingPatterns = new Set(profile.patterns || []);
-    const newPatterns = highConfidence.filter(p => !existingPatterns.has(p));
-
-    if (newPatterns.length > 0) {
-      profile.patterns = [...(profile.patterns || []), ...newPatterns.slice(0, 20)];
-      saveProfile(profile, { force: true });
-      if (!quiet) dim(`  Updated profile with ${newPatterns.length} new pattern(s)`);
-    }
+  log.blank();
+  for (const applied of results.applied) {
+    log.success(`${applied.type}: ${applied.count} rule(s) → ${rel(applied.path)}`);
   }
+  printSuggestedRemovals(results.suggestedRemovals, log, rel);
+  log.blank();
+  log.success(`Adaptation cycle #${state.totalCycles} complete`);
+  log.dim('Run `cortex compile` to propagate learned rules to all providers.');
+}
 
-  if (!quiet) {
-    console.log();
-    for (const applied of results.applied) {
-      success(`${applied.type}: ${applied.count} rule(s) → ${applied.path}`);
-    }
-    console.log();
-    success(`Adaptation cycle #${state.totalCycles} complete`);
-    dim('Run `cortex compile` to propagate learned rules to all providers.');
+function printSuggestedRemovals(removals, log, rel) {
+  if (!removals?.length) return;
+  log.blank();
+  log.info(`Suggested removals (${removals.length}) — you deleted these from generated files:`);
+  for (const r of removals) {
+    const where = r.locations.map(l => `${rel(l.file)}:${l.line}`).join(', ');
+    log.dim(`- ${r.content}`);
+    log.dim(`  edit ${where}`);
   }
 }
 

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!--@include head title="Stack Lab — Cortex" description="Pick a tech stack, get a guided recommendation, or architect a whole project — then take away a real .cortex config that compiles into rules for Claude Code, Cursor, Copilot, Codex and more."-->
+<script type="module" src="/assets/js/stack-lab.js?v={{build}}"></script>
+</head>
+<body data-page="stack">
+<!--@include header-->
+<main id="main" class="sl-root">
+
+  <section class="page-head">
+    <div class="container">
+      <div class="eyebrow">Stack Lab</div>
+      <h1 class="h2">Choose a stack, then give every AI agent the same rules for it.</h1>
+      <p class="lead">Three ways in. Each one ends with real <code>.cortex/</code> files you can open in the playground or compile with the CLI.</p>
+      <dl class="sl-modes">
+        <div><dt>Pick my stack</dt><dd>Choose technologies yourself and see what they are good for and what you can build with them.</dd></div>
+        <div><dt>Guide me</dt><dd>Answer four quick questions and get a proven starter stack.</dd></div>
+        <div><dt>Architect my project</dt><dd>Nine questions with live insights, ending in a full blueprint: stack, traps, compliance and a scaling roadmap.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="sl-modebar">
+        <div class="seg" id="sl-mode" role="group" aria-label="Stack Lab mode">
+          <button type="button" data-mode="pick" aria-pressed="true" aria-controls="sl-pick">Pick my stack</button>
+          <button type="button" data-mode="guide" aria-pressed="false" aria-controls="sl-guide">Guide me</button>
+          <button type="button" data-mode="architect" aria-pressed="false" aria-controls="sl-architect">Architect my project</button>
+        </div>
+        <span class="fresh tiny" data-freshness><span class="dot"></span><span>Loading model data…</span></span>
+      </div>
+
+      <!-- ── Pick my stack ───────────────────────────────────────────── -->
+      <div id="sl-pick" data-mode-panel="pick">
+        <h2 class="visually-hidden">Pick my stack</h2>
+        <div class="sl-pick">
+          <div class="sl-pick-main">
+            <div class="sl-presets">
+              <span class="tiny muted">Start from</span>
+              <div class="chips" id="sl-preset-starts"></div>
+            </div>
+            <div id="sl-groups"></div>
+          </div>
+          <aside class="sl-aside" aria-label="Selection">
+            <div class="card sl-summary">
+              <div class="row"><strong id="sl-count" tabindex="-1">Nothing selected yet</strong><span class="spacer"></span>
+                <button type="button" class="btn btn-ghost btn-sm" id="sl-clear" disabled>Clear</button></div>
+              <div class="chips sl-selected" id="sl-selected"></div>
+              <a class="btn btn-primary btn-sm sl-jump" href="#sl-pick-results" id="sl-jump" hidden>See results</a>
+            </div>
+            <div id="sl-detail-home">
+              <div class="card sl-detail" id="sl-detail" aria-live="polite">
+                <p class="muted small">Hover, focus or tap a technology to see what it is best for and who uses it.</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div id="sl-pick-results" class="sl-results" hidden>
+          <div class="tabs" role="tablist" aria-label="Results">
+            <button class="tab" role="tab" type="button" id="sl-tab-matrix" aria-controls="sl-panel-matrix" aria-selected="true" data-tab="matrix">What you can build</button>
+            <button class="tab" role="tab" type="button" id="sl-tab-tips" aria-controls="sl-panel-tips" aria-selected="false" data-tab="tips" tabindex="-1">Stack tips</button>
+            <button class="tab" role="tab" type="button" id="sl-tab-config" aria-controls="sl-panel-config" aria-selected="false" data-tab="config" tabindex="-1">Your .cortex config</button>
+          </div>
+          <div role="tabpanel" id="sl-panel-matrix" aria-labelledby="sl-tab-matrix" class="sl-tabpanel"></div>
+          <div role="tabpanel" id="sl-panel-tips" aria-labelledby="sl-tab-tips" class="sl-tabpanel" hidden></div>
+          <div role="tabpanel" id="sl-panel-config" aria-labelledby="sl-tab-config" class="sl-tabpanel" hidden>
+            <div data-cfg-slot="pick"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Guide me ────────────────────────────────────────────────── -->
+      <div id="sl-guide" data-mode-panel="guide" hidden>
+        <h2 class="visually-hidden">Guide me</h2>
+        <div class="sl-narrow" id="sl-guide-body"></div>
+      </div>
+
+      <!-- ── Architect my project ────────────────────────────────────── -->
+      <div id="sl-architect" data-mode-panel="architect" hidden>
+        <h2 class="visually-hidden">Architect my project</h2>
+        <div class="sl-arch">
+          <div class="sl-arch-main" id="sl-arch-body"></div>
+          <details class="sl-insights" id="sl-insights" open>
+            <summary><span>Live insights</span> <span class="badge" id="sl-insights-count">0</span></summary>
+            <div class="sl-insights-body">
+              <ul class="sl-insight-list" id="sl-insight-list" aria-live="polite"></ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<!--@include footer-->
+</body>
+</html>

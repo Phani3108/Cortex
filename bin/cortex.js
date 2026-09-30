@@ -7,159 +7,93 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * cortex — Universal AI Context Engine CLI
- *
- * Carry your intelligence across every AI coding tool and every project.
- * One config layer that compiles to Claude, Cursor, Copilot, Gemini, OpenAI, and more.
+ * cortex — one source of rules, compiled to every AI coding tool.
  */
 
-import { resolve, join } from 'node:path';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
+import { COMMANDS, COMMAND_GROUPS, OPTIONS_HELP } from '../src/engine/commands.js';
 
-// ── CLI argument parsing ────────────────────────────────────────────────────
-const { values, positionals } = parseArgs({
-  allowPositionals: true,
-  options: {
-    help:    { type: 'boolean', short: 'h', default: false },
-    version: { type: 'boolean', short: 'v', default: false },
-    global:  { type: 'boolean', short: 'g', default: false },
-    force:   { type: 'boolean', short: 'f', default: false },
-    dry:     { type: 'boolean', default: false },
-    provider:{ type: 'string',  short: 'p' },
-    model:   { type: 'string',  short: 'm' },
-    profile: { type: 'string' },
-  },
-});
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
+const VERSION = pkg.version;
 
-const VERSION = '1.0.0';
-const COMMANDS = {
-  assist:   'Guided assistant — asks questions, suggests best path, remembers context',
-  init:     'Initialize .cortex/ in the current project (or ~/.cortex/ with --global)',
-  compile:  'Compile universal config to provider-specific files',
-  learn:    'Capture signals from project and evolve AI context',
-  watch:    'Continuously adapt as you work (auto-learn + auto-compile)',
-  hooks:    'Install git hooks for automatic learning (hooks install|remove|status)',
-  diff:     'Show what changed in provider files since last compile',
-  import:   'Import existing provider files (CLAUDE.md, .cursorrules, etc.) into .cortex/',
-  cost:     'Show estimated token cost analysis for the project',
-  budget:   'Pre-session token intelligence — where your tokens go, optimization tips',
-  switch:   'Compare two LLM models — tokens, cost, formatting, capabilities',
-  migrate:  'Compare two AI coding tools — files, features, budget, migration steps',
-  optimize: 'Score rules by impact, compress to fit tight token budgets',
-  verify:   'Validate compiled output against provider specs, generate tips',
-  suggest:  'Intelligent rule suggestions based on project stack analysis',
-  tutorial: 'Stepwise Cortex Academy guide for lanes, phases, and sample scaffolds',
-  status:   'Show current cortex configuration status + provider health',
-  profile:  'View or edit your personal AI profile (~/.cortex/profile.yaml)',
-  add:      'Add a new skill, rule, or source (e.g., cortex add skill <name>)',
-  sync:     'Sync skills/rules from upstream sources',
-  update:   'Update cortex and upstream sources to latest versions',
-  export:   'Export your context for sharing or backup',
+const OPTIONS = {
+  help:     { type: 'boolean', short: 'h', default: false },
+  version:  { type: 'boolean', short: 'v', default: false },
+  global:   { type: 'boolean', short: 'g', default: false },
+  force:    { type: 'boolean', short: 'f', default: false },
+  dry:      { type: 'boolean', default: false },
+  check:    { type: 'boolean', default: false },
+  quiet:    { type: 'boolean', short: 'q', default: false },
+  auto:     { type: 'boolean', default: false },
+  yes:      { type: 'boolean', short: 'y', default: false },
+  json:     { type: 'boolean', default: false },
+  missing:  { type: 'boolean', default: false },
+  strict:   { type: 'boolean', default: false },
+  provider: { type: 'string',  short: 'p' },
+  model:    { type: 'string',  short: 'm' },
+  source:   { type: 'string' },
+  glob:     { type: 'string' },
+  sessions: { type: 'string' },
 };
 
-// ── Entry point ─────────────────────────────────────────────────────────────
+let values, positionals;
+try {
+  ({ values, positionals } = parseArgs({ allowPositionals: true, options: OPTIONS }));
+} catch (err) {
+  console.error(`${err.message}\nRun 'cortex --help' for available commands and options.`);
+  process.exit(2);
+}
+
+const KNOWN = new Set(COMMANDS.map(c => c.name));
+
 async function main() {
   if (values.version) {
-    console.log(`cortex v${VERSION} — Created by Phani Marupaka (https://linkedin.com/in/phani-marupaka)`);
-    process.exit(0);
+    console.log(`cortex v${VERSION} — created by Phani Marupaka (https://linkedin.com/in/phani-marupaka)`);
+    return;
   }
-
   const command = positionals[0];
-
-  if (values.help) {
-    printHelp();
-    process.exit(0);
+  if (values.help || command === 'help') {
+    printHelp(positionals[command === 'help' ? 1 : 0]);
+    return;
   }
 
   // No command? Launch the guided assistant.
   if (!command) {
     const mod = await import('../src/commands/assist.js');
     await mod.default({ values, positionals: [] });
-    process.exit(0);
+    return;
   }
 
-  if (!COMMANDS[command]) {
-    console.error(`Unknown command: ${command}\nRun 'cortex --help' for available commands.`);
-    process.exit(1);
+  if (!KNOWN.has(command)) {
+    const near = [...KNOWN].find(k => k.startsWith(command.slice(0, 3)));
+    console.error(`Unknown command: ${command}${near ? ` — did you mean '${near}'?` : ''}\nRun 'cortex --help' for available commands.`);
+    process.exit(2);
   }
 
-  // Dynamically import the command module
-  try {
-    // 'import' is a JS keyword, so handle the alias
-    const cmdFile = command === 'import' ? 'import' : command;
-    const mod = await import(`../src/commands/${cmdFile}.js`);
-    await mod.default({ values, positionals: positionals.slice(1) });
-  } catch (err) {
-    if (err.code === 'ERR_MODULE_NOT_FOUND') {
-      console.error(`Command '${command}' is not yet implemented.`);
-      process.exit(1);
-    }
-    throw err;
-  }
+  const mod = await import(`../src/commands/${command}.js`);
+  await mod.default({ values, positionals: positionals.slice(1) });
 }
 
-function printHelp() {
-  console.log(`
-  cortex v${VERSION} — Universal AI Context Engine
-  Created by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
-
-  USAGE
-    cortex <command> [options]
-
-  COMMANDS
-${Object.entries(COMMANDS).map(([k, v]) => `    ${k.padEnd(12)} ${v}`).join('\n')}
-
-  OPTIONS
-    -h, --help       Show this help message
-    -v, --version    Show version
-    -g, --global     Apply to global config (~/.cortex/)
-    -f, --force      Overwrite existing files
-    --dry            Dry run — show what would be done without writing
-    -p, --provider   Target a specific provider (claude, cursor, copilot, gemini, openai)
-    --profile        Path to custom profile file
-
-  EXAMPLES
-    cortex init                    Initialize AI context for current project
-    cortex init --global           Set up your personal AI profile
-    cortex compile                 Generate provider-specific configs
-    cortex compile -p claude       Compile only for Claude Code
-    cortex learn                   Capture signals and evolve context
-    cortex learn --dry             Preview what would be learned
-    cortex diff                    See what changed since last compile
-    cortex import                  Import existing CLAUDE.md, .cursorrules, etc.
-    cortex watch                   Auto-adapt as you work
-    cortex hooks install           Install git hooks for auto-learning
-    cortex sync                    Sync rules from remote sources
-    cortex cost                    Analyze token cost for project context
-    cortex budget                  Token budget report for current model
-    cortex budget -m gpt-5.1       Budget report for a specific model
-    cortex switch claude-sonnet-4 gpt-5.1   Compare two models
-    cortex migrate copilot cursor  Compare providers for migration
-    cortex optimize                Score rules + compression analysis
-    cortex optimize -p copilot     Compress rules for Copilot's 2K budget
-    cortex verify                  Validate all compiled files + tips
-    cortex suggest                 Get rule suggestions for your project
-    cortex suggest packs           List available rule packs
-    cortex suggest apply tdd       Apply a rule pack
-    cortex tutorial lanes          Show Academy build lanes
-    cortex tutorial phases         Show phased roadmap
-    cortex tutorial start          Start guided lane + phase walkthrough
-    cortex tutorial scaffold lane-a ./my-agent-app   Scaffold a lane sample
-    cortex add skill tdd           Add the TDD skill to current project
-    cortex add skill stack-selection       Add guided stack/LLM/DB selection skill
-    cortex add skill agent-foundations     Add phased AI agent build skill
-    cortex add skill mcp-builder           Add MCP server/tool contract skill
-    cortex add skill api-contract-engineering  Add API contract design/review skill
-    cortex add skill tutorial-coach        Add tutorial-first coaching skill
-    cortex status                  Show current configuration
-
-  LEARN MORE
-    https://github.com/Phani3108/Cortex
-`);
+function printHelp(topic) {
+  const cmd = topic && COMMANDS.find(c => c.name === topic);
+  if (cmd) {
+    console.log(`\n  cortex ${cmd.name} — ${cmd.summary}\n\n  EXAMPLES\n${cmd.examples.map(e => `    ${e}`).join('\n')}\n`);
+    return;
+  }
+  const lines = [`\n  cortex v${VERSION} — one source of rules for every AI coding tool`, '  https://cortex1.vercel.app', '', '  USAGE', '    cortex <command> [options]', ''];
+  for (const group of COMMAND_GROUPS) {
+    lines.push(`  ${group.title.toUpperCase()}`);
+    for (const c of COMMANDS.filter(x => x.group === group.id)) lines.push(`    ${c.name.padEnd(10)} ${c.summary}`);
+    lines.push('');
+  }
+  lines.push('  OPTIONS');
+  for (const [flag, desc] of OPTIONS_HELP) lines.push(`    ${flag.padEnd(22)} ${desc}`);
+  lines.push('', '  QUICK START', '    cortex init               # detect tools, import existing files', '    cortex compile            # write CLAUDE.md, AGENTS.md, .cursor/rules, …', '    cortex compile --check    # in CI: fail when generated files drift', '', "  Run 'cortex help <command>' for examples.", '');
+  console.log(lines.join('\n'));
 }
 
 main().catch((err) => {
-  console.error(err);
+  console.error(err?.stack || err);
   process.exit(1);
 });

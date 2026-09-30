@@ -1,0 +1,10 @@
+{
+  "$comment": "Manual corrections merged on top of the automated OpenRouter refresh. Keep this tiny: only facts the upstream feed cannot provide.",
+  "models": {},
+  "providerModels": {},
+  "subscriptionProviders": {
+    "cursor":   { "billing": "subscription", "note": "Seat-based plans; per-token cost is not billed to you directly." },
+    "copilot":  { "billing": "subscription", "note": "Seat-based plans with premium-request allowances." },
+    "windsurf": { "billing": "subscription", "note": "Seat-based plans with credit allowances." }
+  }
+}

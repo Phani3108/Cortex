@@ -5,33 +5,37 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * Configuration loading and management.
- * Handles .cortex/config.yaml for project-level and global configs.
+ * .cortex/config.yaml — loading, defaults and serialisation.
+ *
+ *   providers:            # which tools to compile for (true/false or { enabled, model })
+ *     claude: true
+ *     cursor: { enabled: true, model: gpt-6.1-sol }   # format for this model family
+ *   output:
+ *     agentsMd: shared    # shared: tools that read AGENTS.md don't get a duplicate copy
+ *     skills: true        # emit .cortex/skills as Agent Skills (SKILL.md)
  */
 
 import { join } from 'node:path';
-import { existsSync } from 'node:fs';
 import { parse, stringify } from '../utils/yaml.js';
 import { readFileSafe, writeFileSafe, getCortexDir } from '../utils/fs.js';
+import { TARGET_IDS, DEFAULT_TARGETS } from '../engine/targets.js';
 
 const CONFIG_FILE = 'config.yaml';
+const HEADER = `# Cortex configuration — https://github.com/Phani3108/Cortex
+# Docs: https://cortex1.vercel.app/docs.html#config
+`;
 
 const DEFAULT_CONFIG = {
-  version: 1,
+  version: 2,
   project: {
     name: null,
     language: null,
     framework: null,
   },
-  providers: {
-    claude: true,
-    cursor: true,
-    copilot: true,
-    windsurf: false,
-    antigravity: false,
-    codex: false,
-    gemini: false,
-    openai: false,
+  providers: Object.fromEntries(TARGET_IDS.map(id => [id, DEFAULT_TARGETS.includes(id)])),
+  output: {
+    agentsMd: 'shared',
+    skills: true,
   },
   rules: {
     sources: ['local'],
@@ -47,39 +51,38 @@ const DEFAULT_CONFIG = {
 };
 
 /**
- * Load config from .cortex/config.yaml.
- * Merges with defaults for missing keys.
+ * Load config from .cortex/config.yaml, merged over defaults.
+ * Provider keys missing from the file default to disabled (so adding a new
+ * target to Cortex never silently enables it in existing projects).
  */
 export function loadConfig(projectRoot, global = false) {
   const dir = getCortexDir(projectRoot, global);
   const configPath = join(dir, CONFIG_FILE);
   const raw = readFileSafe(configPath);
 
-  if (!raw) return { ...DEFAULT_CONFIG, _path: configPath, _exists: false };
+  if (!raw) return { ...structuredClone(DEFAULT_CONFIG), _path: configPath, _exists: false };
 
-  const parsed = parse(raw);
-  return deepMerge(DEFAULT_CONFIG, parsed, { _path: configPath, _exists: true });
+  let parsed = {};
+  try {
+    parsed = parse(raw) || {};
+  } catch (err) {
+    throw new Error(`Could not parse ${configPath}: ${err.message}`);
+  }
+  const base = structuredClone(DEFAULT_CONFIG);
+  base.providers = Object.fromEntries(TARGET_IDS.map(id => [id, false]));
+  return deepMerge(base, parsed, { _path: configPath, _exists: true });
 }
 
-/**
- * Save config to .cortex/config.yaml.
- */
+/** Save config to .cortex/config.yaml. */
 export function saveConfig(config, opts = {}) {
   const { _path, _exists, ...data } = config;
-  const content = `# cortex configuration\n# https://github.com/YOUR_USERNAME/cortex\n\n${stringify(data)}\n`;
-  return writeFileSafe(_path, content, opts);
+  return writeFileSafe(_path, `${HEADER}\n${stringify(data)}\n`, opts);
 }
 
-/**
- * Get the default config template as a string.
- */
+/** Default config as YAML text, with overrides applied. */
 export function getDefaultConfigString(overrides = {}) {
-  const config = deepMerge(DEFAULT_CONFIG, overrides);
-  return `# cortex configuration
-# https://github.com/YOUR_USERNAME/cortex
-
-${stringify(config)}
-`;
+  const config = deepMerge(structuredClone(DEFAULT_CONFIG), overrides);
+  return `${HEADER}\n${stringify(config)}\n`;
 }
 
 export { DEFAULT_CONFIG };

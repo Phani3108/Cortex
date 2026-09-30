@@ -5,50 +5,43 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * cortex — Universal AI Context Engine
+ * cortex-aictx — programmatic API.
  *
- * Carry your intelligence across every AI coding tool and every project.
- * One config layer that compiles to Claude, Cursor, Copilot, Windsurf,
- * Antigravity, Codex, Gemini, OpenAI, and more.
+ *   import { compileProject, compile, TARGETS } from 'cortex-aictx';
+ *   import { compile } from 'cortex-aictx/engine';   // pure, browser-safe subset
  */
 
+// Engine (pure): compile, targets, parsing, formatting, budgets, tokens
+export * from './engine/index.js';
+export { COMMANDS, COMMAND_GROUPS } from './engine/commands.js';
+
+// Project I/O
+export { compileProject, loadRuleFiles, loadSkillFiles } from './core/sources.js';
+export { planWrites, planRemovals } from './core/outputs.js';
 export { loadConfig, saveConfig } from './core/config.js';
 export { loadProfile, saveProfile } from './core/profile.js';
-export { analyzeProject, estimateTokens, estimateCost, getTokenFamily, getModelCosts } from './core/tokens.js';
-export { getProvider, getAllProviders, getEnabledProviders } from './providers/index.js';
 export { findProjectRoot, getCortexDir } from './utils/fs.js';
-export { captureSignals } from './core/signals.js';
-export { distillSignals, applyAdaptation } from './core/adapt.js';
-export { getProviderSpec, getModelFamily, PROVIDER_SPECS, MODEL_STRATEGIES } from './core/specs.js';
-export { formatForModel, compileForProvider } from './core/compiler.js';
 export { saveManifest, loadManifest, detectUserEdits } from './core/manifest.js';
+export { getProvider, getAllProviders, getEnabledProviders } from './providers/index.js';
 
-// Phase 0: Family-based model classification (future-proof)
-export { resolveModel, getFormatFamily, getTokenizerFamily, getCharsPerToken, getModelStrategy, estimateTierCost, estimateContextWindow, MODEL_FAMILIES } from './core/families.js';
-
-// Phase 1: Model registry (auto-synced pricing & model data)
-export { loadRegistry, getModelCost, getContextWindow, getAllModels, getAllModelCosts, getProviderModels, getModelEntry, isRegistryStale, syncRegistry } from './core/registry.js';
-
-// Phase 1: Comparison engine (model switch + provider migration)
+// Models & pricing
+export { resolveModel, getFormatFamily, getTokenizerFamily, getCharsPerToken, getModelStrategy, MODEL_FAMILIES } from './core/families.js';
+export { loadRegistry, findModel, getModelCost, getModelPricing, getContextWindow, getAllModels, getAllModelCosts, getProviderModels, getModelEntry, getHighlight, getRegistryInfo, isRegistryStale, syncRegistry } from './core/registry.js';
+export { buildRegistryFromOpenRouter, diffRegistries } from './core/registry-build.js';
+export { analyzeProject, estimateCost } from './core/tokens.js';
 export { compareModels, compareProviders } from './core/compare.js';
-
-// Phase 1: Budget analysis (pre-session token intelligence)
 export { analyzeBudget } from './core/budget.js';
 
-// Phase 2: Inline tips engine (model-specific advice after compile)
+// Analysis
+export { getProviderSpec, PROVIDER_SPECS } from './core/specs.js';
 export { generateTips, formatTipsForDisplay } from './core/tips.js';
-
-// Phase 2: Provider health assessment
 export { assessHealth } from './core/health.js';
-
-// Phase 2: Rule impact scoring + budget optimization
 export { scoreRules, optimizeForBudget, generateImpactReport } from './core/scoring.js';
-
-// Phase 2: Prompt compression engine
 export { compressRules, needsCompression } from './core/compress.js';
+export { formatForModel, compileForProvider } from './core/compiler.js';
 
-// Phase 2: Watch-mode model switch detection
+// Learning loop
+export { captureSignals } from './core/signals.js';
+export { distillSignals, applyAdaptation } from './core/adapt.js';
 export { detectModelSwitch } from './core/watch.js';
-
-// Phase 3: Community rules + intelligent suggestions
 export { listPacks, getPack, suggestRules, suggestMissingRules, syncCommunityPacks, BUILTIN_PACKS } from './core/community.js';

@@ -22,7 +22,8 @@ export default async function watch({ values }) {
 
   if (!existsSync(cortexDir)) {
     warn('.cortex/ not found. Run `cortex init` first.');
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   heading('Watching for changes');
@@ -39,7 +40,7 @@ export default async function watch({ values }) {
     },
     onLearn: () => {
       info('Detected edits — learning...');
-      learnCmd({ values, positionals: ['--quiet'] }).catch(() => {});
+      learnCmd({ values: { ...values, auto: true, quiet: true }, positionals: [] }).catch(() => {});
     },
     onDetect: () => {
       info('Project config changed — re-scanning...');
@@ -47,8 +48,9 @@ export default async function watch({ values }) {
       if (report.totalSignals > 0) {
         const plan = distillSignals(report);
         if (plan.contextUpdates.length > 0) {
-          applyAdaptation(projectRoot, plan);
-          dim(`  Updated ${plan.contextUpdates.length} auto-detected rule(s)`);
+          const results = applyAdaptation(projectRoot, { ...plan, newRules: [], importedRules: [], removedRules: [] });
+          const added = results.applied.reduce((n, a) => n + a.count, 0);
+          if (added > 0) dim(`  Added ${added} auto-detected rule(s)`);
         }
       }
     },

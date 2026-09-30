@@ -5,169 +5,124 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * cortex optimize — compress and score rules to maximize token efficiency.
+ * cortex optimize — how your rules fit each tool's size budget.
+ *
+ * Read-only analysis built on the same engine code `cortex compile` uses
+ * (scoreRule + fitRules): for every target with a limit it shows the size vs.
+ * the limit and exactly which rules the compiler leaves out, plus the
+ * highest- and lowest-value rules overall. It never rewrites your rules.
+ *
+ *   cortex optimize              every enabled tool
+ *   cortex optimize -p windsurf  one tool (enabled or not)
  */
 
-import { join } from 'node:path';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { findProjectRoot, getCortexDir, writeFileSafe } from '../utils/fs.js';
-import { loadConfig } from '../core/config.js';
-import { PROVIDER_SPECS } from '../core/specs.js';
-import { scoreRules, generateImpactReport, optimizeForBudget } from '../core/scoring.js';
-import { compressRules, needsCompression } from '../core/compress.js';
-import { getCharsPerToken } from '../core/families.js';
-import { heading, info, success, warn, dim, table, error } from '../utils/log.js';
+import { findProjectRoot } from '../utils/fs.js';
+import { heading, info, success, warn, error, dim } from '../utils/log.js';
+import { requireCortex, inspectProject, compileTargetAlone } from '../core/health.js';
+import { TARGETS, resolveTargetId, scoreRule, measure } from '../engine/index.js';
 
-export default async function optimize({ values, positionals }) {
+export default async function optimize({ values }) {
   const projectRoot = findProjectRoot();
-  const cortexDir = getCortexDir(projectRoot);
-  const dry = values.dry;
-  const providerSlug = values.provider;
-  const modelName = values.model;
+  requireCortex(projectRoot);
 
-  if (!existsSync(cortexDir)) {
-    error('.cortex/ not found. Run `cortex init` first.');
+  let focus = null;
+  if (values.provider) {
+    focus = resolveTargetId(values.provider);
+    if (!focus) {
+      error(`Unknown provider '${values.provider}'. Known: ${Object.keys(TARGETS).join(', ')}`);
+      process.exit(1);
+    }
+  }
+
+  let inspection;
+  try {
+    inspection = inspectProject(projectRoot);
+  } catch (err) {
+    error(err.message);
     process.exit(1);
   }
 
-  heading('Optimizing rules');
-  info(`Project: ${projectRoot}`);
+  const ids = focus ? [focus] : Object.keys(inspection.report);
+  const analyses = ids.map(id => analyzeTarget(inspection, id));
+  const scored = inspection.rules
+    .map(r => ({ text: r.text, category: r.label || r.category, priority: r.priority, scope: r.scope, score: scoreRule(r) }))
+    .sort((a, b) => b.score - a.score);
 
-  // Load rules
-  const rules = loadRules(cortexDir);
-  const globalRules = loadRules(getCortexDir(null, true));
-  const allRules = [...globalRules, ...rules];
-
-  if (allRules.length === 0) {
-    warn('No rules found. Run `cortex learn` or `cortex add rule` first.');
-    process.exit(0);
+  if (values.json) {
+    console.log(JSON.stringify({ targets: analyses, rules: scored }, null, 2));
+    return;
   }
 
-  info(`Rules loaded: ${allRules.length}`);
-  console.log();
-
-  // Determine target model
-  const config = loadConfig(projectRoot);
-  const targetModel = modelName || getDefaultModel(config, providerSlug);
-
-  // Score all rules
-  info('Scoring rules by impact...');
-  const scored = scoreRules(allRules, targetModel);
-  const report = generateImpactReport(scored);
-
-  // Display impact report
-  console.log();
-  info('RULE IMPACT ANALYSIS');
-  table([
-    ['Total rules', `${report.totalRules}`],
-    ['Total tokens', `${report.totalTokens}`],
-    ['High impact', `${report.tiers.high.count} rules (${report.tiers.high.tokens} tokens)`],
-    ['Medium impact', `${report.tiers.medium.count} rules (${report.tiers.medium.tokens} tokens)`],
-    ['Low impact', `${report.tiers.low.count} rules (${report.tiers.low.tokens} tokens)`],
-  ]);
-
-  // Show top rules
-  console.log();
-  info('TOP RULES (highest value per token):');
-  for (const r of report.topRules.slice(0, 5)) {
-    dim(`  [${r.impact.toFixed(3)}] ${r.content} (${r.tokens} tok)`);
-  }
-
-  // Show bottom rules
-  if (report.bottomRules.length > 0) {
+  heading('Rule budget analysis');
+  dim(`${inspection.rules.length} rule(s). Nothing is changed — this shows what \`cortex compile\` does to fit each tool.`);
+  if (!ids.length) {
     console.log();
-    info('LOWEST IMPACT RULES (candidates for removal):');
-    for (const r of report.bottomRules) {
-      dim(`  [${r.impact.toFixed(3)}] ${r.content} (${r.tokens} tok)`);
-    }
+    warn('No providers enabled. Use `-p <tool>` to analyse one anyway.');
   }
 
-  // Provider-specific compression
-  if (providerSlug) {
-    const spec = PROVIDER_SPECS[providerSlug];
-    if (!spec) {
-      error(`Unknown provider: ${providerSlug}`);
-      process.exit(1);
-    }
-
-    const budget = spec.tokenLimits?.instructionBudget;
-    if (budget) {
-      console.log();
-      info(`Compressing for ${spec.name} (budget: ${budget} tokens)...`);
-
-      if (!needsCompression(allRules, budget, targetModel)) {
-        success(`Rules already fit within ${spec.name}'s budget!`);
-      } else {
-        const { compressed, stats } = compressRules(allRules, budget, targetModel, {
-          aggressive: values.force,
-        });
-
-        info('COMPRESSION RESULTS');
-        table([
-          ['Original', `${stats.originalRules} rules, ${stats.originalTokens} tokens`],
-          ['Compressed', `${stats.compressedRules} rules, ${stats.compressedTokens} tokens`],
-          ['Reduction', `${stats.compressionRatio}%`],
-          ['Fits budget', stats.fitsInBudget ? '✓ Yes' : '✗ No'],
-        ]);
-
-        for (const step of stats.steps) {
-          dim(`  ${step.step}: ${step.removed ? `removed ${step.removed}` : ''} ${step.tokensSaved ? `saved ${step.tokensSaved} tokens` : ''} ${step.note || ''}`);
-        }
-
-        if (!stats.fitsInBudget) {
-          warn(`Still ${stats.compressedTokens - budget} tokens over budget. Try --force for aggressive compression.`);
-        }
-      }
-    } else {
-      info(`${spec.name} has no token budget limit.`);
-    }
-  } else {
-    // Show per-provider fit status
+  for (const a of analyses) {
     console.log();
-    info('PROVIDER FIT STATUS:');
-    const providerRows = [];
-    for (const [slug, spec] of Object.entries(PROVIDER_SPECS)) {
-      const enabled = config.providers?.[slug];
-      if (!enabled) continue;
-      const budget = spec.tokenLimits?.instructionBudget;
-      if (!budget) {
-        providerRows.push([spec.name, 'unlimited', '✓']);
-      } else {
-        const fits = !needsCompression(allRules, budget, targetModel);
-        providerRows.push([spec.name, `${budget} tokens`, fits ? '✓ fits' : `✗ over by ${report.totalTokens - budget}`]);
-      }
+    if (a.viaAgentsMd) {
+      info(`${a.name}: always-on rules come from AGENTS.md — see the AGENTS.md target.`);
+      continue;
     }
-    if (providerRows.length > 0) table(providerRows);
+    const { unit, soft, hard, size } = a;
+    const limit = hard ? `${size.toLocaleString('en-US')} / ${hard.toLocaleString('en-US')} ${unit} (hard limit)`
+      : soft ? `${size.toLocaleString('en-US')} / ~${soft.toLocaleString('en-US')} ${unit} (guidance)`
+        : `${size.toLocaleString('en-US')} ${unit} (no limit)`;
+    const over = (hard && size > hard) || a.dropped.length;
+    const line = `${a.name} — ${a.file}: ${limit}${a.enabled ? '' : '  [not enabled]'}`;
+    if (over) warn(line);
+    else if (soft && size > soft) warn(line);
+    else success(line);
+
+    if (a.dropped.length) {
+      dim(`${a.kept} of ${a.kept + a.dropped.length} rule(s) kept; left out (lowest value first):`);
+      const sorted = [...a.dropped].sort((x, y) => x.score - y.score);
+      const shown = focus ? sorted : sorted.slice(0, 10);
+      for (const r of shown) {
+        dim(`  − [${r.score.toFixed(2)}] ${r.priority === 'critical' ? '(critical!) ' : ''}${r.text.slice(0, 100)}`);
+      }
+      if (sorted.length > shown.length) dim(`  … and ${sorted.length - shown.length} more (\`cortex optimize -p ${a.id}\` lists all)`);
+      if (a.dropped.some(r => r.priority === 'critical')) warn('Critical rules were left out — shorten other rules or move them into scoped files.');
+      else dim('To keep them: shorten long rules, move file-specific ones into scoped rule files, or into skills.');
+    } else if (hard) {
+      dim(`All rules fit — ${(hard - size).toLocaleString('en-US')} ${unit} to spare.`);
+    } else if (soft && size > soft) {
+      dim(TARGETS[a.id].budget.note);
+    }
   }
 
-  console.log();
-  success('Optimization analysis complete');
-  if (!providerSlug) {
-    dim('Run `cortex optimize -p <provider>` to compress for a specific provider');
+  if (scored.length > 1) {
+    const n = Math.min(5, Math.floor(scored.length / 2));
+    console.log();
+    info('Highest-value rules (kept first when space is tight):');
+    for (const r of scored.slice(0, n)) dim(`[${r.score.toFixed(2)}] ${r.text.slice(0, 100)}`);
+    info('Lowest-value rules (dropped first):');
+    for (const r of scored.slice(-n).reverse()) dim(`[${r.score.toFixed(2)}] ${r.text.slice(0, 100)}`);
+    dim('Score: category weight + priority (`!` = critical) + concrete details (code, paths, numbers); long rules score lower.');
   }
+  console.log();
 }
 
-function loadRules(dir) {
-  const rulesDir = join(dir, 'rules');
-  if (!existsSync(rulesDir)) return [];
-  const rules = [];
-  for (const file of readdirSync(rulesDir)) {
-    if (file.startsWith('.') || (!file.endsWith('.md') && !file.endsWith('.txt'))) continue;
-    const content = readFileSync(join(rulesDir, file), 'utf-8');
-    for (const line of content.split('\n')) {
-      const trimmed = line.trim();
-      if (trimmed.startsWith('- ') && trimmed.length > 5) {
-        rules.push({ content: trimmed.slice(2).trim(), source: file, category: 'rules' });
-      }
-    }
-  }
-  return rules;
-}
+function analyzeTarget(inspection, id) {
+  const target = TARGETS[id];
+  const enabled = !!inspection.report[id];
+  const result = enabled ? inspection : compileTargetAlone(inspection, id);
+  const entry = result.report[id];
+  const main = result.outputs.find(o => o.kind === 'instructions' && (o.targets || [o.target]).includes(id));
+  const { unit, soft, hard } = target.budget;
+  const base = { id, name: target.name, enabled, unit, soft, hard };
+  if (!main) return { ...base, viaAgentsMd: !!entry?.viaAgentsMd, file: null, size: 0, kept: 0, dropped: [] };
 
-function getDefaultModel(config, providerSlug) {
-  if (providerSlug) {
-    const spec = PROVIDER_SPECS[providerSlug];
-    if (spec?.models?.[0]) return spec.models[0];
-  }
-  return 'claude-sonnet-4';
+  const inlined = result.rules.filter(r => !r.scope || !target.scopedPattern).length;
+  const dropped = entry.dropped.map(r => ({ text: r.text, priority: r.priority, score: scoreRule(r) }));
+  return {
+    ...base,
+    viaAgentsMd: false,
+    file: main.path,
+    size: measure(main.content, unit),
+    kept: inlined - dropped.length,
+    dropped,
+  };
 }

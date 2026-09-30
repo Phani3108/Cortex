@@ -21,6 +21,9 @@ import { existsSync } from 'node:fs';
 import { readFileSafe, writeFileSafe, getCortexDir } from '../utils/fs.js';
 
 const SESSION_FILE = 'session.json';
+const MAX_TIMELINE = 500;
+const MAX_DECISIONS = 50;
+const MAX_RECOMMENDATIONS = 50;
 
 const EMPTY_SESSION = {
   version: 1,
@@ -65,7 +68,7 @@ export function loadSession(projectRoot) {
 
   try {
     const parsed = JSON.parse(raw);
-    return { ...structuredClone(EMPTY_SESSION), ...parsed, _path: sessionPath, _isNew: false };
+    return { ...mergeSession(parsed), _path: sessionPath, _isNew: false };
   } catch {
     return { ...structuredClone(EMPTY_SESSION), _path: sessionPath, _isNew: true };
   }
@@ -76,6 +79,7 @@ export function loadSession(projectRoot) {
  */
 export function saveSession(session) {
   const { _path, _isNew, ...data } = session;
+  capArrays(data);
   data.lastActivity = new Date().toISOString();
   writeFileSafe(_path, JSON.stringify(data, null, 2) + '\n', { force: true });
 }
@@ -90,10 +94,7 @@ export function recordAction(session, action, detail = {}) {
     action,
     ...detail,
   });
-  // Keep timeline bounded to last 500 events
-  if (session.timeline.length > 500) {
-    session.timeline = session.timeline.slice(-500);
-  }
+  capArrays(session);
 }
 
 /**
@@ -106,6 +107,7 @@ export function recordDecision(session, question, choice, context = null) {
     choice,
     context,
   });
+  capArrays(session);
 }
 
 /**
@@ -117,6 +119,7 @@ export function recordRecommendation(session, recommendation, accepted = null) {
     recommendation,
     accepted,
   });
+  capArrays(session);
 }
 
 /**
@@ -156,10 +159,34 @@ export function loadGlobalSession() {
 
   try {
     const parsed = JSON.parse(raw);
-    return { ...structuredClone(EMPTY_SESSION), projectSessions: {}, ...parsed, _path: sessionPath, _isNew: false };
+    return { projectSessions: {}, ...mergeSession(parsed), _path: sessionPath, _isNew: false };
   } catch {
     return { ...structuredClone(EMPTY_SESSION), _path: sessionPath, _isNew: true, projectSessions: {} };
   }
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Merge a stored session over the empty shape, tolerating missing/invalid fields. */
+function mergeSession(parsed) {
+  const base = structuredClone(EMPTY_SESSION);
+  if (!parsed || typeof parsed !== 'object') return base;
+  const merged = { ...base, ...parsed, metrics: { ...base.metrics, ...(parsed.metrics || {}) } };
+  for (const key of ['goals', 'decisions', 'timeline', 'recommendations']) {
+    if (!Array.isArray(merged[key])) merged[key] = [];
+  }
+  return capArrays(merged);
+}
+
+/** Keep long-lived arrays bounded so session.json doesn't grow forever. */
+function capArrays(session) {
+  const limits = { timeline: MAX_TIMELINE, decisions: MAX_DECISIONS, recommendations: MAX_RECOMMENDATIONS };
+  for (const [key, max] of Object.entries(limits)) {
+    if (Array.isArray(session[key]) && session[key].length > max) {
+      session[key] = session[key].slice(-max);
+    }
+  }
+  return session;
 }
 
 export { EMPTY_SESSION };
