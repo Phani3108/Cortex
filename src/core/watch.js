@@ -22,7 +22,6 @@ import { existsSync, readFileSync } from 'node:fs';
 import { findProjectRoot, getCortexDir } from '../utils/fs.js';
 import { info, success, dim, warn } from '../utils/log.js';
 import { resolveModel } from './families.js';
-import { PROVIDER_SPECS } from './specs.js';
 
 const DEBOUNCE_MS = 2000; // Wait 2s after last change before acting
 const PROVIDER_FILES = [

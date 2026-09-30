@@ -8,9 +8,7 @@
  * cortex profile — View or edit your personal AI profile.
  */
 
-import { existsSync } from 'node:fs';
-import { loadProfile, saveProfile, getDefaultProfileString } from '../core/profile.js';
-import { getCortexDir } from '../utils/fs.js';
+import { loadProfile, saveProfile, DEFAULT_PROFILE } from '../core/profile.js';
 import { heading, info, warn, success, dim, table } from '../utils/log.js';
 import { stringify } from '../utils/yaml.js';
 
@@ -66,6 +64,11 @@ function setProfileValue(args) {
 
   // Set nested value
   const keys = keyPath.split('.');
+  if (keys.some(k => !k || k === '__proto__' || k === 'constructor' || k === 'prototype')) {
+    warn(`Invalid key: ${keyPath}`);
+    process.exitCode = 1;
+    return;
+  }
   let obj = profileData;
   for (let i = 0; i < keys.length - 1; i++) {
     if (typeof obj[keys[i]] !== 'object' || obj[keys[i]] === null) {
@@ -92,6 +95,7 @@ function resetProfile(values) {
     return;
   }
 
-  saveProfile(profileData, { force: true });
+  const fresh = structuredClone(DEFAULT_PROFILE);
+  saveProfile({ ...fresh, _path: profileData._path, _exists: true }, { force: true });
   success('Profile reset to defaults');
 }

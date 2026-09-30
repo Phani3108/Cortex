@@ -20,7 +20,7 @@
  *   cortex assist reset        — Reset session (start fresh)
  */
 
-import { existsSync, unlinkSync } from 'node:fs';
+import { existsSync, unlinkSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { findProjectRoot, getCortexDir } from '../utils/fs.js';
 import { loadConfig, saveConfig } from '../core/config.js';
@@ -29,6 +29,7 @@ import { loadSession, saveSession, recordAction, updateMetrics } from '../core/s
 import { startConversation, closeReadline } from '../core/assistant.js';
 import { generateSummary, calculateSavings } from '../core/metrics.js';
 import { heading, info, success, warn, dim, error } from '../utils/log.js';
+import { PROVIDER_SPECS } from '../core/specs.js';
 
 export default async function assist({ values, positionals }) {
   const projectRoot = findProjectRoot();
@@ -47,8 +48,8 @@ export default async function assist({ values, positionals }) {
 
   if (!result) return; // User exited or no action needed
 
-  // Execute the chosen action
-  const session = loadSession(projectRoot);
+  // Execute the chosen action. Onboarding hands over its unsaved session.
+  const session = result.session || loadSession(projectRoot);
 
   switch (result.action) {
     case 'setup':
@@ -163,17 +164,9 @@ async function executeCompile(projectRoot, session, values) {
     const compileMod = await import('./compile.js');
     await compileMod.default({ values: { ...values, force: true }, positionals: [] });
 
-    // Track metrics
-    const config = loadConfig(projectRoot);
-    const enabledProviders = Object.entries(config.providers || {})
-      .filter(([, v]) => v).map(([k]) => k);
-
-    updateMetrics(session, {
-      compilations: 1,
-      filesGenerated: enabledProviders.length * 2, // Rough estimate
-      providersUsed: enabledProviders,
-    });
-    recordAction(session, 'compiled', { providers: enabledProviders });
+    // compile records its own metrics — pick them up so our save doesn't clobber them
+    syncMetrics(projectRoot, session);
+    recordAction(session, 'compiled');
   } catch (e) {
     error(`Compile failed: ${e.message}`);
   }
@@ -183,6 +176,7 @@ async function executeLearn(projectRoot, session, values) {
   try {
     const learnMod = await import('./learn.js');
     await learnMod.default({ values, positionals: [] });
+    syncMetrics(projectRoot, session);
     recordAction(session, 'learned');
   } catch (e) {
     error(`Learn failed: ${e.message}`);
@@ -240,7 +234,7 @@ async function executeSetLanguage(projectRoot, session) {
     detected.language = 'javascript';
     if (existsSync(`${projectRoot}/tsconfig.json`)) detected.language = 'typescript';
     try {
-      const pkg = JSON.parse(require('node:fs').readFileSync(`${projectRoot}/package.json`, 'utf-8'));
+      const pkg = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf-8'));
       const deps = { ...pkg.dependencies, ...pkg.devDependencies };
       if (deps.react || deps.next) detected.framework = 'React';
       else if (deps.vue) detected.framework = 'Vue';
@@ -331,6 +325,12 @@ async function executeAddSkills(projectRoot, session) {
   }
 }
 
+/** Copy metrics that sub-commands persisted into the in-memory session. */
+function syncMetrics(projectRoot, session) {
+  const stored = loadSession(projectRoot);
+  if (!stored._isNew) session.metrics = { ...session.metrics, ...stored.metrics };
+}
+
 // ── Summary ─────────────────────────────────────────────────────────────────
 
 function showSummary(projectRoot) {
@@ -350,5 +350,3 @@ function resetSession(projectRoot) {
   }
 }
 
-// Import PROVIDER_SPECS for use in executeAddProviders
-import { PROVIDER_SPECS } from '../core/specs.js';

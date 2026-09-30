@@ -8,9 +8,10 @@
  * cortex suggest — intelligent rule suggestions based on project analysis.
  */
 
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { findProjectRoot, getCortexDir, writeFileSafe } from '../utils/fs.js';
+import { findProjectRoot, getCortexDir, writeFileSafe, readFileSafe } from '../utils/fs.js';
+import { mergeBullets } from '../core/adapt.js';
 import { loadConfig } from '../core/config.js';
 import { suggestRules, suggestMissingRules, listPacks, getPack } from '../core/community.js';
 import { heading, info, success, warn, dim, table, error } from '../utils/log.js';
@@ -23,7 +24,8 @@ export default async function suggest({ values, positionals }) {
 
   if (!existsSync(cortexDir)) {
     error('.cortex/ not found. Run `cortex init` first.');
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const config = loadConfig(projectRoot);
@@ -33,6 +35,9 @@ export default async function suggest({ values, positionals }) {
     return showPacks();
   }
 
+  if (subCommand === 'apply' && values.missing) {
+    return applyMissing(projectRoot, cortexDir, currentRules, config, dry);
+  }
   if (subCommand === 'apply') {
     return applyPack(positionals[1], cortexDir, currentRules, dry);
   }
@@ -117,34 +122,82 @@ function showPacks() {
 
 function applyPack(packId, cortexDir, currentRules, dry) {
   if (!packId) {
-    error('Usage: cortex suggest apply <pack-id>');
-    process.exit(1);
+    error('Usage: cortex suggest apply <pack-id>  (or: cortex suggest apply --missing)');
+    process.exitCode = 1;
+    return;
   }
 
   const pack = getPack(packId);
   if (!pack) {
     error(`Unknown pack: ${packId}. Run \`cortex suggest packs\` to see available packs.`);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
+  }
+
+  const fileId = String(pack.id || packId).toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^[-._]+/, '');
+  if (!fileId) {
+    error(`Pack id "${packId}" cannot be used as a file name.`);
+    process.exitCode = 1;
+    return;
   }
 
   heading(`Applying: ${pack.name}`);
   info(pack.description);
   console.log();
 
+  writeRules({
+    rules: pack.rules,
+    currentRules,
+    path: join(cortexDir, 'rules', `${fileId}.md`),
+    title: pack.name,
+    intro: `Source: ${pack.source || 'builtin'} pack (cortex suggest apply ${fileId})`,
+    dry,
+    emptyMessage: 'All rules from this pack are already in your project!',
+  });
+}
+
+function applyMissing(projectRoot, cortexDir, currentRules, config, dry) {
+  heading('Applying suggested rules');
+  const missing = suggestMissingRules(projectRoot, currentRules, config);
+  writeRules({
+    rules: missing,
+    currentRules,
+    path: join(cortexDir, 'rules', 'suggested.md'),
+    title: 'Suggested Rules',
+    intro: 'Added by `cortex suggest apply --missing` — edit or remove as needed.',
+    dry,
+    emptyMessage: 'No individual rule gaps detected.',
+  });
+}
+
+/** Merge rules into a rules file, keeping anything already there. */
+function writeRules({ rules, currentRules, path, title, intro, dry, emptyMessage }) {
   const currentContent = new Set(currentRules.map(r => r.content.toLowerCase().trim()));
-  const newRules = pack.rules.filter(r => !currentContent.has(r.content.toLowerCase().trim()));
+  const newRules = rules.filter(r => !currentContent.has(String(r.content).toLowerCase().trim()));
 
   if (newRules.length === 0) {
-    success('All rules from this pack are already in your project!');
+    success(emptyMessage);
     return;
   }
 
-  info(`New rules to add: ${newRules.length} (${pack.rules.length - newRules.length} already exist)`);
-  console.log();
-
+  const byCategory = new Map();
   for (const rule of newRules) {
-    dim(`  + [${rule.category}] ${rule.content}`);
+    const cat = rule.category || 'general';
+    const label = cat.charAt(0).toUpperCase() + cat.slice(1);
+    if (!byCategory.has(label)) byCategory.set(label, []);
+    byCategory.get(label).push(rule.content);
   }
+  const sections = [...byCategory].map(([heading, items]) => ({ heading, items }));
+  const merged = mergeBullets(readFileSafe(path), { title, intro, sections });
+
+  if (merged.added.length === 0) {
+    success(emptyMessage);
+    return;
+  }
+
+  info(`New rules to add: ${merged.added.length} (${rules.length - merged.added.length} already exist)`);
+  console.log();
+  for (const item of merged.added) dim(`  + ${item}`);
   console.log();
 
   if (dry) {
@@ -152,28 +205,8 @@ function applyPack(packId, cortexDir, currentRules, dry) {
     return;
   }
 
-  // Write to .cortex/rules/<pack-id>.md
-  const rulesPath = join(cortexDir, 'rules', `${packId}.md`);
-  let content = `# ${pack.name}\n`;
-  content += `# Source: ${pack.source || 'builtin'} pack\n\n`;
-
-  const byCategory = {};
-  for (const rule of newRules) {
-    const cat = rule.category || 'general';
-    if (!byCategory[cat]) byCategory[cat] = [];
-    byCategory[cat].push(rule.content);
-  }
-
-  for (const [cat, items] of Object.entries(byCategory)) {
-    content += `## ${cat.charAt(0).toUpperCase() + cat.slice(1)}\n`;
-    for (const item of items) {
-      content += `- ${item}\n`;
-    }
-    content += '\n';
-  }
-
-  writeFileSafe(rulesPath, content, { force: true });
-  success(`Added ${newRules.length} rules to .cortex/rules/${packId}.md`);
+  writeFileSafe(path, merged.content, { force: true });
+  success(`Added ${merged.added.length} rule(s) to ${relative(process.cwd(), path) || path}`);
   dim('Run `cortex compile` to apply to all providers.');
 }
 

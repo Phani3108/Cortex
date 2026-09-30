@@ -41,10 +41,11 @@ export function loadProfile() {
   const profilePath = join(dir, PROFILE_FILE);
   const raw = readFileSafe(profilePath);
 
-  if (!raw) return { ...DEFAULT_PROFILE, _path: profilePath, _exists: false };
+  if (!raw) return { ...structuredClone(DEFAULT_PROFILE), _path: profilePath, _exists: false };
 
   const parsed = parse(raw);
-  return { ...DEFAULT_PROFILE, ...parsed, _path: profilePath, _exists: true };
+  const base = structuredClone(DEFAULT_PROFILE);
+  return { ...base, ...parsed, style: { ...base.style, ...(parsed?.style || {}) }, _path: profilePath, _exists: true };
 }
 
 /**

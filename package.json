@@ -1,56 +1,62 @@
 {
-  "name": "cortex",
-  "version": "1.0.0",
-  "description": "Universal AI Context Engine — carry your intelligence across every AI coding tool and every project",
+  "name": "cortex-aictx",
+  "version": "2.0.0",
+  "description": "One source of rules for every AI coding tool — compiles .cortex/ into native CLAUDE.md, AGENTS.md, Cursor, Copilot, Gemini, Windsurf, Kiro and Antigravity files, with budgets, skills and CI drift checks.",
   "type": "module",
   "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./engine": "./src/engine/index.js",
+    "./package.json": "./package.json"
+  },
   "bin": {
     "cortex": "./bin/cortex.js"
   },
   "scripts": {
     "start": "node bin/cortex.js",
-    "test": "node --test tests/",
-    "lint": "eslint src/ bin/",
-    "build": "echo 'No build step needed — pure Node.js'"
+    "test": "node --test",
+    "build": "node scripts/build-site.mjs",
+    "dev": "node scripts/build-site.mjs --serve",
+    "refresh:registry": "node scripts/refresh-registry.mjs",
+    "check": "node bin/cortex.js compile --check"
   },
   "keywords": [
     "ai",
-    "claude",
+    "agents-md",
+    "claude-code",
     "cursor",
     "copilot",
-    "gemini",
-    "openai",
     "codex",
+    "gemini-cli",
+    "windsurf",
+    "kiro",
     "antigravity",
+    "agent-skills",
     "developer-tools",
     "ai-coding",
-    "context-management",
-    "token-optimization",
-    "skills",
+    "context-engineering",
     "rules",
-    "agents",
-    "mcp",
-    "universal-config",
-    "ai-context",
-    "productivity"
+    "llm-pricing"
   ],
   "author": "Phani Marupaka (https://linkedin.com/in/phani-marupaka)",
   "license": "MIT",
+  "homepage": "https://cortex1.vercel.app",
+  "bugs": "https://github.com/Phani3108/Cortex/issues",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20"
   },
   "files": [
     "bin/",
     "src/",
     "templates/",
     "samples/",
-    "content/",
-    "providers/",
+    "registry/latest.json",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Phani3108/Cortex"
+    "url": "git+https://github.com/Phani3108/Cortex.git"
   }
 }

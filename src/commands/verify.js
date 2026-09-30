@@ -5,174 +5,118 @@
 // Licensed under MIT — see LICENSE for terms. Attribution required.
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * cortex verify — validate compiled output against provider specs.
+ * cortex verify — check that every tool reads what .cortex/ says.
+ *
+ *   - generated files exist and match a fresh compile (no drift, no hand edits)
+ *   - hard budgets respected (rules dropped to fit are listed), soft budgets flagged
+ *   - unknown providers in config.yaml, stale model registry
+ *
+ * Exit 1 on errors; with --strict, also on warnings. --json for CI.
  */
 
-import { join } from 'node:path';
-import { existsSync, readFileSync } from 'node:fs';
-import { findProjectRoot, getCortexDir } from '../utils/fs.js';
-import { loadConfig } from '../core/config.js';
-import { PROVIDER_SPECS } from '../core/specs.js';
-import { getEnabledProviders } from '../providers/index.js';
-import { estimateTokens, getTokenFamily } from '../core/tokens.js';
+import { findProjectRoot } from '../utils/fs.js';
+import { heading, success, warn, error, dim, info } from '../utils/log.js';
+import { requireCortex, inspectProject, collectFindings, registryHealth } from '../core/health.js';
 import { generateTips, formatTipsForDisplay } from '../core/tips.js';
-import { assessHealth } from '../core/health.js';
-import { loadManifest } from '../core/manifest.js';
-import { heading, info, success, warn, error, dim, table } from '../utils/log.js';
+import { resolveTargetId, TARGETS } from '../engine/index.js';
+
+// Target lines go to stdout (log.error writes to stderr, which interleaves badly).
+const fail = msg => console.log(process.env.NO_COLOR !== undefined ? `  ✗ ${msg}` : `  \x1b[31m✗\x1b[0m ${msg}`);
 
 export default async function verify({ values }) {
   const projectRoot = findProjectRoot();
-  const cortexDir = getCortexDir(projectRoot);
+  requireCortex(projectRoot);
 
-  if (!existsSync(cortexDir)) {
-    error('.cortex/ not found. Run `cortex init` first.');
+  let only = null;
+  if (values.provider) {
+    const id = resolveTargetId(values.provider);
+    if (!id) {
+      error(`Unknown provider '${values.provider}'. Known: ${Object.keys(TARGETS).join(', ')}`);
+      process.exit(1);
+    }
+    only = [id];
+  }
+
+  let inspection;
+  try {
+    inspection = inspectProject(projectRoot, { only });
+  } catch (err) {
+    error(err.message);
     process.exit(1);
   }
 
-  heading('Verifying compiled output');
-  info(`Project: ${projectRoot}`);
-  console.log();
-
-  const config = loadConfig(projectRoot);
-  const providers = getEnabledProviders(config);
-  const providerNames = Object.keys(providers);
-
-  if (providerNames.length === 0) {
-    warn('No providers enabled.');
-    process.exit(0);
+  if (only && !inspection.report[only[0]]) {
+    error(`Provider '${only[0]}' is not enabled. Set providers.${only[0]}: true in .cortex/config.yaml`);
+    process.exit(1);
   }
 
-  let totalIssues = 0;
-  let totalWarnings = 0;
+  const registry = registryHealth();
+  const findings = collectFindings(inspection, registry);
+  const errors = findings.filter(f => f.level === 'error');
+  const warnings = findings.filter(f => f.level === 'warning');
+  const failed = errors.length > 0 || (values.strict && warnings.length > 0);
 
-  for (const [slug, provider] of Object.entries(providers)) {
-    const spec = PROVIDER_SPECS[slug];
-    if (!spec) continue;
+  if (values.json) {
+    console.log(JSON.stringify({
+      ok: !failed,
+      strict: !!values.strict,
+      errors,
+      warnings,
+      targets: Object.fromEntries(Object.values(inspection.targets).map(t => [t.id, {
+        name: t.name,
+        status: t.status,
+        alwaysOn: t.alwaysOn,
+        viaAgentsMd: t.viaAgentsMd,
+        budget: t.budget,
+        dropped: t.dropped.map(r => r.text),
+        files: t.files,
+      }])),
+      registry: { lastUpdated: registry.lastUpdated, ageDays: Number.isFinite(registry.ageDays) ? registry.ageDays : null, modelCount: registry.modelCount, status: registry.status },
+    }, null, 2));
+    process.exitCode = failed ? 1 : 0;
+    return;
+  }
 
-    info(`${spec.name}:`);
+  heading('Verifying generated files');
+  dim(projectRoot);
+  console.log();
 
-    // Check if compiled files exist
-    const checks = [];
-    for (const cf of spec.contextFiles || []) {
-      if (!cf.alwaysLoaded) continue;
-      if (cf.path.includes('{') || cf.path.includes('*')) continue;
-      if (cf.location !== 'project_root') continue;
-
-      const fullPath = join(projectRoot, cf.path);
-      const exists = existsSync(fullPath);
-
-      if (!exists) {
-        checks.push({ file: cf.path, status: 'missing', issue: 'File not found' });
-        totalIssues++;
-        continue;
-      }
-
-      const content = readFileSync(fullPath, 'utf-8');
-      const family = getTokenFamily(spec.models?.[0] || 'gpt-4o');
-      const tokens = estimateTokens(content, family);
-      const budget = spec.tokenLimits?.instructionBudget;
-
-      // Size check
-      if (budget && tokens > budget) {
-        checks.push({
-          file: cf.path,
-          status: 'warning',
-          issue: `${tokens} tokens exceeds budget of ${budget}`,
-          tokens,
-        });
-        totalWarnings++;
-      } else if (content.trim().length === 0) {
-        checks.push({ file: cf.path, status: 'warning', issue: 'File is empty', tokens: 0 });
-        totalWarnings++;
-      } else {
-        checks.push({ file: cf.path, status: 'ok', tokens });
-      }
-
-      // Character limit check
-      if (cf.maxSize && content.length > cf.maxSize) {
-        checks.push({
-          file: cf.path,
-          status: 'warning',
-          issue: `${content.length} chars exceeds limit of ${cf.maxSize}`,
-        });
-        totalWarnings++;
-      }
+  for (const t of Object.values(inspection.targets)) {
+    const mine = findings.filter(f => f.target === t.id);
+    const label = t.viaAgentsMd && !t.files.length ? `${t.name} (via AGENTS.md)` : t.name;
+    const budget = t.budget.size !== null
+      ? ` · ${t.budget.size}${t.budget.hard ? `/${t.budget.hard}` : t.budget.soft ? `/~${t.budget.soft}` : ''} ${t.budget.unit}`
+      : '';
+    if (mine.some(f => f.level === 'error')) fail(`${label}${budget}`);
+    else if (mine.length) warn(`${label}${budget}`);
+    else success(`${label}${budget}`);
+    for (const f of mine) {
+      dim(`${f.level === 'error' ? '✗' : '⚠'} ${f.message}`);
+      for (const rule of (f.rules || []).slice(0, 5)) dim(`    − ${rule.slice(0, 90)}`);
     }
-
-    // Display results
-    for (const check of checks) {
-      const icon = check.status === 'ok' ? '  ✓' : check.status === 'warning' ? '  ⚠' : '  ✗';
-      const detail = check.tokens !== undefined ? ` (${check.tokens} tokens)` : '';
-      const issue = check.issue ? ` — ${check.issue}` : '';
-
-      if (check.status === 'ok') {
-        success(`${icon} ${check.file}${detail}`);
-      } else if (check.status === 'warning') {
-        warn(`${icon} ${check.file}${detail}${issue}`);
-      } else {
-        error(`${icon} ${check.file}${issue}`);
-      }
+    const out = t.alwaysOnOutput;
+    if (out && !t.viaAgentsMd) {
+      const tips = generateTips(out.content, inspection.config.providers?.[t.id]?.model, t.id, { rules: inspection.rules })
+        .filter(tip => tip.category !== 'budget'); // budgets are already reported above
+      const text = formatTipsForDisplay(tips);
+      if (text) console.log(text);
     }
+  }
 
-    // Generate model-specific tips for this provider
-    const primaryFile = spec.contextFiles?.find(f => f.alwaysLoaded && !f.deprecated && f.location === 'project_root');
-    if (primaryFile) {
-      const primaryPath = join(projectRoot, primaryFile.path);
-      if (existsSync(primaryPath) && !primaryFile.path.includes('{')) {
-        const content = readFileSync(primaryPath, 'utf-8');
-        const model = spec.models?.[0] || 'gpt-4o';
-        const tips = generateTips(content, model, slug);
-
-        const criticalTips = tips.filter(t => t.severity === 'critical');
-        const warningTips = tips.filter(t => t.severity === 'warning');
-
-        if (criticalTips.length > 0 || warningTips.length > 0) {
-          const tipsDisplay = formatTipsForDisplay([...criticalTips, ...warningTips]);
-          if (tipsDisplay) console.log(tipsDisplay);
-          totalWarnings += warningTips.length;
-          totalIssues += criticalTips.length;
-        }
-      }
-    }
-
+  const general = findings.filter(f => !f.target);
+  if (general.length) {
     console.log();
+    for (const f of general) (f.level === 'error' ? fail : warn)(f.message + (f.fix && f.code !== 'registry-stale' ? ` (${f.fix})` : ''));
   }
 
-  // Manifest freshness
-  const manifest = loadManifest(projectRoot);
-  if (manifest) {
-    const age = Date.now() - new Date(manifest.compiledAt).getTime();
-    const ageHours = Math.floor(age / (1000 * 60 * 60));
-    if (ageHours > 24) {
-      warn(`Last compiled ${ageHours} hours ago. Consider re-compiling.`);
-    } else {
-      dim(`  Last compiled: ${ageHours}h ago`);
-    }
-  } else {
-    warn('No compile manifest found. Run `cortex compile` first.');
-    totalIssues++;
-  }
-
-  // Health summary
-  const health = assessHealth(projectRoot, config);
   console.log();
-  info(`Overall health: ${health.overall.score}/100 (${health.overall.label})`);
-
-  if (health.recommendations.length > 0) {
-    console.log();
-    info('Recommendations:');
-    for (const rec of health.recommendations) {
-      dim(`  ${rec.priority === 'high' ? '!' : '·'} ${rec.message}`);
-    }
+  info(`Registry: ${registry.modelCount} models from ${registry.source}, ${Number.isFinite(registry.ageDays) ? `${registry.ageDays} day(s) old` : 'never updated'}`);
+  const fixes = [...new Set(errors.map(f => f.fix).filter(Boolean))];
+  if (!errors.length && !warnings.length) success('All checks passed.');
+  else if (!failed) success(`Passed with ${warnings.length} warning(s).`);
+  else {
+    error(`${errors.length} error(s), ${warnings.length} warning(s).`);
+    for (const fix of fixes.slice(0, 3)) dim(`Fix: ${fix}`);
   }
-
-  // Summary
-  console.log();
-  if (totalIssues === 0 && totalWarnings === 0) {
-    success('All checks passed!');
-  } else if (totalIssues === 0) {
-    success(`Passed with ${totalWarnings} warning(s).`);
-  } else {
-    error(`${totalIssues} issue(s) and ${totalWarnings} warning(s) found.`);
-  }
+  process.exitCode = failed ? 1 : 0;
 }
