@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-09-30",
+  "version": "2026-10-01",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-09-30T15:15:05.215Z",
+  "lastUpdated": "2026-10-01T13:25:09.526Z",
   "modelCount": 212,
   "vendors": {
     "anthropic": "Anthropic",
@@ -378,9 +378,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.0198,
-        "output": 0.396,
-        "cacheRead": 0.0029
+        "input": 0.03,
+        "output": 0.5,
+        "cacheRead": 0.01
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -412,9 +412,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.01,
+        "input": 0.0108,
         "output": 1.28,
-        "cacheRead": 0.01
+        "cacheRead": 0.0108
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -429,12 +429,12 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0785,
-        "output": 0.1571,
-        "cacheRead": 0.0157
+        "input": 0.0419,
+        "output": 0.0837,
+        "cacheRead": 0.0084
       },
       "contextWindow": 1048576,
-      "maxOutput": 384000,
+      "maxOutput": 131072,
       "released": "2026-04-24",
       "status": "active"
     },
@@ -446,9 +446,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.783,
-        "output": 1.566,
-        "cacheRead": 0.0653
+        "input": 0.2088,
+        "output": 0.4176,
+        "cacheRead": 0.0174
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -1140,7 +1140,7 @@
       "tier": "",
       "version": "1",
       "costPer1M": {
-        "input": 0.4,
+        "input": 0.55,
         "output": 2.2
       },
       "contextWindow": 1000000,
@@ -1486,9 +1486,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 3,
-        "output": 15,
-        "cacheRead": 0.3
+        "input": 0.6705,
+        "output": 10,
+        "cacheRead": 0.6705
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -1520,9 +1520,9 @@
       "tier": "",
       "version": "2.6",
       "costPer1M": {
-        "input": 0.65,
-        "output": 3.41,
-        "cacheRead": 0.15
+        "input": 0.4342,
+        "output": 1.828,
+        "cacheRead": 0.0731
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1555,11 +1555,10 @@
       "version": "2",
       "costPer1M": {
         "input": 0.6,
-        "output": 2.5,
-        "cacheRead": 0.15
+        "output": 2.5
       },
       "contextWindow": 262144,
-      "maxOutput": 98304,
+      "maxOutput": 235929,
       "released": "2025-11-06",
       "status": "active"
     },
@@ -2684,12 +2683,12 @@
       "tier": "",
       "version": "3.8",
       "costPer1M": {
-        "input": 0.0249,
-        "output": 4.35,
-        "cacheRead": 0.0199
+        "input": 0.42,
+        "output": 3,
+        "cacheRead": 0.085
       },
       "contextWindow": 1000000,
-      "maxOutput": 235929,
+      "maxOutput": 131072,
       "released": "2026-08-14",
       "status": "active"
     },
@@ -3557,12 +3556,12 @@
       "tier": "",
       "version": "5.3",
       "costPer1M": {
-        "input": 1.4,
-        "output": 4.4,
-        "cacheRead": 0.26
+        "input": 0.2219,
+        "output": 3.39,
+        "cacheRead": 0.1775
       },
       "contextWindow": 1048576,
-      "maxOutput": 943717,
+      "maxOutput": 943718,
       "released": "2026-08-18",
       "status": "active"
     },
@@ -3694,7 +3693,7 @@
       "costPer1M": {
         "input": 0.3,
         "output": 0.9,
-        "cacheRead": 0.055
+        "cacheRead": 0.05
       },
       "contextWindow": 131072,
       "maxOutput": 32768,
