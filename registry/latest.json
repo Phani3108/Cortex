@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-02",
+  "version": "2026-10-03",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-02T12:42:50.248Z",
+  "lastUpdated": "2026-10-03T11:44:03.025Z",
   "modelCount": 212,
   "vendors": {
     "anthropic": "Anthropic",
@@ -412,9 +412,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0077,
+        "input": 0.0188,
         "output": 1.28,
-        "cacheRead": 0.0077
+        "cacheRead": 0.0188
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -429,9 +429,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.042,
-        "output": 0.084,
-        "cacheRead": 0.0084
+        "input": 0.028,
+        "output": 0.056,
+        "cacheRead": 0.0056
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -480,12 +480,11 @@
       "tier": "",
       "version": "3.1",
       "costPer1M": {
-        "input": 0.3,
-        "output": 1,
-        "cacheRead": 0.135
+        "input": 0.27,
+        "output": 1
       },
       "contextWindow": 163840,
-      "maxOutput": 65536,
+      "maxOutput": 147456,
       "released": "2025-09-22",
       "status": "active",
       "knowledgeCutoff": "2025-03-31"
@@ -689,9 +688,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.3,
-        "cacheRead": 0.05
+        "input": 0.0675,
+        "output": 0.225,
+        "cacheRead": 0.0375
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1520,9 +1519,9 @@
       "tier": "",
       "version": "2.6",
       "costPer1M": {
-        "input": 0.4342,
-        "output": 1.828,
-        "cacheRead": 0.0731
+        "input": 0.95,
+        "output": 4,
+        "cacheRead": 0.16
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1555,11 +1554,10 @@
       "version": "2",
       "costPer1M": {
         "input": 0.6,
-        "output": 2.5,
-        "cacheRead": 0.15
+        "output": 2.5
       },
       "contextWindow": 262144,
-      "maxOutput": 98304,
+      "maxOutput": 235929,
       "released": "2025-11-06",
       "status": "active"
     },
@@ -3093,9 +3091,10 @@
         "output": 1.2
       },
       "contextWindow": 262144,
-      "maxOutput": 235929,
+      "maxOutput": 32768,
       "released": "2025-09-11",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-10-09",
       "knowledgeCutoff": "2025-09-30"
     },
     "qwen-plus-2025-07-28": {
@@ -3592,9 +3591,9 @@
       "tier": "",
       "version": "5.1",
       "costPer1M": {
-        "input": 0.9646,
-        "output": 3.0316,
-        "cacheRead": 0.1791
+        "input": 1.4,
+        "output": 4.4,
+        "cacheRead": 0.26
       },
       "contextWindow": 204800,
       "maxOutput": 131072,
