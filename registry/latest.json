@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-04",
+  "version": "2026-10-05",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-04T12:27:04.952Z",
+  "lastUpdated": "2026-10-05T14:48:37.082Z",
   "modelCount": 212,
   "vendors": {
     "anthropic": "Anthropic",
@@ -378,9 +378,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.003,
-        "output": 2.4,
-        "cacheRead": 0.003
+        "input": 0.3,
+        "output": 1.2,
+        "cacheRead": 0.006
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -395,9 +395,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.85,
+        "input": 0.4,
         "output": 5,
-        "cacheRead": 0.7
+        "cacheRead": 0.36
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -429,9 +429,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0224,
+        "input": 0.03,
         "output": 1.28,
-        "cacheRead": 0.0224
+        "cacheRead": 0.03
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -533,11 +533,12 @@
       "tier": "chat",
       "version": "3",
       "costPer1M": {
-        "input": 0.25,
-        "output": 1
+        "input": 0.29,
+        "output": 1.14,
+        "cacheRead": 0.11
       },
       "contextWindow": 163840,
-      "maxOutput": 147456,
+      "maxOutput": 115200,
       "released": "2025-03-24",
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
@@ -687,9 +688,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.0675,
-        "output": 0.225,
-        "cacheRead": 0.0375
+        "input": 0.09,
+        "output": 0.3,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1112,8 +1113,7 @@
       "contextWindow": 204800,
       "maxOutput": 131072,
       "released": "2025-12-23",
-      "status": "deprecated",
-      "expires": "2026-10-08"
+      "status": "active"
     },
     "minimax-m2": {
       "id": "minimax-m2",
@@ -1485,9 +1485,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.72,
-        "output": 13,
-        "cacheRead": 0.7
+        "input": 0.67,
+        "output": 14,
+        "cacheRead": 0.22
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -1793,9 +1793,9 @@
       "tier": "sol",
       "version": "5.6",
       "costPer1M": {
-        "input": 4,
-        "output": 20,
-        "cacheRead": 0.4
+        "input": 2,
+        "output": 10,
+        "cacheRead": 0.2
       },
       "contextWindow": 1050000,
       "maxOutput": 128000,
@@ -2784,10 +2784,11 @@
       "version": "3.6",
       "costPer1M": {
         "input": 0.32,
-        "output": 3.2
+        "output": 3.25,
+        "cacheRead": 0.03
       },
       "contextWindow": 262144,
-      "maxOutput": 81920,
+      "maxOutput": 262140,
       "released": "2026-04-27",
       "status": "active"
     },
@@ -3557,12 +3558,12 @@
       "tier": "",
       "version": "5.3",
       "costPer1M": {
-        "input": 1.4,
-        "output": 4.4,
-        "cacheRead": 0.14
+        "input": 0.05,
+        "output": 7,
+        "cacheRead": 0.045
       },
       "contextWindow": 1048576,
-      "maxOutput": 131072,
+      "maxOutput": 943718,
       "released": "2026-08-18",
       "status": "active"
     },
@@ -3574,12 +3575,12 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.38,
-        "output": 3.49,
-        "cacheRead": 0.26
+        "input": 0.0192,
+        "output": 16,
+        "cacheRead": 0.0192
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 131072,
       "released": "2026-06-16",
       "status": "active"
     },
