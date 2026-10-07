@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-06",
+  "version": "2026-10-07",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-06T13:23:13.823Z",
-  "modelCount": 212,
+  "lastUpdated": "2026-10-07T13:30:37.600Z",
+  "modelCount": 214,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -36,6 +36,7 @@
       "r1": "deepseek-r1-0528"
     },
     "google": {
+      "nano": "gemini-nano-banana-2.1",
       "flash": "gemini-3.8-flash",
       "flash-lite": "gemini-3.5-flash-lite",
       "gemma": "gemma-4-26b-a4b-it",
@@ -50,11 +51,11 @@
       "default": "minimax-m3"
     },
     "mistralai": {
+      "large": "mistral-large-4-0",
       "medium": "mistral-medium-3-5",
       "small": "mistral-small-2603",
       "devstral": "devstral-2512",
       "ministral": "ministral-14b-2512",
-      "large": "mistral-large-2512",
       "codestral": "codestral-2508",
       "default": "mistral-saba"
     },
@@ -378,9 +379,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.055,
-        "output": 1.32,
-        "cacheRead": 0.0165
+        "input": 0.05,
+        "output": 1.2,
+        "cacheRead": 0.02
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -412,9 +413,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0079,
+        "input": 0.018,
         "output": 1.28,
-        "cacheRead": 0.0079
+        "cacheRead": 0.018
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -429,9 +430,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0082,
+        "input": 0.03,
         "output": 1.28,
-        "cacheRead": 0.0082
+        "cacheRead": 0.03
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -576,6 +577,22 @@
       "released": "2024-12-26",
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
+    },
+    "gemini-nano-banana-2.1": {
+      "id": "gemini-nano-banana-2.1",
+      "name": "Nano Banana 2.1",
+      "vendor": "google",
+      "family": "gemini",
+      "tier": "nano",
+      "version": "2.1",
+      "costPer1M": {
+        "input": 1.5,
+        "output": 7.5
+      },
+      "contextWindow": 65536,
+      "maxOutput": 58982,
+      "released": "2026-10-06",
+      "status": "active"
     },
     "gemini-3.8-flash": {
       "id": "gemini-3.8-flash",
@@ -918,7 +935,8 @@
       "version": "4",
       "costPer1M": {
         "input": 0.1875,
-        "output": 0.6525
+        "output": 0.6525,
+        "cacheRead": 0.05
       },
       "contextWindow": 1048576,
       "maxOutput": 16384,
@@ -1164,6 +1182,23 @@
       "released": "2025-01-15",
       "status": "active",
       "knowledgeCutoff": "2024-03-31"
+    },
+    "mistral-large-4-0": {
+      "id": "mistral-large-4-0",
+      "name": "Mistral Large 4",
+      "vendor": "mistralai",
+      "family": "mistral",
+      "tier": "large",
+      "version": "4",
+      "costPer1M": {
+        "input": 0.68,
+        "output": 2.09,
+        "cacheRead": 0.07
+      },
+      "contextWindow": 524288,
+      "maxOutput": 262144,
+      "released": "2026-10-06",
+      "status": "active"
     },
     "mistral-medium-3-5": {
       "id": "mistral-medium-3-5",
@@ -1485,9 +1520,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.95,
-        "output": 14,
-        "cacheRead": 0.31
+        "input": 0.62,
+        "output": 15,
+        "cacheRead": 0.43
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -1519,9 +1554,9 @@
       "tier": "",
       "version": "2.6",
       "costPer1M": {
-        "input": 0.95,
-        "output": 4,
-        "cacheRead": 0.16
+        "input": 0.465,
+        "output": 2.45,
+        "cacheRead": 0.0975
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -2783,12 +2818,12 @@
       "tier": "",
       "version": "3.6",
       "costPer1M": {
-        "input": 0.32,
-        "output": 3.25,
+        "input": 0.3,
+        "output": 2,
         "cacheRead": 0.03
       },
       "contextWindow": 262144,
-      "maxOutput": 262140,
+      "maxOutput": 65536,
       "released": "2026-04-27",
       "status": "active"
     },
@@ -2914,12 +2949,12 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.08,
-        "output": 0.75,
-        "cacheRead": 0.04
+        "input": 0.15,
+        "output": 1,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
-      "maxOutput": 32768,
+      "maxOutput": 235929,
       "released": "2026-02-25",
       "status": "active"
     },
@@ -3159,11 +3194,11 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.1,
-        "output": 0.3
+        "input": 0.0482,
+        "output": 0.1931
       },
       "contextWindow": 262144,
-      "maxOutput": 235929,
+      "maxOutput": 32000,
       "released": "2025-07-29",
       "status": "active",
       "knowledgeCutoff": "2025-06-30"
@@ -3574,9 +3609,9 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.112,
-        "output": 12,
-        "cacheRead": 0.11
+        "input": 0.171,
+        "output": 7.2,
+        "cacheRead": 0.162
       },
       "contextWindow": 1048576,
       "maxOutput": 131072,
@@ -3591,12 +3626,12 @@
       "tier": "",
       "version": "5.1",
       "costPer1M": {
-        "input": 1.4,
-        "output": 4.4,
-        "cacheRead": 0.26
+        "input": 0.966,
+        "output": 3.036,
+        "cacheRead": 0.1794
       },
       "contextWindow": 204800,
-      "maxOutput": 131072,
+      "maxOutput": 128000,
       "released": "2026-04-07",
       "status": "active"
     },
@@ -3798,14 +3833,14 @@
       "gpt-6-astra-pro"
     ],
     "gemini": [
+      "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
       "gemini-3.7-flash",
       "gemini-3.5-flash-lite",
       "gemini-3.6-flash",
       "gemini-3.5-flash",
       "gemini-3.1-flash-lite",
-      "gemma-4-26b-a4b-it",
-      "gemma-4-31b-it"
+      "gemma-4-26b-a4b-it"
     ],
     "cursor": [
       "claude-sonnet-5.5",
@@ -3814,9 +3849,9 @@
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
+      "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
       "gemini-3.5-flash-lite",
-      "gemma-4-26b-a4b-it",
       "grok-4.7",
       "grok-4.6",
       "grok-4.5"
@@ -3828,9 +3863,9 @@
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
+      "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
-      "gemini-3.5-flash-lite",
-      "gemma-4-26b-a4b-it"
+      "gemini-3.5-flash-lite"
     ],
     "windsurf": [
       "claude-sonnet-5.5",
@@ -3839,14 +3874,14 @@
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
+      "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
-      "gemini-3.5-flash-lite",
-      "gemma-4-26b-a4b-it"
+      "gemini-3.5-flash-lite"
     ],
     "antigravity": [
+      "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
       "gemini-3.5-flash-lite",
-      "gemma-4-26b-a4b-it",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
       "claude-fable-5.1",
