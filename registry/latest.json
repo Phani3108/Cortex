@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-07",
+  "version": "2026-10-08",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-07T13:30:37.600Z",
+  "lastUpdated": "2026-10-08T13:36:35.533Z",
   "modelCount": 214,
   "vendors": {
     "anthropic": "Anthropic",
@@ -23,10 +23,10 @@
   },
   "highlights": {
     "anthropic": {
+      "haiku": "claude-haiku-5.5",
       "sonnet": "claude-sonnet-5.5",
       "opus": "claude-opus-5.5",
-      "fable": "claude-fable-5.1",
-      "haiku": "claude-haiku-4.5"
+      "fable": "claude-fable-5.1"
     },
     "deepseek": {
       "flash": "deepseek-v4.1-flash",
@@ -98,6 +98,24 @@
     }
   },
   "models": {
+    "claude-haiku-5.5": {
+      "id": "claude-haiku-5.5",
+      "name": "Claude Haiku 5.5",
+      "vendor": "anthropic",
+      "family": "anthropic",
+      "tier": "haiku",
+      "version": "5.5",
+      "costPer1M": {
+        "input": 0.1,
+        "output": 0.5,
+        "cacheRead": 0.01
+      },
+      "contextWindow": 1000000,
+      "maxOutput": 128000,
+      "released": "2026-10-07",
+      "status": "active",
+      "apiId": "claude-haiku-5-5"
+    },
     "claude-sonnet-5.5": {
       "id": "claude-sonnet-5.5",
       "name": "Claude Sonnet 5.5",
@@ -108,7 +126,7 @@
       "costPer1M": {
         "input": 2,
         "output": 10,
-        "cacheRead": 0.2
+        "cacheRead": 0.1
       },
       "contextWindow": 1000000,
       "maxOutput": 128000,
@@ -379,9 +397,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.05,
-        "output": 1.2,
-        "cacheRead": 0.02
+        "input": 0.0356,
+        "output": 1,
+        "cacheRead": 0.01
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -413,9 +431,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.018,
+        "input": 0.0137,
         "output": 1.28,
-        "cacheRead": 0.018
+        "cacheRead": 0.0137
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -430,9 +448,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.03,
+        "input": 0.0228,
         "output": 1.28,
-        "cacheRead": 0.03
+        "cacheRead": 0.0228
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -447,9 +465,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.2088,
-        "output": 0.4176,
-        "cacheRead": 0.0174
+        "input": 0.2923,
+        "output": 0.5846,
+        "cacheRead": 0.0244
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -464,12 +482,12 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.28,
+        "input": 0.259,
         "output": 0.42,
-        "cacheRead": 0.028
+        "cacheRead": 0.135
       },
       "contextWindow": 163840,
-      "maxOutput": 65536,
+      "maxOutput": 147456,
       "released": "2025-12-01",
       "status": "active"
     },
@@ -969,9 +987,8 @@
       "tier": "",
       "version": "3.3",
       "costPer1M": {
-        "input": 0.22,
-        "output": 0.5,
-        "cacheRead": 0.11
+        "input": 0.1,
+        "output": 0.32
       },
       "contextWindow": 131072,
       "maxOutput": 16384,
@@ -1195,7 +1212,7 @@
         "output": 2.09,
         "cacheRead": 0.07
       },
-      "contextWindow": 524288,
+      "contextWindow": 1048576,
       "maxOutput": 262144,
       "released": "2026-10-06",
       "status": "active"
@@ -1521,7 +1538,7 @@
       "version": "3",
       "costPer1M": {
         "input": 0.62,
-        "output": 15,
+        "output": 12.3,
         "cacheRead": 0.43
       },
       "contextWindow": 1048576,
@@ -1554,9 +1571,9 @@
       "tier": "",
       "version": "2.6",
       "costPer1M": {
-        "input": 0.465,
+        "input": 0.441,
         "output": 2.45,
-        "cacheRead": 0.0975
+        "cacheRead": 0.1224
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -2818,9 +2835,8 @@
       "tier": "",
       "version": "3.6",
       "costPer1M": {
-        "input": 0.3,
-        "output": 2,
-        "cacheRead": 0.03
+        "input": 0.45,
+        "output": 2.7
       },
       "contextWindow": 262144,
       "maxOutput": 65536,
@@ -2907,7 +2923,8 @@
       "contextWindow": 262144,
       "maxOutput": 32768,
       "released": "2026-03-10",
-      "status": "active"
+      "status": "deprecated",
+      "expires": "2026-10-21"
     },
     "qwen3.5-122b-a10b": {
       "id": "qwen3.5-122b-a10b",
@@ -2933,11 +2950,11 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.195,
-        "output": 1.56
+        "input": 0.26,
+        "output": 2.6
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 81920,
       "released": "2026-02-25",
       "status": "active"
     },
@@ -3096,24 +3113,6 @@
       "released": "2025-09-17",
       "status": "active",
       "knowledgeCutoff": "2025-06-30"
-    },
-    "qwen3-next-80b-a3b-instruct": {
-      "id": "qwen3-next-80b-a3b-instruct",
-      "name": "Qwen3 Next 80B A3B Instruct",
-      "vendor": "qwen",
-      "family": "qwen",
-      "tier": "",
-      "version": "3",
-      "costPer1M": {
-        "input": 0.1,
-        "output": 1.1,
-        "cacheRead": 0.07
-      },
-      "contextWindow": 262144,
-      "maxOutput": 235929,
-      "released": "2025-09-11",
-      "status": "active",
-      "knowledgeCutoff": "2025-09-30"
     },
     "qwen3-next-80b-a3b-thinking": {
       "id": "qwen3-next-80b-a3b-thinking",
@@ -3592,9 +3591,9 @@
       "tier": "",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.07,
-        "output": 7,
-        "cacheRead": 0.065
+        "input": 0.049,
+        "output": 3.39,
+        "cacheRead": 0.048
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3609,9 +3608,9 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.171,
-        "output": 7.2,
-        "cacheRead": 0.162
+        "input": 0.03,
+        "output": 10,
+        "cacheRead": 0.03
       },
       "contextWindow": 1048576,
       "maxOutput": 131072,
@@ -3730,7 +3729,7 @@
       "costPer1M": {
         "input": 0.3,
         "output": 0.9,
-        "cacheRead": 0.05
+        "cacheRead": 0.055
       },
       "contextWindow": 131072,
       "maxOutput": 32768,
@@ -3813,14 +3812,14 @@
   },
   "providerModels": {
     "claude": [
+      "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
       "claude-fable-5.1",
       "claude-opus-5",
       "claude-sonnet-5",
       "claude-fable-5",
-      "claude-opus-4.8",
-      "claude-opus-4.7"
+      "claude-opus-4.8"
     ],
     "codex": [
       "gpt-6.1-sol",
@@ -3843,9 +3842,9 @@
       "gemma-4-26b-a4b-it"
     ],
     "cursor": [
+      "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
-      "claude-fable-5.1",
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
@@ -3857,9 +3856,9 @@
       "grok-4.5"
     ],
     "copilot": [
+      "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
-      "claude-fable-5.1",
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
@@ -3868,9 +3867,9 @@
       "gemini-3.5-flash-lite"
     ],
     "windsurf": [
+      "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
-      "claude-fable-5.1",
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
@@ -3882,22 +3881,22 @@
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
       "gemini-3.5-flash-lite",
+      "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
-      "claude-fable-5.1",
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra"
     ],
     "kiro": [
+      "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
       "claude-fable-5.1",
       "claude-opus-5",
       "claude-sonnet-5",
       "claude-fable-5",
-      "claude-opus-4.8",
-      "claude-opus-4.7"
+      "claude-opus-4.8"
     ],
     "openai": [
       "gpt-6.1-sol",
