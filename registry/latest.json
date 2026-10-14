@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-13",
+  "version": "2026-10-14",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-13T14:17:33.176Z",
-  "modelCount": 207,
+  "lastUpdated": "2026-10-14T11:59:05.269Z",
+  "modelCount": 208,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -36,6 +36,7 @@
       "r1": "deepseek-r1-0528"
     },
     "google": {
+      "default": "gemini-4-argon",
       "nano": "gemini-nano-banana-2.1",
       "flash": "gemini-3.8-flash",
       "flash-lite": "gemini-3.5-flash-lite",
@@ -397,12 +398,12 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.0438,
-        "output": 0.1752,
-        "cacheRead": 0.0009
+        "input": 0.0202,
+        "output": 0.891,
+        "cacheRead": 0.0054
       },
       "contextWindow": 1048576,
-      "maxOutput": 393216,
+      "maxOutput": 943718,
       "released": "2026-09-10",
       "status": "active"
     },
@@ -448,12 +449,12 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.05,
-        "output": 1.28,
-        "cacheRead": 0.05
+        "input": 0.091,
+        "output": 0.182,
+        "cacheRead": 0.0182
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 943717,
       "released": "2026-04-24",
       "status": "active"
     },
@@ -465,9 +466,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.4394,
-        "output": 0.8787,
-        "cacheRead": 0.0366
+        "input": 0.9553,
+        "output": 1.9105,
+        "cacheRead": 0.0796
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -595,6 +596,23 @@
       "released": "2024-12-26",
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
+    },
+    "gemini-4-argon": {
+      "id": "gemini-4-argon",
+      "name": "Gemini 4 Argon",
+      "vendor": "google",
+      "family": "gemini",
+      "tier": "",
+      "version": "4",
+      "costPer1M": {
+        "input": 2,
+        "output": 10,
+        "cacheRead": 0.1
+      },
+      "contextWindow": 1048576,
+      "maxOutput": 65536,
+      "released": "2026-10-13",
+      "status": "active"
     },
     "gemini-nano-banana-2.1": {
       "id": "gemini-nano-banana-2.1",
@@ -1159,11 +1177,11 @@
       "tier": "",
       "version": "2",
       "costPer1M": {
-        "input": 0.3,
-        "output": 1.2
+        "input": 0.255,
+        "output": 1.02
       },
       "contextWindow": 204800,
-      "maxOutput": 176947,
+      "maxOutput": 131072,
       "released": "2025-10-23",
       "status": "active"
     },
@@ -1538,9 +1556,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.73,
-        "output": 10,
-        "cacheRead": 0.55
+        "input": 0.7,
+        "output": 15,
+        "cacheRead": 0.32
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -2245,12 +2263,11 @@
       "tier": "oss",
       "version": "120",
       "costPer1M": {
-        "input": 0.15,
-        "output": 0.6,
-        "cacheRead": 0.075
+        "input": 0.037,
+        "output": 0.17
       },
       "contextWindow": 131072,
-      "maxOutput": 65536,
+      "maxOutput": 117964,
       "released": "2025-08-05",
       "status": "active",
       "knowledgeCutoff": "2024-06-30"
@@ -2952,12 +2969,12 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.08,
-        "output": 0.75,
-        "cacheRead": 0.04
+        "input": 0.15,
+        "output": 1,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
-      "maxOutput": 32768,
+      "maxOutput": 16384,
       "released": "2026-02-25",
       "status": "active"
     },
@@ -2985,9 +3002,9 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.55,
-        "output": 3.5,
-        "cacheRead": 0.225
+        "input": 0.5,
+        "output": 3.6,
+        "cacheRead": 0.3
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -3449,7 +3466,7 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0261,
+        "input": 0.036,
         "output": 0.9,
         "cacheRead": 0.0108
       },
@@ -3483,9 +3500,9 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.06,
+        "input": 0.05,
         "output": 7,
-        "cacheRead": 0.059
+        "cacheRead": 0.049
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3500,12 +3517,12 @@
       "tier": "",
       "version": "5.1",
       "costPer1M": {
-        "input": 0.966,
-        "output": 3.036,
-        "cacheRead": 0.1794
+        "input": 1.33,
+        "output": 4.18,
+        "cacheRead": 0.247
       },
       "contextWindow": 204800,
-      "maxOutput": 128000,
+      "maxOutput": 131072,
       "released": "2026-04-07",
       "status": "active"
     },
@@ -3707,14 +3724,14 @@
       "gpt-6-astra-pro"
     ],
     "gemini": [
+      "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
       "gemini-3.7-flash",
       "gemini-3.5-flash-lite",
       "gemini-3.6-flash",
       "gemini-3.5-flash",
-      "gemini-3.1-flash-lite",
-      "gemma-4-26b-a4b-it"
+      "gemini-3.1-flash-lite"
     ],
     "cursor": [
       "claude-haiku-5.5",
@@ -3723,9 +3740,9 @@
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
+      "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
-      "gemini-3.5-flash-lite",
       "grok-4.7",
       "grok-4.6",
       "grok-4.5"
@@ -3737,9 +3754,9 @@
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
+      "gemini-4-argon",
       "gemini-nano-banana-2.1",
-      "gemini-3.8-flash",
-      "gemini-3.5-flash-lite"
+      "gemini-3.8-flash"
     ],
     "windsurf": [
       "claude-haiku-5.5",
@@ -3748,14 +3765,14 @@
       "gpt-6.1-sol",
       "gpt-6-luna",
       "gpt-6-astra",
+      "gemini-4-argon",
       "gemini-nano-banana-2.1",
-      "gemini-3.8-flash",
-      "gemini-3.5-flash-lite"
+      "gemini-3.8-flash"
     ],
     "antigravity": [
+      "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
-      "gemini-3.5-flash-lite",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
