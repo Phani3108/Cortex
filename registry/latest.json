@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-14",
+  "version": "2026-10-15",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-14T11:59:05.269Z",
-  "modelCount": 208,
+  "lastUpdated": "2026-10-15T11:35:48.159Z",
+  "modelCount": 207,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -371,25 +371,6 @@
       "knowledgeCutoff": "2025-01-31",
       "apiId": "claude-opus-4-1"
     },
-    "claude-sonnet-4": {
-      "id": "claude-sonnet-4",
-      "name": "Claude Sonnet 4",
-      "vendor": "anthropic",
-      "family": "anthropic",
-      "tier": "sonnet",
-      "version": "4",
-      "costPer1M": {
-        "input": 3,
-        "output": 15,
-        "cacheRead": 0.3
-      },
-      "contextWindow": 200000,
-      "maxOutput": 64000,
-      "released": "2025-05-22",
-      "status": "active",
-      "knowledgeCutoff": "2025-01-31",
-      "apiId": "claude-sonnet-4"
-    },
     "deepseek-v4.1-flash": {
       "id": "deepseek-v4.1-flash",
       "name": "DeepSeek V4.1 Flash",
@@ -398,8 +379,8 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.0202,
-        "output": 0.891,
+        "input": 0.0238,
+        "output": 0.72,
         "cacheRead": 0.0054
       },
       "contextWindow": 1048576,
@@ -758,9 +739,8 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.34,
-        "cacheRead": 0.05
+        "input": 0.2,
+        "output": 0.4
       },
       "contextWindow": 262144,
       "maxOutput": 16384,
@@ -1127,11 +1107,11 @@
       "version": "2.5",
       "costPer1M": {
         "input": 0.27,
-        "output": 1.08,
-        "cacheRead": 0.027
+        "output": 0.95,
+        "cacheRead": 0.03
       },
       "contextWindow": 204800,
-      "maxOutput": 128000,
+      "maxOutput": 32768,
       "released": "2026-02-12",
       "status": "active"
     },
@@ -1398,8 +1378,8 @@
       "tier": "small",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.0938,
-        "output": 0.25
+        "input": 0.075,
+        "output": 0.2
       },
       "contextWindow": 256000,
       "maxOutput": 16384,
@@ -1556,9 +1536,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.7,
+        "input": 0.45,
         "output": 15,
-        "cacheRead": 0.32
+        "cacheRead": 0.28
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -1847,9 +1827,9 @@
       "tier": "sol",
       "version": "5.6",
       "costPer1M": {
-        "input": 2,
-        "output": 10,
-        "cacheRead": 0.2
+        "input": 4,
+        "output": 20,
+        "cacheRead": 0.4
       },
       "contextWindow": 1050000,
       "maxOutput": 128000,
@@ -1865,9 +1845,9 @@
       "tier": "sol",
       "version": "5.6",
       "costPer1M": {
-        "input": 2,
-        "output": 10,
-        "cacheRead": 0.2
+        "input": 4,
+        "output": 20,
+        "cacheRead": 0.4
       },
       "contextWindow": 1050000,
       "maxOutput": 128000,
@@ -2263,11 +2243,12 @@
       "tier": "oss",
       "version": "120",
       "costPer1M": {
-        "input": 0.037,
-        "output": 0.17
+        "input": 0.15,
+        "output": 0.6,
+        "cacheRead": 0.075
       },
       "contextWindow": 131072,
-      "maxOutput": 117964,
+      "maxOutput": 65536,
       "released": "2025-08-05",
       "status": "active",
       "knowledgeCutoff": "2024-06-30"
@@ -2754,9 +2735,9 @@
       "tier": "",
       "version": "3.8",
       "costPer1M": {
-        "input": 0.04,
-        "output": 2.3,
-        "cacheRead": 0.0198
+        "input": 0.24,
+        "output": 2.2,
+        "cacheRead": 0.05
       },
       "contextWindow": 1000000,
       "maxOutput": 235929,
@@ -2871,12 +2852,12 @@
       "tier": "",
       "version": "3.6",
       "costPer1M": {
-        "input": 0.1,
-        "output": 0.95,
-        "cacheRead": 0.1
+        "input": 0.15,
+        "output": 1,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 235929,
       "released": "2026-04-27",
       "status": "active"
     },
@@ -3466,12 +3447,12 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.036,
-        "output": 0.9,
-        "cacheRead": 0.0108
+        "input": 0.15,
+        "output": 0.5,
+        "cacheRead": 0.03
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 943717,
       "released": "2026-08-26",
       "status": "active"
     },
@@ -3483,9 +3464,9 @@
       "tier": "",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.079,
+        "input": 0.03,
         "output": 4.8,
-        "cacheRead": 0.059
+        "cacheRead": 0.029
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3500,9 +3481,9 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.05,
+        "input": 0.02,
         "output": 7,
-        "cacheRead": 0.049
+        "cacheRead": 0.019
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3517,12 +3498,12 @@
       "tier": "",
       "version": "5.1",
       "costPer1M": {
-        "input": 1.33,
-        "output": 4.18,
-        "cacheRead": 0.247
+        "input": 0.966,
+        "output": 3.036,
+        "cacheRead": 0.1794
       },
       "contextWindow": 204800,
-      "maxOutput": 131072,
+      "maxOutput": 128000,
       "released": "2026-04-07",
       "status": "active"
     },
@@ -3568,12 +3549,12 @@
       "tier": "",
       "version": "5",
       "costPer1M": {
-        "input": 0.6,
-        "output": 1.92,
-        "cacheRead": 0.12
+        "input": 1,
+        "output": 3.2,
+        "cacheRead": 0.2
       },
       "contextWindow": 204800,
-      "maxOutput": 128000,
+      "maxOutput": 131072,
       "released": "2026-02-11",
       "status": "active"
     },
