@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-16",
+  "version": "2026-10-17",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-16T11:30:14.617Z",
-  "modelCount": 207,
+  "lastUpdated": "2026-10-17T10:50:18.860Z",
+  "modelCount": 208,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -29,7 +29,7 @@
       "fable": "claude-fable-5.1"
     },
     "deepseek": {
-      "flash": "deepseek-v4.1-flash",
+      "flash": "deepseek-v4.1-flash-1017",
       "pro": "deepseek-v4-pro-0813",
       "default": "deepseek-v3.2",
       "chat": "deepseek-chat-v3.1",
@@ -371,6 +371,23 @@
       "knowledgeCutoff": "2025-01-31",
       "apiId": "claude-opus-4-1"
     },
+    "deepseek-v4.1-flash-1017": {
+      "id": "deepseek-v4.1-flash-1017",
+      "name": "DeepSeek V4.1 Flash 1017",
+      "vendor": "deepseek",
+      "family": "deepseek",
+      "tier": "flash",
+      "version": "4.1",
+      "costPer1M": {
+        "input": 0.15,
+        "output": 0.6,
+        "cacheRead": 0.003
+      },
+      "contextWindow": 1048576,
+      "maxOutput": 393216,
+      "released": "2026-10-17",
+      "status": "active"
+    },
     "deepseek-v4.1-flash": {
       "id": "deepseek-v4.1-flash",
       "name": "DeepSeek V4.1 Flash",
@@ -379,9 +396,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.036,
-        "output": 0.684,
-        "cacheRead": 0.0054
+        "input": 0.0145,
+        "output": 0.594,
+        "cacheRead": 0.0006
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -413,9 +430,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0068,
-        "output": 1.28,
-        "cacheRead": 0.0068
+        "input": 0.0075,
+        "output": 0.2829,
+        "cacheRead": 0.0015
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -447,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.9553,
-        "output": 1.9105,
-        "cacheRead": 0.0796
+        "input": 0.2088,
+        "output": 0.4176,
+        "cacheRead": 0.0174
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -464,12 +481,12 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.259,
-        "output": 0.8,
-        "cacheRead": 0.14
+        "input": 0.28,
+        "output": 0.42,
+        "cacheRead": 0.028
       },
       "contextWindow": 163840,
-      "maxOutput": 147456,
+      "maxOutput": 65536,
       "released": "2025-12-01",
       "status": "active"
     },
@@ -569,11 +586,11 @@
       "tier": "chat",
       "version": null,
       "costPer1M": {
-        "input": 0.2574,
-        "output": 1.0287
+        "input": 0.32,
+        "output": 0.89
       },
       "contextWindow": 163840,
-      "maxOutput": 16000,
+      "maxOutput": 16384,
       "released": "2024-12-26",
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
@@ -722,9 +739,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.3,
-        "cacheRead": 0.05
+        "input": 0.0675,
+        "output": 0.225,
+        "cacheRead": 0.0375
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -968,11 +985,11 @@
       "tier": "scout",
       "version": "4",
       "costPer1M": {
-        "input": 0.18,
-        "output": 0.59
+        "input": 0.1,
+        "output": 0.3
       },
       "contextWindow": 1310720,
-      "maxOutput": 117964,
+      "maxOutput": 16384,
       "released": "2025-04-05",
       "status": "active",
       "knowledgeCutoff": "2024-08-31"
@@ -3446,9 +3463,9 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0121,
-        "output": 0.9,
-        "cacheRead": 0.0113
+        "input": 0.0226,
+        "output": 0.3966,
+        "cacheRead": 0.0023
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3480,9 +3497,9 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.037,
-        "output": 9,
-        "cacheRead": 0.036
+        "input": 0.62,
+        "output": 2.42,
+        "cacheRead": 0.14
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3581,15 +3598,14 @@
       "tier": "",
       "version": "4.7",
       "costPer1M": {
-        "input": 0.6,
-        "output": 2.2,
-        "cacheRead": 0.11
+        "input": 0.54,
+        "output": 1.98,
+        "cacheRead": 0.099
       },
       "contextWindow": 204800,
       "maxOutput": 131072,
       "released": "2025-12-22",
-      "status": "deprecated",
-      "expires": "2026-12-31"
+      "status": "active"
     },
     "glm-4.6v": {
       "id": "glm-4.6v",
