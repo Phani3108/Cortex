@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-17",
+  "version": "2026-10-18",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-17T10:50:18.860Z",
+  "lastUpdated": "2026-10-18T11:14:30.584Z",
   "modelCount": 208,
   "vendors": {
     "anthropic": "Anthropic",
@@ -396,9 +396,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.0145,
-        "output": 0.594,
-        "cacheRead": 0.0006
+        "input": 0.0648,
+        "output": 0.144,
+        "cacheRead": 0.0016
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -418,7 +418,7 @@
         "cacheRead": 0.022
       },
       "contextWindow": 1048576,
-      "maxOutput": 393216,
+      "maxOutput": 384000,
       "released": "2026-08-12",
       "status": "active"
     },
@@ -430,9 +430,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0075,
-        "output": 0.2829,
-        "cacheRead": 0.0015
+        "input": 0.0114,
+        "output": 0.45,
+        "cacheRead": 0.0114
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -933,7 +933,7 @@
       "version": "3",
       "costPer1M": {
         "input": 0.08,
-        "output": 0.45,
+        "output": 0.35,
         "cacheRead": 0.04
       },
       "contextWindow": 131072,
@@ -2972,7 +2972,7 @@
         "cacheRead": 0.05
       },
       "contextWindow": 262144,
-      "maxOutput": 16384,
+      "maxOutput": 235929,
       "released": "2026-02-25",
       "status": "active"
     },
@@ -3119,7 +3119,7 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.1,
+        "input": 0.09,
         "output": 0.3
       },
       "contextWindow": 262144,
@@ -3463,9 +3463,9 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0226,
-        "output": 0.3966,
-        "cacheRead": 0.0023
+        "input": 0.048,
+        "output": 0.2,
+        "cacheRead": 0.006
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3481,7 +3481,7 @@
       "version": "5.3",
       "costPer1M": {
         "input": 0.079,
-        "output": 4.8,
+        "output": 2.5,
         "cacheRead": 0.078
       },
       "contextWindow": 1048576,
