@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-18",
+  "version": "2026-10-19",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-18T11:14:30.584Z",
-  "modelCount": 208,
+  "lastUpdated": "2026-10-19T13:25:38.803Z",
+  "modelCount": 207,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -396,8 +396,8 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.0648,
-        "output": 0.144,
+        "input": 0.0376,
+        "output": 0.08,
         "cacheRead": 0.0016
       },
       "contextWindow": 1048576,
@@ -430,9 +430,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0114,
-        "output": 0.45,
-        "cacheRead": 0.0114
+        "input": 0.15,
+        "output": 0.15,
+        "cacheRead": 0.042
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.2088,
-        "output": 0.4176,
-        "cacheRead": 0.0174
+        "input": 0.4461,
+        "output": 0.8923,
+        "cacheRead": 0.0372
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -561,23 +561,6 @@
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
     },
-    "deepseek-r1": {
-      "id": "deepseek-r1",
-      "name": "R1",
-      "vendor": "deepseek",
-      "family": "deepseek",
-      "tier": "r1",
-      "version": "1",
-      "costPer1M": {
-        "input": 0.7,
-        "output": 2.5
-      },
-      "contextWindow": 64000,
-      "maxOutput": 16000,
-      "released": "2025-01-20",
-      "status": "active",
-      "knowledgeCutoff": "2024-07-31"
-    },
     "deepseek-chat": {
       "id": "deepseek-chat",
       "name": "DeepSeek V3",
@@ -608,7 +591,7 @@
         "cacheRead": 0.1
       },
       "contextWindow": 1048576,
-      "maxOutput": 65536,
+      "maxOutput": 943718,
       "released": "2026-10-13",
       "status": "active"
     },
@@ -739,9 +722,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.0675,
-        "output": 0.225,
-        "cacheRead": 0.0375
+        "input": 0.09,
+        "output": 0.3,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -971,7 +954,7 @@
         "output": 0.6525,
         "cacheRead": 0.05
       },
-      "contextWindow": 1048576,
+      "contextWindow": 524288,
       "maxOutput": 16384,
       "released": "2025-04-05",
       "status": "active",
@@ -1036,11 +1019,11 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.05,
-        "output": 0.33
+        "input": 0.0509,
+        "output": 0.335
       },
       "contextWindow": 131072,
-      "maxOutput": 117964,
+      "maxOutput": 72000,
       "released": "2024-09-25",
       "status": "active",
       "knowledgeCutoff": "2023-12-31"
@@ -1552,7 +1535,7 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.304,
+        "input": 0.239,
         "output": 11.936,
         "cacheRead": 0.21
       },
@@ -2951,11 +2934,12 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.26,
-        "output": 2.6
+        "input": 0.27,
+        "output": 2.16,
+        "cacheRead": 0.27
       },
       "contextWindow": 262144,
-      "maxOutput": 81920,
+      "maxOutput": 65536,
       "released": "2026-02-25",
       "status": "active"
     },
@@ -3464,7 +3448,7 @@
       "version": "5.3",
       "costPer1M": {
         "input": 0.048,
-        "output": 0.2,
+        "output": 0.16,
         "cacheRead": 0.006
       },
       "contextWindow": 1048576,
@@ -3481,7 +3465,7 @@
       "version": "5.3",
       "costPer1M": {
         "input": 0.079,
-        "output": 2.5,
+        "output": 1.4,
         "cacheRead": 0.078
       },
       "contextWindow": 1048576,
@@ -3632,9 +3616,9 @@
       "tier": "",
       "version": "4.6",
       "costPer1M": {
-        "input": 0.5,
-        "output": 2,
-        "cacheRead": 0.1
+        "input": 0.55,
+        "output": 2.2,
+        "cacheRead": 0.11
       },
       "contextWindow": 204800,
       "maxOutput": 131072,
