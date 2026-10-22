@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-21",
+  "version": "2026-10-22",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-21T11:56:36.865Z",
+  "lastUpdated": "2026-10-22T11:58:57.602Z",
   "modelCount": 207,
   "vendors": {
     "anthropic": "Anthropic",
@@ -396,9 +396,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.049,
-        "output": 0.375,
-        "cacheRead": 0.001
+        "input": 0.3,
+        "output": 1.2,
+        "cacheRead": 0.006
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -2916,8 +2916,8 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.26,
-        "output": 2.08
+        "input": 0.4,
+        "output": 3.2
       },
       "contextWindow": 262144,
       "maxOutput": 65536,
@@ -2982,11 +2982,12 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.39,
-        "output": 2.34
+        "input": 0.5,
+        "output": 3.6,
+        "cacheRead": 0.3
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 235929,
       "released": "2026-02-16",
       "status": "active"
     },
@@ -3444,12 +3445,12 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.15,
-        "output": 0.5,
-        "cacheRead": 0.03
+        "input": 0.0052,
+        "output": 0.1985,
+        "cacheRead": 0.0052
       },
       "contextWindow": 1048576,
-      "maxOutput": 943717,
+      "maxOutput": 943718,
       "released": "2026-08-26",
       "status": "active"
     },
