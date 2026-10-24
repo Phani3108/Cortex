@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-23",
+  "version": "2026-10-24",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-23T11:44:45.965Z",
-  "modelCount": 208,
+  "lastUpdated": "2026-10-24T11:08:17.878Z",
+  "modelCount": 209,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -61,7 +61,7 @@
       "default": "mistral-saba"
     },
     "moonshotai": {
-      "default": "kimi-k3",
+      "default": "kimi-k3.1-pro",
       "code": "kimi-k2.7-code",
       "thinking": "kimi-k2-thinking"
     },
@@ -396,9 +396,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.3,
-        "output": 1.2,
-        "cacheRead": 0.006
+        "input": 0.02,
+        "output": 1,
+        "cacheRead": 0.015
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -430,9 +430,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.44,
-        "output": 1.32,
-        "cacheRead": 0.014
+        "input": 0.0444,
+        "output": 0.1333,
+        "cacheRead": 0.0014
       },
       "contextWindow": 1048576,
       "maxOutput": 131072,
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.9553,
-        "output": 1.9105,
-        "cacheRead": 0.0796
+        "input": 0.3276,
+        "output": 0.6553,
+        "cacheRead": 0.0273
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -722,9 +722,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.3,
-        "cacheRead": 0.05
+        "input": 0.0675,
+        "output": 0.225,
+        "cacheRead": 0.0375
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1120,12 +1120,12 @@
       "tier": "",
       "version": "2.5",
       "costPer1M": {
-        "input": 0.27,
-        "output": 0.95,
+        "input": 0.3,
+        "output": 1.2,
         "cacheRead": 0.03
       },
       "contextWindow": 204800,
-      "maxOutput": 32768,
+      "maxOutput": 131072,
       "released": "2026-02-12",
       "status": "active"
     },
@@ -1542,6 +1542,23 @@
       "status": "active",
       "knowledgeCutoff": "2024-11-30"
     },
+    "kimi-k3.1-pro": {
+      "id": "kimi-k3.1-pro",
+      "name": "Kimi K3.1 Pro",
+      "vendor": "moonshotai",
+      "family": "moonshot",
+      "tier": "",
+      "version": "3.1",
+      "costPer1M": {
+        "input": 2,
+        "output": 10,
+        "cacheRead": 0.2
+      },
+      "contextWindow": 1048576,
+      "maxOutput": 943718,
+      "released": "2026-10-23",
+      "status": "active"
+    },
     "kimi-k3": {
       "id": "kimi-k3",
       "name": "Kimi K3",
@@ -1551,7 +1568,7 @@
       "version": "3",
       "costPer1M": {
         "input": 0.239,
-        "output": 11.936,
+        "output": 10.8,
         "cacheRead": 0.21
       },
       "contextWindow": 1048576,
@@ -1569,7 +1586,7 @@
       "costPer1M": {
         "input": 0.6712,
         "output": 3.35,
-        "cacheRead": 0.18
+        "cacheRead": 0.15
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -3461,12 +3478,12 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0052,
-        "output": 0.1985,
-        "cacheRead": 0.0052
+        "input": 0.15,
+        "output": 0.5,
+        "cacheRead": 0.03
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 943717,
       "released": "2026-08-26",
       "status": "active"
     },
