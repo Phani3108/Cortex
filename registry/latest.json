@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-24",
+  "version": "2026-10-25",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-24T11:08:17.878Z",
-  "modelCount": 209,
+  "lastUpdated": "2026-10-25T11:38:09.197Z",
+  "modelCount": 207,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.3276,
-        "output": 0.6553,
-        "cacheRead": 0.0273
+        "input": 0.2088,
+        "output": 0.4176,
+        "cacheRead": 0.0174
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -1017,11 +1017,11 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.0509,
-        "output": 0.335
+        "input": 0.05,
+        "output": 0.33
       },
       "contextWindow": 131072,
-      "maxOutput": 72000,
+      "maxOutput": 117964,
       "released": "2024-09-25",
       "status": "active",
       "knowledgeCutoff": "2023-12-31"
@@ -2639,23 +2639,6 @@
       "status": "active",
       "knowledgeCutoff": "2021-09-30"
     },
-    "gpt-3.5-turbo-instruct": {
-      "id": "gpt-3.5-turbo-instruct",
-      "name": "GPT-3.5 Turbo Instruct",
-      "vendor": "openai",
-      "family": "openai-gpt",
-      "tier": "",
-      "version": "3.5",
-      "costPer1M": {
-        "input": 1.5,
-        "output": 2
-      },
-      "contextWindow": 4095,
-      "maxOutput": 3685,
-      "released": "2023-09-28",
-      "status": "active",
-      "knowledgeCutoff": "2021-09-30"
-    },
     "gpt-3.5-turbo-16k": {
       "id": "gpt-3.5-turbo-16k",
       "name": "GPT-3.5 Turbo 16k",
@@ -2670,23 +2653,6 @@
       "contextWindow": 16385,
       "maxOutput": 4096,
       "released": "2023-08-28",
-      "status": "active",
-      "knowledgeCutoff": "2021-09-30"
-    },
-    "gpt-3.5-turbo": {
-      "id": "gpt-3.5-turbo",
-      "name": "GPT-3.5 Turbo",
-      "vendor": "openai",
-      "family": "openai-gpt",
-      "tier": "",
-      "version": "3.5",
-      "costPer1M": {
-        "input": 0.5,
-        "output": 1.5
-      },
-      "contextWindow": 16385,
-      "maxOutput": 4096,
-      "released": "2023-05-28",
       "status": "active",
       "knowledgeCutoff": "2021-09-30"
     },
@@ -3632,7 +3598,7 @@
       "costPer1M": {
         "input": 0.3,
         "output": 0.9,
-        "cacheRead": 0.055
+        "cacheRead": 0.05
       },
       "contextWindow": 131072,
       "maxOutput": 32768,
@@ -3672,7 +3638,8 @@
       "contextWindow": 65536,
       "maxOutput": 16384,
       "released": "2025-08-11",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-12-31",
       "knowledgeCutoff": "2024-12-31"
     },
     "glm-4.5": {
