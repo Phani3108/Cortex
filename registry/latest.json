@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-25",
+  "version": "2026-10-26",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-25T11:38:09.197Z",
+  "lastUpdated": "2026-10-26T13:10:49.100Z",
   "modelCount": 207,
   "vendors": {
     "anthropic": "Anthropic",
@@ -430,9 +430,9 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0444,
-        "output": 0.1333,
-        "cacheRead": 0.0014
+        "input": 0.44,
+        "output": 1.32,
+        "cacheRead": 0.014
       },
       "contextWindow": 1048576,
       "maxOutput": 131072,
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.2088,
-        "output": 0.4176,
-        "cacheRead": 0.0174
+        "input": 0.7976,
+        "output": 1.5952,
+        "cacheRead": 0.0665
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -722,9 +722,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.0675,
-        "output": 0.225,
-        "cacheRead": 0.0375
+        "input": 0.09,
+        "output": 0.3,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1567,9 +1567,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.239,
-        "output": 10.8,
-        "cacheRead": 0.21
+        "input": 0.152,
+        "output": 20,
+        "cacheRead": 0.142
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -2419,10 +2419,10 @@
       "costPer1M": {
         "input": 0.1,
         "output": 0.4,
-        "cacheRead": 0.025
+        "cacheRead": 0.03
       },
       "contextWindow": 1047576,
-      "maxOutput": 32768,
+      "maxOutput": 942818,
       "released": "2025-04-14",
       "status": "active",
       "knowledgeCutoff": "2024-06-30"
@@ -2833,12 +2833,11 @@
       "tier": "",
       "version": "3.6",
       "costPer1M": {
-        "input": 0.25,
-        "output": 2,
-        "cacheRead": 0.025
+        "input": 0.32,
+        "output": 3.2
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 81920,
       "released": "2026-04-27",
       "status": "active"
     },
@@ -2915,8 +2914,8 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.4,
-        "output": 3.2
+        "input": 0.26,
+        "output": 2.08
       },
       "contextWindow": 262144,
       "maxOutput": 65536,
@@ -3100,7 +3099,7 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.09,
+        "input": 0.1,
         "output": 0.3
       },
       "contextWindow": 262144,
@@ -3461,9 +3460,9 @@
       "tier": "",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.079,
+        "input": 0.0699,
         "output": 1.4,
-        "cacheRead": 0.078
+        "cacheRead": 0.0689
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
