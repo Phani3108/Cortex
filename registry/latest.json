@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-26",
+  "version": "2026-10-27",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-26T13:10:49.100Z",
-  "modelCount": 207,
+  "lastUpdated": "2026-10-27T12:18:53.366Z",
+  "modelCount": 209,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -66,10 +66,10 @@
       "thinking": "kimi-k2-thinking"
     },
     "openai": {
+      "terra": "gpt-6.1-terra",
       "sol": "gpt-6.1-sol",
       "luna": "gpt-6-luna",
       "astra": "gpt-6-astra",
-      "terra": "gpt-5.6-terra",
       "chat": "gpt-chat-latest",
       "default": "gpt-5.5",
       "pro": "gpt-5.5-pro",
@@ -396,12 +396,12 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.02,
-        "output": 1,
-        "cacheRead": 0.015
+        "input": 0.14,
+        "output": 0.42,
+        "cacheRead": 0.0042
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 131072,
       "released": "2026-09-10",
       "status": "active"
     },
@@ -430,12 +430,12 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.44,
-        "output": 1.32,
-        "cacheRead": 0.014
+        "input": 0.119,
+        "output": 0.238,
+        "cacheRead": 0.0238
       },
       "contextWindow": 1048576,
-      "maxOutput": 131072,
+      "maxOutput": 943718,
       "released": "2026-07-31",
       "status": "active"
     },
@@ -447,12 +447,12 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.091,
-        "output": 0.182,
-        "cacheRead": 0.0182
+        "input": 0.05,
+        "output": 0.45,
+        "cacheRead": 0.05
       },
       "contextWindow": 1048576,
-      "maxOutput": 943717,
+      "maxOutput": 943718,
       "released": "2026-04-24",
       "status": "active"
     },
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.7976,
-        "output": 1.5952,
-        "cacheRead": 0.0665
+        "input": 0.9553,
+        "output": 1.9105,
+        "cacheRead": 0.0796
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -895,12 +895,11 @@
       "tier": "gemma",
       "version": "3",
       "costPer1M": {
-        "input": 0.04,
-        "output": 0.05,
-        "cacheRead": 0.02
+        "input": 0.05,
+        "output": 0.1
       },
       "contextWindow": 131072,
-      "maxOutput": 117964,
+      "maxOutput": 16384,
       "released": "2025-03-13",
       "status": "active",
       "knowledgeCutoff": "2024-08-31"
@@ -1040,7 +1039,8 @@
       "contextWindow": 131072,
       "maxOutput": 16384,
       "released": "2024-07-23",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-11-03",
       "knowledgeCutoff": "2023-12-31"
     },
     "llama-3.1-8b-instruct": {
@@ -1567,9 +1567,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.152,
+        "input": 0.179,
         "output": 20,
-        "cacheRead": 0.142
+        "cacheRead": 0.169
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -1584,8 +1584,8 @@
       "tier": "code",
       "version": "2.7",
       "costPer1M": {
-        "input": 0.6712,
-        "output": 3.35,
+        "input": 0.6725,
+        "output": 3.1,
         "cacheRead": 0.15
       },
       "contextWindow": 262144,
@@ -1677,6 +1677,40 @@
       "released": "2025-07-11",
       "status": "active",
       "knowledgeCutoff": "2024-12-31"
+    },
+    "gpt-6.1-terra": {
+      "id": "gpt-6.1-terra",
+      "name": "GPT-6.1 Terra",
+      "vendor": "openai",
+      "family": "openai-gpt",
+      "tier": "terra",
+      "version": "6.1",
+      "costPer1M": {
+        "input": 1,
+        "output": 5,
+        "cacheRead": 0.05
+      },
+      "contextWindow": 1050000,
+      "maxOutput": 128000,
+      "released": "2026-10-26",
+      "status": "active"
+    },
+    "gpt-6.1-terra-pro": {
+      "id": "gpt-6.1-terra-pro",
+      "name": "GPT-6.1 Terra Pro",
+      "vendor": "openai",
+      "family": "openai-gpt",
+      "tier": "terra",
+      "version": "6.1",
+      "costPer1M": {
+        "input": 1,
+        "output": 5,
+        "cacheRead": 0.05
+      },
+      "contextWindow": 1050000,
+      "maxOutput": 128000,
+      "released": "2026-10-26",
+      "status": "active"
     },
     "gpt-6.1-sol": {
       "id": "gpt-6.1-sol",
@@ -2930,12 +2964,11 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.27,
-        "output": 2.16,
-        "cacheRead": 0.27
+        "input": 0.26,
+        "output": 2.6
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 81920,
       "released": "2026-02-25",
       "status": "active"
     },
@@ -3494,12 +3527,12 @@
       "tier": "",
       "version": "5.1",
       "costPer1M": {
-        "input": 1.4,
-        "output": 4.4,
-        "cacheRead": 0.26
+        "input": 0.966,
+        "output": 3.036,
+        "cacheRead": 0.1794
       },
       "contextWindow": 204800,
-      "maxOutput": 131072,
+      "maxOutput": 128000,
       "released": "2026-04-07",
       "status": "active"
     },
@@ -3597,7 +3630,7 @@
       "costPer1M": {
         "input": 0.3,
         "output": 0.9,
-        "cacheRead": 0.05
+        "cacheRead": 0.055
       },
       "contextWindow": 131072,
       "maxOutput": 32768,
@@ -3637,8 +3670,7 @@
       "contextWindow": 65536,
       "maxOutput": 16384,
       "released": "2025-08-11",
-      "status": "deprecated",
-      "expires": "2026-12-31",
+      "status": "active",
       "knowledgeCutoff": "2024-12-31"
     },
     "glm-4.5": {
@@ -3691,14 +3723,14 @@
       "claude-opus-4.8"
     ],
     "codex": [
+      "gpt-6.1-terra",
+      "gpt-6.1-terra-pro",
       "gpt-6.1-sol",
       "gpt-6.1-sol-pro",
       "gpt-6-luna",
       "gpt-6-luna-pro",
       "gpt-6-sol",
-      "gpt-6-sol-pro",
-      "gpt-6-astra",
-      "gpt-6-astra-pro"
+      "gpt-6-sol-pro"
     ],
     "gemini": [
       "gemini-4-argon",
@@ -3714,9 +3746,9 @@
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
+      "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna",
-      "gpt-6-astra",
       "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
@@ -3728,9 +3760,9 @@
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
+      "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna",
-      "gpt-6-astra",
       "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash"
@@ -3739,9 +3771,9 @@
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
+      "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna",
-      "gpt-6-astra",
       "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash"
@@ -3753,9 +3785,9 @@
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
+      "gpt-6.1-terra",
       "gpt-6.1-sol",
-      "gpt-6-luna",
-      "gpt-6-astra"
+      "gpt-6-luna"
     ],
     "kiro": [
       "claude-haiku-5.5",
@@ -3768,14 +3800,14 @@
       "claude-opus-4.8"
     ],
     "openai": [
+      "gpt-6.1-terra",
+      "gpt-6.1-terra-pro",
       "gpt-6.1-sol",
       "gpt-6.1-sol-pro",
       "gpt-6-luna",
       "gpt-6-luna-pro",
       "gpt-6-sol",
-      "gpt-6-sol-pro",
-      "gpt-6-astra",
-      "gpt-6-astra-pro"
+      "gpt-6-sol-pro"
     ]
   },
   "subscriptionProviders": {
