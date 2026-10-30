@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-10-29",
+  "version": "2026-10-30",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-10-29T13:09:07.228Z",
+  "lastUpdated": "2026-10-30T13:01:49.740Z",
   "modelCount": 201,
   "vendors": {
     "anthropic": "Anthropic",
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.894,
-        "output": 1.788,
-        "cacheRead": 0.0745
+        "input": 0.8162,
+        "output": 1.6325,
+        "cacheRead": 0.068
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -481,12 +481,12 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.28,
-        "output": 0.42,
-        "cacheRead": 0.028
+        "input": 0.26,
+        "output": 0.38,
+        "cacheRead": 0.13
       },
       "contextWindow": 163840,
-      "maxOutput": 65536,
+      "maxOutput": 147456,
       "released": "2025-12-01",
       "status": "active"
     },
@@ -1221,9 +1221,9 @@
       "tier": "large",
       "version": "4",
       "costPer1M": {
-        "input": 1.36,
-        "output": 4.18,
-        "cacheRead": 0.14
+        "input": 0.7,
+        "output": 2.1,
+        "cacheRead": 0.07
       },
       "contextWindow": 1048576,
       "maxOutput": 262144,
@@ -1567,9 +1567,9 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.239,
-        "output": 10.8,
-        "cacheRead": 0.21
+        "input": 0.192,
+        "output": 15,
+        "cacheRead": 0.182
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -1584,8 +1584,8 @@
       "tier": "code",
       "version": "2.7",
       "costPer1M": {
-        "input": 0.56,
-        "output": 3.1,
+        "input": 0.6,
+        "output": 3.5,
         "cacheRead": 0.15
       },
       "contextWindow": 262144,
@@ -2642,12 +2642,12 @@
       "tier": "",
       "version": "3.8",
       "costPer1M": {
-        "input": 0.039,
-        "output": 1.25,
-        "cacheRead": 0.0039
+        "input": 0.15,
+        "output": 1.875,
+        "cacheRead": 0.0375
       },
       "contextWindow": 1000000,
-      "maxOutput": 65536,
+      "maxOutput": 235929,
       "released": "2026-08-14",
       "status": "active"
     },
@@ -2664,7 +2664,7 @@
         "cacheRead": 0.25
       },
       "contextWindow": 1048576,
-      "maxOutput": 909000,
+      "maxOutput": 131072,
       "released": "2026-08-12",
       "status": "active"
     },
@@ -2743,11 +2743,11 @@
       "tier": "",
       "version": "3.6",
       "costPer1M": {
-        "input": 0.45,
-        "output": 2.7
+        "input": 0.32,
+        "output": 3.2
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 81920,
       "released": "2026-04-27",
       "status": "active"
     },
@@ -3336,12 +3336,12 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0457,
-        "output": 0.0742,
+        "input": 0.15,
+        "output": 0.5,
         "cacheRead": 0.03
       },
       "contextWindow": 1048576,
-      "maxOutput": 131072,
+      "maxOutput": 943717,
       "released": "2026-08-26",
       "status": "active"
     },
@@ -3353,9 +3353,9 @@
       "tier": "",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0699,
-        "output": 1.4,
-        "cacheRead": 0.0689
+        "input": 0.08,
+        "output": 3.6,
+        "cacheRead": 0.076
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3490,7 +3490,7 @@
       "costPer1M": {
         "input": 0.3,
         "output": 0.9,
-        "cacheRead": 0.05
+        "cacheRead": 0.055
       },
       "contextWindow": 131072,
       "maxOutput": 32768,
