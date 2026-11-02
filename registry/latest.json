@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-01",
+  "version": "2026-11-02",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-01T13:30:59.187Z",
-  "modelCount": 201,
+  "lastUpdated": "2026-11-02T16:04:18.212Z",
+  "modelCount": 202,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -90,8 +90,8 @@
       "build": "grok-build-0.1"
     },
     "z-ai": {
+      "flashx": "glm-5.3-flashx-legal",
       "prime": "glm-5.3-prime",
-      "flashx": "glm-5.3-flashx",
       "flash": "glm-5.3-flash",
       "default": "glm-5.3",
       "turbo": "glm-5v-turbo",
@@ -722,12 +722,12 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.0675,
-        "output": 0.225,
-        "cacheRead": 0.0375
+        "input": 0.085,
+        "output": 0.254,
+        "cacheRead": 0.042
       },
       "contextWindow": 262144,
-      "maxOutput": 235929,
+      "maxOutput": 32768,
       "released": "2026-04-03",
       "status": "active"
     },
@@ -1016,11 +1016,11 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.05,
-        "output": 0.33
+        "input": 0.0509,
+        "output": 0.335
       },
       "contextWindow": 131072,
-      "maxOutput": 117964,
+      "maxOutput": 72000,
       "released": "2024-09-25",
       "status": "active",
       "knowledgeCutoff": "2023-12-31"
@@ -1069,9 +1069,9 @@
       "tier": "",
       "version": "3.1",
       "costPer1M": {
-        "input": 0.15,
-        "output": 0.6,
-        "cacheRead": 0.015
+        "input": 0.075,
+        "output": 0.3,
+        "cacheRead": 0.0075
       },
       "contextWindow": 1048576,
       "maxOutput": 524288,
@@ -2308,8 +2308,9 @@
       "tier": "oss",
       "version": "120",
       "costPer1M": {
-        "input": 0.017,
-        "output": 0.063
+        "input": 0.15,
+        "output": 0.6,
+        "cacheRead": 0.075
       },
       "contextWindow": 131072,
       "maxOutput": 65536,
@@ -2645,7 +2646,7 @@
         "output": 1.875,
         "cacheRead": 0.0375
       },
-      "contextWindow": 1000000,
+      "contextWindow": 1024000,
       "maxOutput": 235929,
       "released": "2026-08-14",
       "status": "active"
@@ -3293,6 +3294,23 @@
       "status": "active",
       "knowledgeCutoff": "2025-09-01"
     },
+    "glm-5.3-flashx-legal": {
+      "id": "glm-5.3-flashx-legal",
+      "name": "GLM 5.3 FlashX Legal",
+      "vendor": "z-ai",
+      "family": "zhipu",
+      "tier": "flashx",
+      "version": "5.3",
+      "costPer1M": {
+        "input": 0.37,
+        "output": 1.25,
+        "cacheRead": 0.075
+      },
+      "contextWindow": 1048576,
+      "maxOutput": 131072,
+      "released": "2026-11-02",
+      "status": "active"
+    },
     "glm-5.3-prime": {
       "id": "glm-5.3-prime",
       "name": "GLM 5.3 Prime",
@@ -3320,7 +3338,7 @@
       "costPer1M": {
         "input": 0.37,
         "output": 1.25,
-        "cacheRead": 0.09
+        "cacheRead": 0.075
       },
       "contextWindow": 1048576,
       "maxOutput": 131072,
