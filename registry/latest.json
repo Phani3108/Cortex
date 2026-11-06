@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-05",
+  "version": "2026-11-06",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-05T14:43:07.964Z",
+  "lastUpdated": "2026-11-06T14:21:21.776Z",
   "modelCount": 198,
   "vendors": {
     "anthropic": "Anthropic",
@@ -396,8 +396,8 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.045,
-        "output": 0.5,
+        "input": 0.051,
+        "output": 0.567,
         "cacheRead": 0.018
       },
       "contextWindow": 1048576,
@@ -413,9 +413,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.103,
-        "output": 4.11,
-        "cacheRead": 0.098
+        "input": 0.1165,
+        "output": 4.66,
+        "cacheRead": 0.111
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -430,7 +430,7 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.054,
+        "input": 0.0553,
         "output": 0.3,
         "cacheRead": 0.035
       },
@@ -464,12 +464,12 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 1.6,
-        "output": 3.2,
-        "cacheRead": 0.135
+        "input": 0.882,
+        "output": 1.764,
+        "cacheRead": 0.0735
       },
       "contextWindow": 1048576,
-      "maxOutput": 393216,
+      "maxOutput": 384000,
       "released": "2026-04-24",
       "status": "active"
     },
@@ -569,11 +569,11 @@
       "tier": "chat",
       "version": null,
       "costPer1M": {
-        "input": 0.2574,
-        "output": 1.0287
+        "input": 0.32,
+        "output": 0.89
       },
       "contextWindow": 163840,
-      "maxOutput": 16000,
+      "maxOutput": 16384,
       "released": "2024-12-26",
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
@@ -722,12 +722,12 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.013,
-        "output": 0.04,
-        "cacheRead": 0.007
+        "input": 0.09,
+        "output": 0.3,
+        "cacheRead": 0.05
       },
       "contextWindow": 262144,
-      "maxOutput": 32768,
+      "maxOutput": 235929,
       "released": "2026-04-03",
       "status": "active"
     },
@@ -982,12 +982,12 @@
       "tier": "",
       "version": "3.3",
       "costPer1M": {
-        "input": 0.2,
-        "output": 0.52,
-        "cacheRead": 0.1
+        "input": 0.59,
+        "output": 0.79,
+        "cacheRead": 0.295
       },
       "contextWindow": 131072,
-      "maxOutput": 128000,
+      "maxOutput": 32768,
       "released": "2024-12-06",
       "status": "active",
       "knowledgeCutoff": "2023-12-31"
@@ -1006,7 +1006,8 @@
       "contextWindow": 60000,
       "maxOutput": 54000,
       "released": "2024-09-25",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-11-15",
       "knowledgeCutoff": "2023-12-31"
     },
     "llama-3.2-3b-instruct": {
@@ -1023,7 +1024,8 @@
       "contextWindow": 131072,
       "maxOutput": 72000,
       "released": "2024-09-25",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-11-15",
       "knowledgeCutoff": "2023-12-31"
     },
     "llama-3.1-70b-instruct": {
@@ -1551,14 +1553,15 @@
       "tier": "",
       "version": "2.5",
       "costPer1M": {
-        "input": 0.5,
-        "output": 2.5,
-        "cacheRead": 0.15
+        "input": 0.532,
+        "output": 3.325,
+        "cacheRead": 0.209
       },
       "contextWindow": 262144,
-      "maxOutput": 235929,
+      "maxOutput": 65536,
       "released": "2026-01-27",
-      "status": "active"
+      "status": "deprecated",
+      "expires": "2026-11-18"
     },
     "kimi-k2-thinking": {
       "id": "kimi-k2-thinking",
