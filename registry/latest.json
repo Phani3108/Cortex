@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-06",
+  "version": "2026-11-07",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-06T14:21:21.776Z",
+  "lastUpdated": "2026-11-07T13:10:01.626Z",
   "modelCount": 198,
   "vendors": {
     "anthropic": "Anthropic",
@@ -430,7 +430,7 @@
       "tier": "flash",
       "version": "4",
       "costPer1M": {
-        "input": 0.0553,
+        "input": 0.0474,
         "output": 0.3,
         "cacheRead": 0.035
       },
@@ -464,9 +464,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.882,
-        "output": 1.764,
-        "cacheRead": 0.0735
+        "input": 0.7179,
+        "output": 1.4358,
+        "cacheRead": 0.0598
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -722,9 +722,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.3,
-        "cacheRead": 0.05
+        "input": 0.0675,
+        "output": 0.225,
+        "cacheRead": 0.0375
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1007,7 +1007,7 @@
       "maxOutput": 54000,
       "released": "2024-09-25",
       "status": "deprecated",
-      "expires": "2026-11-15",
+      "expires": "2026-11-20",
       "knowledgeCutoff": "2023-12-31"
     },
     "llama-3.2-3b-instruct": {
@@ -1025,7 +1025,7 @@
       "maxOutput": 72000,
       "released": "2024-09-25",
       "status": "deprecated",
-      "expires": "2026-11-15",
+      "expires": "2026-11-20",
       "knowledgeCutoff": "2023-12-31"
     },
     "llama-3.1-70b-instruct": {
@@ -1122,12 +1122,12 @@
       "tier": "",
       "version": "2.5",
       "costPer1M": {
-        "input": 0.27,
-        "output": 0.95,
-        "cacheRead": 0.03
+        "input": 0.3,
+        "output": 1.2,
+        "cacheRead": 0.06
       },
       "contextWindow": 204800,
-      "maxOutput": 32768,
+      "maxOutput": 58982,
       "released": "2026-02-12",
       "status": "active"
     },
@@ -1553,15 +1553,14 @@
       "tier": "",
       "version": "2.5",
       "costPer1M": {
-        "input": 0.532,
-        "output": 3.325,
-        "cacheRead": 0.209
+        "input": 0.5,
+        "output": 2.5,
+        "cacheRead": 0.15
       },
       "contextWindow": 262144,
-      "maxOutput": 65536,
+      "maxOutput": 235929,
       "released": "2026-01-27",
-      "status": "deprecated",
-      "expires": "2026-11-18"
+      "status": "active"
     },
     "kimi-k2-thinking": {
       "id": "kimi-k2-thinking",
@@ -2244,9 +2243,9 @@
       "tier": "oss",
       "version": "120",
       "costPer1M": {
-        "input": 0.15,
-        "output": 0.6,
-        "cacheRead": 0.075
+        "input": 0.018,
+        "output": 0.065,
+        "cacheRead": 0.016
       },
       "contextWindow": 131072,
       "maxOutput": 65536,
