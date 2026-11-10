@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-09",
+  "version": "2026-11-10",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-09T16:28:55.476Z",
-  "modelCount": 197,
+  "lastUpdated": "2026-11-10T14:57:35.687Z",
+  "modelCount": 198,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -23,10 +23,10 @@
   },
   "highlights": {
     "anthropic": {
+      "fable": "claude-fable-5.2",
       "haiku": "claude-haiku-5.5",
       "sonnet": "claude-sonnet-5.5",
-      "opus": "claude-opus-5.5",
-      "fable": "claude-fable-5.1"
+      "opus": "claude-opus-5.5"
     },
     "deepseek": {
       "flash": "deepseek-v4.1-flash-1017",
@@ -99,6 +99,24 @@
     }
   },
   "models": {
+    "claude-fable-5.2": {
+      "id": "claude-fable-5.2",
+      "name": "Claude Fable 5.2",
+      "vendor": "anthropic",
+      "family": "anthropic",
+      "tier": "fable",
+      "version": "5.2",
+      "costPer1M": {
+        "input": 8,
+        "output": 40,
+        "cacheRead": 0.2
+      },
+      "contextWindow": 1000000,
+      "maxOutput": 128000,
+      "released": "2026-11-09",
+      "status": "active",
+      "apiId": "claude-fable-5-2"
+    },
     "claude-haiku-5.5": {
       "id": "claude-haiku-5.5",
       "name": "Claude Haiku 5.5",
@@ -396,9 +414,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.051,
-        "output": 0.567,
-        "cacheRead": 0.018
+        "input": 0.3,
+        "output": 1.2,
+        "cacheRead": 0.006
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -464,9 +482,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.894,
-        "output": 1.788,
-        "cacheRead": 0.0745
+        "input": 0.9553,
+        "output": 1.9105,
+        "cacheRead": 0.0796
       },
       "contextWindow": 1048576,
       "maxOutput": 384000,
@@ -722,12 +740,12 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.3,
-        "cacheRead": 0.05
+        "input": 0.08,
+        "output": 0.1,
+        "cacheRead": 0.046
       },
       "contextWindow": 262144,
-      "maxOutput": 235929,
+      "maxOutput": 128000,
       "released": "2026-04-03",
       "status": "active"
     },
@@ -982,12 +1000,12 @@
       "tier": "",
       "version": "3.3",
       "costPer1M": {
-        "input": 0.59,
-        "output": 0.79,
-        "cacheRead": 0.295
+        "input": 0.71,
+        "output": 0.71,
+        "cacheRead": 0.71
       },
       "contextWindow": 131072,
-      "maxOutput": 32768,
+      "maxOutput": 115200,
       "released": "2024-12-06",
       "status": "active",
       "knowledgeCutoff": "2023-12-31"
@@ -1069,9 +1087,9 @@
       "tier": "",
       "version": "3.1",
       "costPer1M": {
-        "input": 0.075,
-        "output": 0.3,
-        "cacheRead": 0.0075
+        "input": 0.15,
+        "output": 0.6,
+        "cacheRead": 0.015
       },
       "contextWindow": 1048576,
       "maxOutput": 524288,
@@ -2564,7 +2582,7 @@
         "output": 1.875,
         "cacheRead": 0.0375
       },
-      "contextWindow": 1024000,
+      "contextWindow": 1048575,
       "maxOutput": 235929,
       "released": "2026-08-14",
       "status": "active"
@@ -2980,11 +2998,11 @@
       "tier": "",
       "version": "3",
       "costPer1M": {
-        "input": 0.12,
-        "output": 0.24
+        "input": 0.1,
+        "output": 0.22
       },
       "contextWindow": 40960,
-      "maxOutput": 16384,
+      "maxOutput": 36864,
       "released": "2025-04-28",
       "status": "active",
       "knowledgeCutoff": "2025-03-31"
@@ -3272,8 +3290,8 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.0335,
-        "output": 0.083,
+        "input": 0.0399,
+        "output": 0.0784,
         "cacheRead": 0.03
       },
       "contextWindow": 1048576,
@@ -3306,9 +3324,9 @@
       "tier": "",
       "version": "5.2",
       "costPer1M": {
-        "input": 0.006,
+        "input": 0.0062,
         "output": 6.8,
-        "cacheRead": 0.005
+        "cacheRead": 0.0052
       },
       "contextWindow": 1048576,
       "maxOutput": 943718,
@@ -3510,14 +3528,14 @@
   },
   "providerModels": {
     "claude": [
+      "claude-fable-5.2",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
       "claude-fable-5.1",
       "claude-opus-5",
       "claude-sonnet-5",
-      "claude-fable-5",
-      "claude-opus-4.8"
+      "claude-fable-5"
     ],
     "codex": [
       "gpt-6.1-terra",
@@ -3540,9 +3558,9 @@
       "gemini-3.1-flash-lite"
     ],
     "cursor": [
+      "claude-fable-5.2",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
-      "claude-opus-5.5",
       "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna",
@@ -3554,9 +3572,9 @@
       "grok-4.5"
     ],
     "copilot": [
+      "claude-fable-5.2",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
-      "claude-opus-5.5",
       "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna",
@@ -3565,9 +3583,9 @@
       "gemini-3.8-flash"
     ],
     "windsurf": [
+      "claude-fable-5.2",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
-      "claude-opus-5.5",
       "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna",
@@ -3579,22 +3597,22 @@
       "gemini-4-argon",
       "gemini-nano-banana-2.1",
       "gemini-3.8-flash",
+      "claude-fable-5.2",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
-      "claude-opus-5.5",
       "gpt-6.1-terra",
       "gpt-6.1-sol",
       "gpt-6-luna"
     ],
     "kiro": [
+      "claude-fable-5.2",
       "claude-haiku-5.5",
       "claude-sonnet-5.5",
       "claude-opus-5.5",
       "claude-fable-5.1",
       "claude-opus-5",
       "claude-sonnet-5",
-      "claude-fable-5",
-      "claude-opus-4.8"
+      "claude-fable-5"
     ],
     "openai": [
       "gpt-6.1-terra",
