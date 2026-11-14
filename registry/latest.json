@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-13",
+  "version": "2026-11-14",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-13T14:39:33.913Z",
+  "lastUpdated": "2026-11-14T13:36:47.787Z",
   "modelCount": 199,
   "vendors": {
     "anthropic": "Anthropic",
@@ -414,12 +414,12 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.3,
-        "output": 1.2,
-        "cacheRead": 0.006
+        "input": 0.0507,
+        "output": 0.2028,
+        "cacheRead": 0.001
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 393216,
       "released": "2026-09-10",
       "status": "active"
     },
@@ -587,11 +587,11 @@
       "tier": "chat",
       "version": null,
       "costPer1M": {
-        "input": 0.32,
-        "output": 0.89
+        "input": 0.2574,
+        "output": 1.0287
       },
       "contextWindow": 163840,
-      "maxOutput": 16384,
+      "maxOutput": 16000,
       "released": "2024-12-26",
       "status": "active",
       "knowledgeCutoff": "2024-07-31"
@@ -774,9 +774,9 @@
       "tier": "gemma",
       "version": "4",
       "costPer1M": {
-        "input": 0.09,
-        "output": 0.3,
-        "cacheRead": 0.05
+        "input": 0.0675,
+        "output": 0.225,
+        "cacheRead": 0.0375
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -1070,13 +1070,14 @@
       "tier": "",
       "version": "3.2",
       "costPer1M": {
-        "input": 0.05,
-        "output": 0.33
+        "input": 0.0509,
+        "output": 0.335
       },
       "contextWindow": 131072,
-      "maxOutput": 117964,
+      "maxOutput": 72000,
       "released": "2024-09-25",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-11-20",
       "knowledgeCutoff": "2023-12-31"
     },
     "llama-3.1-70b-instruct": {
@@ -1861,9 +1862,9 @@
       "tier": "sol",
       "version": "5.6",
       "costPer1M": {
-        "input": 4.4,
-        "output": 22,
-        "cacheRead": 0.44
+        "input": 4,
+        "output": 20,
+        "cacheRead": 0.4
       },
       "contextWindow": 1050000,
       "maxOutput": 128000,
@@ -2621,7 +2622,7 @@
         "output": 1.875,
         "cacheRead": 0.0375
       },
-      "contextWindow": 1048575,
+      "contextWindow": 1024000,
       "maxOutput": 235929,
       "released": "2026-08-14",
       "status": "active"
@@ -2783,9 +2784,9 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.07,
-        "output": 0.103,
-        "cacheRead": 0.063
+        "input": 0.17,
+        "output": 0.25,
+        "cacheRead": 0.153
       },
       "contextWindow": 262144,
       "maxOutput": 40960,
