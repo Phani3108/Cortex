@@ -1,12 +1,12 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-24",
+  "version": "2026-11-25",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-24T17:51:36.046Z",
+  "lastUpdated": "2026-11-25T17:18:09.508Z",
   "modelCount": 199,
   "vendors": {
     "anthropic": "Anthropic",
@@ -41,7 +41,7 @@
       "flash": "gemini-3.8-flash",
       "flash-lite": "gemini-3.5-flash-lite",
       "gemma": "gemma-4-26b-a4b-it",
-      "pro": "gemini-2.5-pro"
+      "pro": "gemini-3.1-pro-preview"
     },
     "meta-llama": {
       "maverick": "llama-4-maverick",
@@ -394,9 +394,9 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.03,
-        "output": 0.2,
-        "cacheRead": 0.001
+        "input": 0.15,
+        "output": 0.6,
+        "cacheRead": 0.003
       },
       "contextWindow": 1048576,
       "maxOutput": 393216,
@@ -479,9 +479,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 1.28,
-        "output": 2.56,
-        "cacheRead": 0.108
+        "input": 0.7657,
+        "output": 1.5016,
+        "cacheRead": 0.21
       },
       "contextWindow": 1048576,
       "maxOutput": 393216,
@@ -895,7 +895,8 @@
       "contextWindow": 1048576,
       "maxOutput": 65535,
       "released": "2025-06-17",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-12-01",
       "knowledgeCutoff": "2025-01-31"
     },
     "gemini-2.5-pro": {
@@ -913,7 +914,8 @@
       "contextWindow": 1048576,
       "maxOutput": 65536,
       "released": "2025-06-17",
-      "status": "active",
+      "status": "deprecated",
+      "expires": "2026-12-01",
       "knowledgeCutoff": "2025-01-31"
     },
     "gemini-2.5-pro-preview": {
@@ -1166,12 +1168,12 @@
       "tier": "",
       "version": "2.5",
       "costPer1M": {
-        "input": 0.27,
-        "output": 0.95,
-        "cacheRead": 0.03
+        "input": 0.3,
+        "output": 1.2,
+        "cacheRead": 0.06
       },
-      "contextWindow": 198000,
-      "maxOutput": 32768,
+      "contextWindow": 65536,
+      "maxOutput": 58982,
       "released": "2026-02-12",
       "status": "active"
     },
@@ -2625,12 +2627,12 @@
       "tier": "",
       "version": "3.8",
       "costPer1M": {
-        "input": 0.06,
-        "output": 1.96,
-        "cacheRead": 0.059
+        "input": 0.035,
+        "output": 1.5,
+        "cacheRead": 0.0175
       },
       "contextWindow": 1024000,
-      "maxOutput": 235929,
+      "maxOutput": 131072,
       "released": "2026-08-14",
       "status": "active"
     },
@@ -2742,9 +2744,9 @@
       "tier": "",
       "version": "3.6",
       "costPer1M": {
-        "input": 0.05,
-        "output": 0.7,
-        "cacheRead": 0.025
+        "input": 0.1,
+        "output": 0.89,
+        "cacheRead": 0.035
       },
       "contextWindow": 262144,
       "maxOutput": 235929,
@@ -3304,12 +3306,12 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.15,
-        "output": 0.5,
-        "cacheRead": 0.03
+        "input": 0.12,
+        "output": 0.38,
+        "cacheRead": 0.02
       },
       "contextWindow": 1048576,
-      "maxOutput": 943717,
+      "maxOutput": 943718,
       "released": "2026-08-26",
       "status": "active"
     },
@@ -3426,7 +3428,7 @@
         "input": 0.0605,
         "output": 0.4
       },
-      "contextWindow": 200000,
+      "contextWindow": 131072,
       "maxOutput": 117964,
       "released": "2026-01-19",
       "status": "active"
@@ -3458,7 +3460,7 @@
       "costPer1M": {
         "input": 0.3,
         "output": 0.9,
-        "cacheRead": 0.055
+        "cacheRead": 0.05
       },
       "contextWindow": 131072,
       "maxOutput": 32768,
@@ -3529,12 +3531,11 @@
       "tier": "air",
       "version": "4.5",
       "costPer1M": {
-        "input": 0.13,
-        "output": 0.85,
-        "cacheRead": 0.025
+        "input": 0.14,
+        "output": 0.86
       },
       "contextWindow": 131072,
-      "maxOutput": 98304,
+      "maxOutput": 117964,
       "released": "2025-07-25",
       "status": "active",
       "knowledgeCutoff": "2024-12-31"
