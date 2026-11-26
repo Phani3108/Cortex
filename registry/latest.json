@@ -1,13 +1,13 @@
 {
   "$schema": "https://github.com/Phani3108/Cortex/blob/main/registry/README.md",
-  "version": "2026-11-25",
+  "version": "2026-11-26",
   "description": "Cortex Model Registry — pricing and context windows for models used by AI coding tools. Auto-refreshed daily from OpenRouter by .github/workflows/refresh-registry.yml.",
   "source": {
     "name": "OpenRouter",
     "url": "https://openrouter.ai/api/v1/models"
   },
-  "lastUpdated": "2026-11-25T17:18:09.508Z",
-  "modelCount": 199,
+  "lastUpdated": "2026-11-26T16:58:40.410Z",
+  "modelCount": 200,
   "vendors": {
     "anthropic": "Anthropic",
     "openai": "OpenAI",
@@ -394,12 +394,12 @@
       "tier": "flash",
       "version": "4.1",
       "costPer1M": {
-        "input": 0.15,
-        "output": 0.6,
-        "cacheRead": 0.003
+        "input": 0.025,
+        "output": 0.25,
+        "cacheRead": 0.0015
       },
       "contextWindow": 1048576,
-      "maxOutput": 393216,
+      "maxOutput": 943718,
       "released": "2026-10-17",
       "status": "active"
     },
@@ -479,9 +479,9 @@
       "tier": "pro",
       "version": "4",
       "costPer1M": {
-        "input": 0.7657,
-        "output": 1.5016,
-        "cacheRead": 0.21
+        "input": 0.7994,
+        "output": 1.5593,
+        "cacheRead": 0.2
       },
       "contextWindow": 1048576,
       "maxOutput": 393216,
@@ -980,10 +980,11 @@
       "version": "3",
       "costPer1M": {
         "input": 0.08,
-        "output": 0.16
+        "output": 0.45,
+        "cacheRead": 0.04
       },
       "contextWindow": 131072,
-      "maxOutput": 16384,
+      "maxOutput": 117964,
       "released": "2025-03-12",
       "status": "active",
       "knowledgeCutoff": "2024-08-31"
@@ -1571,6 +1572,23 @@
       "maxOutput": 235929,
       "released": "2026-01-27",
       "status": "active"
+    },
+    "kimi-k2": {
+      "id": "kimi-k2",
+      "name": "Kimi K2 0711",
+      "vendor": "moonshotai",
+      "family": "moonshot",
+      "tier": "",
+      "version": "2",
+      "costPer1M": {
+        "input": 0.57,
+        "output": 2.3
+      },
+      "contextWindow": 131072,
+      "maxOutput": 98304,
+      "released": "2025-07-11",
+      "status": "active",
+      "knowledgeCutoff": "2024-12-31"
     },
     "gpt-6.2-astra": {
       "id": "gpt-6.2-astra",
@@ -2627,12 +2645,12 @@
       "tier": "",
       "version": "3.8",
       "costPer1M": {
-        "input": 0.035,
-        "output": 1.5,
-        "cacheRead": 0.0175
+        "input": 0.06,
+        "output": 1.96,
+        "cacheRead": 0.059
       },
       "contextWindow": 1024000,
-      "maxOutput": 131072,
+      "maxOutput": 235929,
       "released": "2026-08-14",
       "status": "active"
     },
@@ -2793,7 +2811,7 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.17,
+        "input": 0.1,
         "output": 0.25
       },
       "contextWindow": 262144,
@@ -2874,12 +2892,12 @@
       "tier": "",
       "version": "3.5",
       "costPer1M": {
-        "input": 0.45,
-        "output": 3,
-        "cacheRead": 0.22
+        "input": 0.5,
+        "output": 3.6,
+        "cacheRead": 0.3
       },
       "contextWindow": 262144,
-      "maxOutput": 81920,
+      "maxOutput": 235929,
       "released": "2026-02-16",
       "status": "active"
     },
@@ -3306,12 +3324,12 @@
       "tier": "flash",
       "version": "5.3",
       "costPer1M": {
-        "input": 0.12,
-        "output": 0.38,
-        "cacheRead": 0.02
+        "input": 0.15,
+        "output": 0.5,
+        "cacheRead": 0.03
       },
       "contextWindow": 1048576,
-      "maxOutput": 943718,
+      "maxOutput": 943717,
       "released": "2026-08-26",
       "status": "active"
     },
@@ -3479,7 +3497,7 @@
         "output": 2,
         "cacheRead": 0.1
       },
-      "contextWindow": 204800,
+      "contextWindow": 202752,
       "maxOutput": 131072,
       "released": "2025-09-30",
       "status": "active",
@@ -3531,11 +3549,12 @@
       "tier": "air",
       "version": "4.5",
       "costPer1M": {
-        "input": 0.14,
-        "output": 0.86
+        "input": 0.2,
+        "output": 1.1,
+        "cacheRead": 0.03
       },
       "contextWindow": 131072,
-      "maxOutput": 117964,
+      "maxOutput": 98304,
       "released": "2025-07-25",
       "status": "active",
       "knowledgeCutoff": "2024-12-31"
